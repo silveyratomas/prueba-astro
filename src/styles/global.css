@@ -1,0 +1,71 @@
+@import "tailwindcss";
+@tailwind utilities;
+
+/* Estilo base claro */
+body {
+  @apply bg-white text-gray-800;
+}
+
+.container {
+  @apply max-w-6xl mx-auto px-4;
+}
+
+.btn {
+  @apply inline-flex items-center gap-2 rounded-lg bg-indigo-600 text-white px-4 py-2 hover:bg-indigo-700 transition;
+}
+
+.card {
+  @apply bg-white border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition;
+}
+
+.h1 {
+  @apply text-4xl md:text-5xl font-extrabold tracking-tight text-center;
+}
+
+.h2 {
+  @apply text-2xl font-bold mb-3;
+}
+
+.muted {
+  @apply text-gray-500;
+}
+
+/* Paleta por defecto (ej: indigo) */
+:root {
+  --brand: #4f46e5;          /* color principal (header, botones) */
+  --on-brand: #ffffff;       /* texto sobre brand */
+  --surface: #ffffff;        /* fondos */
+  --text: #111827;           /* texto base */
+  --muted: #6b7280;          /* texto secundario */
+  --accent: #6366f1;         /* acento */
+  --card: #ffffff;           /* fondo de card */
+  --card-border: #e5e7eb;    /* borde de card */
+}
+
+/* Tema estilo Mercado Libre (por si lo querés) */
+.theme-ml {
+  --brand: #fff159;
+  --on-brand: #333333;
+  --accent: #3483fa;
+  --surface: #ffffff;
+  --text: #333333;
+  --muted: #666666;
+  --card: #ffffff;
+  --card-border: #e5e7eb;
+}
+
+/* Otro ejemplo (azul) */
+.theme-azul {
+  --brand: #0ea5e9;
+  --on-brand: #ffffff;
+  --accent: #0284c7;
+}
+
+/* Utils para sombras sutiles (opcional) */
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+

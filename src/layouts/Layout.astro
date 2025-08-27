@@ -1,22 +1,215 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+import "../styles/global.css";
+const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro.props;
+---
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+
+  <body class="min-h-screen flex flex-col bg-[var(--surface)] text-[color:var(--text)]">
+    <!-- header -->
+    <header id="siteHeader" class="fixed top-0 left-0 w-full z-50 bg-[var(--brand)] text-[var(--on-brand)] shadow transition-colors">
+      <!-- fila superior -->
+      <div class="container flex items-center gap-4 py-3">
+        <!-- logo -->
+        <a href="/" class="shrink-0 font-bold text-xl flex items-center gap-2">
+          <span>🛒</span> <span>TuTienda</span>
+        </a>
+        <!-- buscador centrado -->
+        <form id="searchForm" class="hidden md:flex flex-1"
+          onsubmit="window.location.href='/listado_box?q='+encodeURIComponent(this.q.value); return false;">
+          <div class="relative w-full">
+            <input name="q" type="search" placeholder="Buscar productos, marcas y más…"
+              class="w-full rounded-full bg-[color:var(--surface)] text-[color:var(--text)]
+                     px-5 py-3 pr-12 text-sm placeholder-gray-400
+                     border border-[color:var(--card-border)]
+                     focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+            <button type="submit"
+              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-full w-10 h-10 grid place-items-center hover:opacity-90">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        <!-- promo pill -->
+        <div class="hidden lg:block">
+          <span class="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] text-white text-xs px-3 py-1">
+            ENVÍO GRATIS
+          </span>
+        </div>
+
+        <!-- user links -->
+        <nav class="hidden md:flex items-center gap-4 text-sm">
+          <a href="#" class="hover:underline">Creá tu cuenta</a>
+          <a href="#" class="hover:underline">Ingresá</a>
+          <a href="#" class="hover:underline">Mis compras</a>
+        </nav>
+
+        <!-- carrito + badge + dropdown -->
+        <div class="relative">
+          <button id="cartBtn" aria-label="Abrir carrito"
+            class="relative inline-flex items-center justify-center rounded-lg px-3 py-2
+         hover:bg-black/10 hover:brightness-110 transition">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M7 7h14l-1.5 8.5a2 2 0 0 1-2 1.5H9a2 2 0 0 1-2-1.5L5 4H2"
+                    stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="10" cy="20" r="1.6" fill="currentColor"/>
+              <circle cx="18" cy="20" r="1.6" fill="currentColor"/>
+            </svg>
+            <span id="cartBadge"
+              class="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 rounded-full
+                     bg-[var(--accent)] text-white text-xs grid place-items-center px-1"
+              style="transform: translate(25%,-25%);">0</span>
+          </button>
+
+          <!-- dropdown -->
+          <div id="cartDropdown"
+            class="absolute right-0 mt-2 w-80 bg-[color:var(--surface)] text-[color:var(--text)]
+                   border border-[color:var(--card-border)] rounded-xl shadow-xl p-4 hidden">
+            <h3 class="font-semibold mb-2">Carrito</h3>
+            <div id="miniCartEmpty" class="text-sm text-[color:var(--muted)]">Tu carrito está vacío.</div>
+            <div id="miniCartList" class="hidden max-h-64 overflow-auto space-y-2"></div>
+            <div class="mt-3 flex items-center justify-between">
+              <div class="font-bold" id="miniCartTotal">$ 0,00</div>
+              <div class="flex gap-2">
+                <a href="/comprar"
+                   class="inline-flex items-center rounded-lg bg-[var(--accent)] text-white px-3 py-2 hover:brightness-110">
+                  Comprar
+                </a>
+                <button id="miniCartClear" class="text-xs text-[color:var(--muted)] hover:text-red-600">Vaciar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- fila inferior -->
+      <div class="container flex items-center gap-6 pb-3 text-sm">
+        <div class="flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+          <span class="truncate">Enviar a <strong>Posadas, Misiones</strong></span>
+        </div>
+        <nav class="flex items-center gap-4 overflow-x-auto">
+          <a href="/listado_box" class="hover:underline">Categorías</a>
+          <a href="#" class="hover:underline">Ofertas</a>
+          <a href="#" class="hover:underline">Cupones</a>
+          <a href="#" class="hover:underline">Supermercado</a>
+          <a href="#" class="hover:underline">Moda</a>
+          <a href="/listado_tablas" class="hover:underline">Listado (tabla)</a>
+          <a href="/comprar" class="hover:underline">Comprar</a>
+        </nav>
+
+        <!-- selector de tema (demo) -->
+        <div class="ml-auto flex items-center gap-2">
+          <span class="text-xs opacity-80">Tema:</span>
+          <button class="px-2 py-1 rounded bg-[color:var(--surface)] border border-[color:var(--card-border)]"
+                  onclick="setTheme('')">Default</button>
+          <button class="px-2 py-1 rounded bg-[#fff159]" onclick="setTheme('theme-ml')">ML</button>
+          <button class="px-2 py-1 rounded bg-[#111827] text-white" onclick="setTheme('theme-oscuro')">Oscuro</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="container flex-1 py-10 pt-32">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 border-t border-gray-800">
+      <div class="container py-4 text-center text-sm">
+        © {new Date().getFullYear()} TuTienda – Proyecto académico
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/cart.js" defer></script>
+    
+    <!-- 3) Mini-carrito: badge + dropdown -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('cartBtn');
+        const dd  = document.getElementById('cartDropdown');
+        const badge = document.getElementById('cartBadge');
+        const list = document.getElementById('miniCartList');
+        const empty = document.getElementById('miniCartEmpty');
+        const totalEl = document.getElementById('miniCartTotal');
+        const clearBtn = document.getElementById('miniCartClear');
+
+        const fmt = (n) => new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS'}).format(n);
+        const api = (window.tpCart && typeof window.tpCart.getCart==='function')
+          ? window.tpCart : { getCart:()=>[], clearCart:()=>[] };
+
+        function render() {
+          const cart = api.getCart();
+          const count = cart.reduce((a,i)=>a + (i.qty||0), 0);
+          badge.textContent = count;
+
+          if (!cart.length) {
+            empty.classList.remove('hidden'); list.classList.add('hidden');
+            totalEl.textContent = fmt(0); return;
+          }
+          empty.classList.add('hidden'); list.classList.remove('hidden');
+
+          list.innerHTML = cart.map(i => `
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <div class="font-medium truncate">${i.title}</div>
+                <div class="text-xs text-[color:var(--muted)]">${fmt(i.price)} × ${i.qty}</div>
+              </div>
+              <div class="text-right font-medium">${fmt(i.price * i.qty)}</div>
+            </div>
+          `).join('');
+
+          totalEl.textContent = fmt(cart.reduce((a,i)=>a + i.price*i.qty, 0));
+        }
+
+        btn.addEventListener('click', (e) => { e.stopPropagation(); dd.classList.toggle('hidden'); render(); });
+        document.addEventListener('click', (e) => { if (!dd.contains(e.target) && e.target !== btn) dd.classList.add('hidden'); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') dd.classList.add('hidden'); });
+        clearBtn.addEventListener('click', () => { api.clearCart(); render(); });
+        window.addEventListener('storage', render);
+        window.addEventListener('focus', render);
+        render();
+      });
+
+      /* Theming: guarda/aplica tema sin tocar código */
+      (function(){
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.classList.add(saved);
+      })();
+      window.setTheme = function(name){
+        const html = document.documentElement;
+        html.className = [...html.classList].filter(c=>!c.startsWith('theme-')).join(' ');
+        if (name) html.classList.add(name);
+        localStorage.setItem('theme', name || '');
+      }
+    </script>
+
+
+</body>
+    <!-- Header background on scroll 
+    <script>
+      document.addEventListener("scroll", () => {
+        const header = document.getElementById("siteHeader");
+        if (window.scrollY > 50) {
+          header.classList.add("bg-gray-900/80", "backdrop-blur");
+        } else {
+          header.classList.remove("bg-gray-900/80", "backdrop-blur");
+        }
+      });
+    </script> -->
+
+  </body>
+</html>

@@ -1,0 +1,39 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { products } from "../../data/products";
+
+// 👉 Esto genera las rutas estáticas para cada producto
+export function getStaticPaths() {
+  return products.map((p) => ({
+    params: { slug: p.slug },
+    props: { product: p },
+  }));
+}
+
+const { product } = Astro.props;
+const fmt = (c:number) => "$ " + (c/100).toFixed(2);
+---
+<Layout title={`${product.title} – TuTienda`} description={product.description}>
+  <div class="grid gap-8 grid-cols-1 md:grid-cols-2 items-start">
+    <div class="relative w-full overflow-hidden rounded-xl bg-gray-100" style="padding-top:56.25%;">
+      <img src={product.img} alt={product.title} class="absolute inset-0 w-full h-full object-contain" />
+    </div>
+
+    <section class="bg-white border border-gray-200 rounded-xl p-6">
+      <h1 class="text-2xl font-bold mb-2">{product.title}</h1>
+      <p class="text-xl font-semibold text-gray-800 mb-2">{fmt(product.price)}</p>
+      <p class="text-gray-600 mb-4">{product.description}</p>
+      <div class="flex gap-2">
+        <button
+          class="inline-flex items-center rounded-lg bg-indigo-600 text-white px-4 py-2 hover:bg-indigo-700"
+          onclick={`tpCart.addToCart(${JSON.stringify({ slug:product.slug, title:product.title, price:product.price, qty:1 })})`}
+        >
+          Agregar al carrito
+        </button>
+        <a class="inline-flex items-center rounded-lg bg-indigo-600 text-white px-4 py-2 hover:bg-indigo-700" href="/comprar">
+          Ir a comprar
+        </a>
+      </div>
+    </section>
+  </div>
+</Layout>
