@@ -4,14 +4,15 @@ import { products } from "../data/products";
 
 const destacados = products.filter(p => p.featured);
 // ⬇️ formateador ARS en pesos
-const fmt = (c:number) =>
+const fmt = (c: number) =>
   new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(c);
 ---
+
 <Layout title="TuTienda – Inicio">
   <!-- Hero -->
-  <section class="text-center mb-12">
-    <h1 class="h1">Bienvenid@ a <span class="text-indigo-600">TuTienda</span></h1>
-    <p class="mt-3 muted max-w-2xl mx-auto">
+  <section class="text-center mb-12 pt-4">
+    <h1 class="h1 text-[var(--text)]">Bienvenid@ a <span class="text-[var(--accent)]">TuTienda</span></h1>
+    <p class="mt-3 muted max-w-2xl mx-auto text-[var(--muted)]">
       Catálogo ágil, productos fáciles de administrar y una experiencia de compra simple.
     </p>
     <div class="mt-6 flex justify-center gap-4 flex-wrap">
@@ -24,18 +25,18 @@ const fmt = (c:number) =>
   <!-- Features -->
   <section class="grid gap-6 md:grid-cols-3 mb-12">
     <div class="card text-center">
-      <h3 class="font-semibold text-lg mb-2">Catálogo en tarjetas</h3>
-      <p class="muted text-sm">Explorá el listado tipo “box”.</p>
+      <h3 class="font-semibold text-lg mb-2 text-[var(--text)]">Catálogo en tarjetas</h3>
+      <p class="muted text-sm text-[var(--muted)]">Explorá el listado tipo “box”.</p>
       <a href="/listado_box" class="btn mt-3">Abrir listado (box)</a>
     </div>
     <div class="card text-center">
-      <h3 class="font-semibold text-lg mb-2">Vista en tabla</h3>
-      <p class="muted text-sm">Compará productos y precios.</p>
+      <h3 class="font-semibold text-lg mb-2 text-[var(--text)]">Vista en tabla</h3>
+      <p class="muted text-sm text-[var(--muted)]">Compará productos y precios.</p>
       <a href="/listado_tablas" class="btn mt-3">Abrir listado (tabla)</a>
     </div>
     <div class="card text-center">
-      <h3 class="font-semibold text-lg mb-2">Compra sencilla</h3>
-      <p class="muted text-sm">Formulario con datos del cliente y carrito.</p>
+      <h3 class="font-semibold text-lg mb-2 text-[var(--text)]">Compra sencilla</h3>
+      <p class="muted text-sm text-[var(--muted)]">Formulario con datos del cliente y carrito.</p>
       <a href="/comprar" class="btn mt-3">Completar compra</a>
     </div>
   </section>
@@ -43,14 +44,14 @@ const fmt = (c:number) =>
   <!-- Destacados -->
   <section>
     <div class="flex items-center justify-between mb-4">
-      <h2 class="h2">Destacados</h2>
-      <a href="/listado_box" class="text-indigo-600 text-sm hover:underline">Ver todo →</a>
+      <h2 class="h2 text-[var(--text)]">Destacados</h2>
+      <a href="/listado_box" class="text-[var(--accent)] btnFondoBlanco text-sm hover:underline">Ver todo →</a>
     </div>
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {destacados.map(p => (
         <article class="card flex flex-col">
           <!-- 👇 wrapper 16:9 para imágenes -->
-          <div class="relative w-full overflow-hidden rounded-lg bg-gray-100 mb-3" style="padding-top:56.25%;">
+          <div class="relative w-full overflow-hidden rounded-lg bg-[var(--card-border)] mb-3" style="padding-top:56.25%;">
             <img
               src={p.img}
               alt={p.title}
@@ -58,9 +59,9 @@ const fmt = (c:number) =>
               loading="lazy"
             />
           </div>
-          <h3 class="font-semibold text-lg">{p.title}</h3>
-          <p class="muted">{fmt(p.price)}</p>
-          <p class="text-sm muted mb-3">{p.description}</p>
+          <h3 class="font-semibold text-lg text-[var(--text)]">{p.title}</h3>
+          <p class="text-[var(--muted)]">{fmt(p.price)}</p>
+          <p class="text-sm text-[var(--muted)] mb-3">{p.description}</p>
           <div class="mt-auto flex gap-2">
             <a class="btn" href={`/producto/${p.slug}`}>Ver</a>
             <button

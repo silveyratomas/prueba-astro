@@ -11,29 +11,29 @@ export type Product = {
 export const products: Product[] = [
   {
     id: 1,
-    slug: 'mate-imperial',
-    title: 'Mate Imperial',
+    slug: 'moto-g15',
+    title: 'Moto G15',
     price: 18000,
     img: '/imgs/celu1.jpeg',
-    description: 'Mate de calabaza forrado en cuero con virola.',
+    description: 'Smartphone con pantalla de 6.5", 128GB de almacenamiento.',
     featured: true
   },
   {
     id: 2,
-    slug: 'termo-acero',
-    title: 'Termo de Acero 1L',
+    slug: 'infinix-hot-50-pro',
+    title: 'Infinix Hot 50 Pro 5G',
     price: 25000,
     img: '/imgs/infinix.jpeg',
-    description: 'Doble pared, mantiene temperatura por 8 hs.',
+    description: 'Dual Sim 256gb 8gb+8gb Ram Negro.',
     featured: true
   },
   {
-    id: 3,
-    slug: 'yerba-selecta-1kg',
-    title: 'Yerba Selecta 1kg',
-    price: 8000,
+    id: 5,
+    slug: 'xiaomi-redmi-15c',
+    title: 'Xiaomi Redmi 15C 128GB 4GB RAM',
+    price: 180000, // en pesos, ajustá según corresponda
     img: '/imgs/redmi15C.jpeg',
-    description: 'Yerba mate con estacionamiento natural.',
+    description: 'Pantalla 6.71" HD+, procesador MediaTek Helio G85, cámara 50MP, batería 5000mAh.',
     featured: true
   },
   {

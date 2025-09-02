@@ -1,40 +1,40 @@
 ---
 import Layout from "../layouts/Layout.astro";
-const fmt = (c:number) => "$ " + (c/100).toFixed(2);
+const fmt = (c: number) => "$ " + (c / 100).toFixed(2);
 ---
 <Layout title="Comprar – TuTienda">
-  <h1 class="text-3xl font-bold mb-6">Finalizar compra</h1>
+  <h1 class="text-3xl font-bold mb-6 text-[var(--text)]">Finalizar compra</h1>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- 🧾 Formulario -->
     <form
-      class="lg:col-span-2 bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-5"
+      class="lg:col-span-2 bg-[var(--surface)] border border-[var(--card-border)] rounded-xl shadow-sm p-6 space-y-5"
       onsubmit="event.preventDefault(); alert('Formulario enviado (demo).');"
     >
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-medium mb-1" for="nombre">Nombre del cliente</label>
-          <input class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          <label class="block text-sm font-medium mb-1 text-[var(--text)]" for="nombre">Nombre del cliente</label>
+          <input class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                  id="nombre" name="nombre" required />
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1" for="telefono">Teléfono</label>
-          <input class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          <label class="block text-sm font-medium mb-1 text-[var(--text)]" for="telefono">Teléfono</label>
+          <input class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                  id="telefono" name="telefono" type="tel" required />
         </div>
         <div class="md:col-span-2">
-          <label class="block text-sm font-medium mb-1" for="direccion">Dirección</label>
-          <input class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          <label class="block text-sm font-medium mb-1 text-[var(--text)]" for="direccion">Dirección</label>
+          <input class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                  id="direccion" name="direccion" required />
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1" for="email">E-mail</label>
-          <input class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          <label class="block text-sm font-medium mb-1 text-[var(--text)]" for="email">E-mail</label>
+          <input class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                  id="email" name="email" type="email" required />
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1" for="pago">Medio de pago</label>
-          <select class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          <label class="block text-sm font-medium mb-1 text-[var(--text)]" for="pago">Medio de pago</label>
+          <select class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   id="pago" name="pago" required>
             <option value="">Seleccionar…</option>
             <option>Tarjeta</option>
@@ -48,57 +48,61 @@ const fmt = (c:number) => "$ " + (c/100).toFixed(2);
       <input type="hidden" name="cart_json" id="cart_json" />
 
       <div class="flex justify-end gap-3 pt-2">
+        <!-- Botón de Limpiar -->
         <button type="reset"
-          class="inline-flex items-center rounded-lg px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50">
+          class="inline-flex items-center rounded-lg px-4 py-2 border border-[var(--card-border)] text-[var(--text)] hover:bg-[var(--surface)] transition-colors">
           Limpiar
         </button>
+
+        <!-- Botón de Confirmar Compra -->
         <button type="submit"
-          class="inline-flex items-center rounded-lg px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700">
+          class="inline-flex items-center rounded-lg px-4 py-2 bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] hover:text-white transition-all">
           Confirmar compra
         </button>
       </div>
+
     </form>
 
     <!-- 🧺 Resumen de carrito -->
     <aside class="lg:col-span-1">
-      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 sticky top-6">
-        <h2 class="text-xl font-semibold mb-4">Tu carrito</h2>
+      <div class="bg-[var(--surface)] border border-[var(--card-border)] rounded-xl shadow-sm p-6 sticky top-6">
+        <h2 class="text-xl font-semibold mb-4 text-[var(--text)]">Tu carrito</h2>
 
-        <div id="emptyCart" class="text-gray-500">No hay productos en el carrito todavía.</div>
+        <div id="emptyCart" class="text-[var(--muted)]">No hay productos en el carrito todavía.</div>
 
-            <div id="cartBox" class="hidden">
-            <table class="w-full text-sm">
-                <thead class="text-gray-500">
-                <tr>
-                    <th class="pb-2 text-left">Producto</th>
-                    <th class="pb-2 text-right">Precio unit.</th>
-                    <th class="pb-2 text-center">Cant.</th>
-                    <th class="pb-2 text-right">Subtotal</th>
-                </tr>
-                </thead>
-                <tbody id="cartRows" class="align-top divide-y divide-gray-100"></tbody>
-                <tfoot>
-                <tr>
-                    <td colspan="3" class="pt-3 text-right font-semibold">Total</td>
-                    <td class="pt-3 text-right font-extrabold" id="cartTotal">$ 0,00</td>
-                </tr>
-                </tfoot>
-            </table>
+        <div id="cartBox" class="hidden">
+          <table class="w-full text-sm">
+            <thead class="text-[var(--muted)]">
+              <tr>
+                <th class="pb-2 text-left">Producto</th>
+                <th class="pb-2 text-left">Precio unit.</th>
+                <th class="pb-2 text-center">Cant.</th>
+                <th class="pb-2 text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="cartRows" class="align-top divide-y divide-gray-100"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="pt-3 text-right font-semibold">Total</td>
+                <td class="pt-3 text-right font-extrabold" id="cartTotal">$ 0,00</td>
+              </tr>
+            </tfoot>
+          </table>
 
-            <div class="mt-3 text-right">
-                <button type="button" id="clearBtn" class="text-xs text-gray-500 hover:text-red-600">
-                Vaciar carrito
-                </button>
-            </div>
-            </div>
+          <div class="mt-3 text-right">
+            <button type="button" id="clearBtn" class="text-xs text-[var(--muted)] hover:text-red-600">
+              Vaciar carrito
+            </button>
+          </div>
+        </div>
       </div>
     </aside>
   </div>
 
   <!-- 👇 Script robusto: espera al DOM y valida nodos -->
-    <script>
-    // @ts-nocheck
-    document.addEventListener('DOMContentLoaded', () => {
+  <script>
+  // @ts-nocheck
+  document.addEventListener('DOMContentLoaded', () => {
     const rowsEl     = document.getElementById('cartRows');
     const totalEl    = document.getElementById('cartTotal');
     const emptyEl    = document.getElementById('emptyCart');
@@ -112,7 +116,6 @@ const fmt = (c:number) => "$ " + (c/100).toFixed(2);
         style: 'currency',
         currency: 'ARS'
     }).format(c);
-
 
     const cartApi = (window.tpCart && typeof window.tpCart.getCart === 'function')
         ? window.tpCart
@@ -144,8 +147,7 @@ const fmt = (c:number) => "$ " + (c/100).toFixed(2);
     }
 
     clearBtn.addEventListener('click', () => { cartApi.clearCart(); location.reload(); });
-    });
-    </script>
-
+  });
+  </script>
 
 </Layout>

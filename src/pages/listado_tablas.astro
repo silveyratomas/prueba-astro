@@ -2,15 +2,16 @@
 import Layout from "../layouts/Layout.astro";
 import { products } from "../data/products";
 
-const fmt = (n:number) =>
+const fmt = (n: number) =>
   new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(n);
 ---
-<Layout title="Productos (tabla)">
-  <h1 class="text-2xl font-bold mb-4">Productos (tabla)</h1>
 
-  <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-    <table class="w-full text-sm">
-      <thead class="bg-gray-900 text-white sticky top-0">
+<Layout title="Productos (tabla)">
+  <h1 class="text-2xl font-bold mb-4 text-[var(--text)]">Productos (tabla)</h1>
+
+  <div class="overflow-x-auto rounded-xl border border-[var(--card-border)] shadow-sm">
+    <table class="w-full text-sm text-[var(--text)]">
+      <thead class="bg-[var(--brand)] text-[var(--on-brand)] sticky top-0">
         <tr>
           <th class="px-4 py-3 text-left w-[180px]">Imagen</th>
           <th class="px-4 py-3 text-left">Producto</th>
@@ -18,12 +19,12 @@ const fmt = (n:number) =>
           <th class="px-4 py-3 text-right w-[140px]">Acciones</th>
         </tr>
       </thead>
-      <tbody class="bg-white divide-y divide-gray-100">
+      <tbody class="bg-[var(--surface)] divide-y divide-gray-100">
         {products.map((p) => (
           <tr class="hover:bg-gray-50">
             <!-- Imagen con wrapper 16:9 -->
             <td class="px-4 py-3">
-              <div class="relative w-[160px] max-w-full overflow-hidden rounded-lg bg-gray-100"
+              <div class="relative w-[160px] max-w-full overflow-hidden rounded-lg bg-[var(--card-border)]"
                    style="padding-top:56.25%;">
                 <img src={p.img} alt={p.title}
                      class="absolute inset-0 w-full h-full object-contain" loading="lazy" />
@@ -32,17 +33,17 @@ const fmt = (n:number) =>
 
             <td class="px-4 py-3">
               <div class="font-medium">{p.title}</div>
-              <div class="text-xs text-gray-500 line-clamp-1">{p.description}</div>
+              <div class="text-xs text-[var(--muted)] line-clamp-1">{p.description}</div>
             </td>
 
             <td class="px-4 py-3 text-right font-medium">{fmt(p.price)}</td>
 
             <td class="px-4 py-3 text-right">
               <div class="flex justify-end gap-2">
-                <a class="inline-flex items-center rounded-lg bg-indigo-600 text-white px-3 py-2 hover:bg-indigo-700"
+                <a class="inline-flex items-center rounded-lg bg-[var(--accent)] text-[var(--on-brand)] px-3 py-2 hover:bg-[var(--accent)]/80"
                    href={`/producto/${p.slug}`}>Ver</a>
                 <button
-                  class="inline-flex items-center rounded-lg border border-gray-300 px-3 py-2 hover:bg-gray-50"
+                  class="inline-flex items-center rounded-lg border border-[var(--card-border)] px-3 py-2 hover:bg-[var(--surface)]"
                   onclick={`tpCart.addToCart(${JSON.stringify({ slug:p.slug, title:p.title, price:p.price, qty:1 })})`}>
                   Agregar
                 </button>
