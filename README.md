@@ -88,7 +88,7 @@ pnpm dev
 
 ### 1. Página de Inicio:
 
-* **Bienvenida dinámica:** Muestra una bienvenida atractiva con una imagen de fondo que resalta la temática de los productos que se venden (como celulares y tecnología).
+* **Bienvenida dinámica:** Muestra una bienvenida atractiva.
 * **Navegación rápida:** Menú de navegación accesible para acceder a distintas secciones como el catálogo de productos, el listado en formato tabla y el proceso de compra.
 
 ### 2. Página de Productos:
