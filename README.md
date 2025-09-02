@@ -1,5 +1,3 @@
-¡Claro! Aquí te dejo el README en el formato que me pides, siguiendo el estilo de ejemplo que mencionaste:
-
 ---
 
 # **TuTienda - E-Commerce Proyecto**
@@ -55,7 +53,7 @@ Todos los comandos deben ejecutarse desde la raíz del proyecto, en la terminal:
 
 ---
 
-## 🧑‍💻 Cómo Empezar
+## Cómo Empezar
 
 Para comenzar a trabajar con **TuTienda** en tu máquina local, sigue estos pasos:
 
@@ -84,7 +82,7 @@ pnpm dev
 
 ---
 
-## 🎯 Funcionalidades Actuales
+## Funcionalidades Actuales
 
 ### 1. Página de Inicio:
 
@@ -108,7 +106,7 @@ pnpm dev
 
 ---
 
-## 📈 Futuro del Proyecto
+## Futuro del Proyecto
 
 **TuTienda** sigue en desarrollo y las siguientes características serán implementadas próximamente:
 
@@ -127,7 +125,7 @@ pnpm dev
 
 ---
 
-## 📜 Licencia
+## Licencia
 
 Este proyecto está bajo la **MIT License**. Ver el archivo [LICENSE](./LICENSE) para más detalles.
 
@@ -136,5 +134,3 @@ Este proyecto está bajo la **MIT License**. Ver el archivo [LICENSE](./LICENSE)
 ¡Gracias por ser parte de **TuTienda**!
 
 ---
-
-Este es un formato de README estándar y claro que explica el proyecto y proporciona instrucciones para ponerlo en marcha. Puedes adaptarlo según tus necesidades.
