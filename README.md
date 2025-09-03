@@ -1,6 +1,10 @@
-¡Claro! Aquí te dejo el README en el formato que me pides, siguiendo el estilo de ejemplo que mencionaste:
+
 
 ---
+
+
+![Vista previa de la página](./public/imgs/fotoSitio.png)
+
 
 # **TuTienda - E-Commerce Proyecto**
 
@@ -88,7 +92,7 @@ pnpm dev
 
 ### 1. Página de Inicio:
 
-* **Bienvenida dinámica:** Muestra una bienvenida atractiva con una imagen de fondo que resalta la temática de los productos que se venden (como celulares y tecnología).
+* **Bienvenida dinámica:** Muestra una bienvenida atractiva.
 * **Navegación rápida:** Menú de navegación accesible para acceder a distintas secciones como el catálogo de productos, el listado en formato tabla y el proceso de compra.
 
 ### 2. Página de Productos:
@@ -137,4 +141,4 @@ Este proyecto está bajo la **MIT License**. Ver el archivo [LICENSE](./LICENSE)
 
 ---
 
-Este es un formato de README estándar y claro que explica el proyecto y proporciona instrucciones para ponerlo en marcha. Puedes adaptarlo según tus necesidades.
+

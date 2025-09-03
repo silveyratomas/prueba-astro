@@ -1,6 +1,8 @@
+
+/* clave donde se guarda el carrito */
 const CART_KEY = "tp_cart";
 
-/* Obtener el carrito guardado */
+/* verificamos si el carrito esta vacio o lleno, si esta vacio devuelve un arreglo vacio*/
 function getCart() {
   try {
     return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
