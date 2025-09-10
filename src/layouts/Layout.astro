@@ -13,7 +13,7 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
 
   <body class="min-h-screen flex flex-col bg-[var(--surface)] text-[var(--text)]">
     <!-- Header -->
-    <header id="siteHeader" class="fixed top-0 left-0 w-full z-50  text-[var(--on-brand)] shadow transition-colors">
+    <header id="siteHeader" class="w-full text-[var(--on-brand)] shadow transition-colors">
       <!-- fila superior -->
       <div class="container flex items-center gap-4 py-3 ">
         <!-- logo -->
@@ -30,9 +30,11 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
                     px-5 py-3 pr-12 text-sm placeholder-gray-400
                     border border-[var(--card-border)]
                     focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
-            <button type="submit"
-              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-full w-10 h-10 grid place-items-center btnFondoBlanco border border-[var(--card-border)]">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <button
+              type="submit"
+              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-full w-10 h-10 grid place-items-center border border-[var(--card-border)] text-[var(--text)]"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="block">
                 <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/>
                 <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
               </svg>
@@ -71,11 +73,13 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
                     style="transform: translate(25%,-25%);">0</span>
           </button>
 
-
           <!-- Dropdown -->
           <div id="cartDropdown"
-            class="absolute right-0 mt-2 w-80 bg-[var(--surface)] text-[var(--text)]
-                   border border-[var(--card-border)] rounded-xl shadow-xl p-4 hidden">
+            class="absolute right-0 mt-2 w-80
+                  bg-[var(--surface)] text-[var(--text)]
+                  border border-[var(--card-border)]
+                  rounded-xl shadow-xl p-4 hidden
+                  z-50">   <!-- 👈 SUBIR CAPA -->
             <h3 class="font-semibold mb-2">Carrito</h3>
             <div id="miniCartEmpty" class="text-sm text-[var(--muted)]">Tu carrito está vacío.</div>
             <div id="miniCartList" class="hidden max-h-64 overflow-auto space-y-2"></div>
@@ -83,10 +87,10 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
               <div class="font-bold" id="miniCartTotal">$ 0,00</div>
               <div class="flex gap-2">
                 <a href="/comprar"
-                   class="inline-flex items-center rounded-lg bg-[var(--accent)] text-white px-3 py-2 hover:brightness-110">
+                  class="inline-flex items-center rounded-lg bg-[var(--accent)] text-white px-3 py-2 hover:brightness-110">
                   Comprar
                 </a>
-                <button id="miniCartClear" class="text-xs text-[var(--muted)]">Vaciar</button>
+                <button id="miniCartClear" class="text-xs text-[var(--muted)] hover:text-[var(--text)]">Vaciar</button>
               </div>
             </div>
           </div>
@@ -106,7 +110,6 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
           <a href="/listado_box" class="hover:underline">Categorías</a>
           <a href="#" class="hover:underline">Ofertas</a>
           <a href="#" class="hover:underline">Cupones</a>
-          <a href="#" class="hover:underline">Tendencias</a>
           <a href="/listado_tablas" class="hover:underline">Listado (tabla)</a>
           <a href="/comprar" class="hover:underline">Comprar</a>
         </nav>
@@ -123,7 +126,7 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
     </header>
 
     <!-- Main -->
-    <main class="container flex-1 py-10 pt-32">
+    <main class="container flex-1 py-5">
       <slot />
     </main>
 
@@ -197,5 +200,8 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
         localStorage.setItem('theme', name || '');
       }
     </script>
+
+    <!-- 4) Hook admin: aplica cambios de config sin tocar build-time -->
+    <script src="/hook-admin.js" defer></script>
   </body>
 </html>

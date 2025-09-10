@@ -10,12 +10,17 @@ const fmt = (c: number) =>
 
 <Layout title="TuTienda – Inicio">
   <!-- Hero -->
-  <section class="text-center mb-12 pt-4">
-    <h1 class="h1 text-[var(--text)]">Bienvenid@ a <span class="text-[var(--accent)]">TuTienda</span></h1>
-    <p class="mt-3 muted max-w-2xl mx-auto text-[var(--muted)]">
+  <section id="homeHero" class="text-center mb-12 pt-4 relative overflow-hidden rounded-xl">
+    <!-- overlay (se activa por JS si hay imagen) -->
+    <div id="homeHeroOv" class="pointer-events-none absolute inset-0 hidden"></div>
+
+    <h1 class="h1 text-[var(--text)] relative z-10">
+      Bienvenid@ a <span id="brandNameHome" class="text-[var(--accent)]">TuTienda</span>
+    </h1>
+    <p id="homeTagline" class="mt-3 muted max-w-2xl mx-auto text-[var(--muted)] relative z-10">
       Catálogo ágil, productos fáciles de administrar y una experiencia de compra simple.
     </p>
-    <div class="mt-6 flex justify-center gap-4 flex-wrap">
+    <div class="mt-6 flex justify-center gap-4 flex-wrap relative z-10">
       <a href="/listado_box" class="btn">Ver productos</a>
       <a href="/listado_tablas" class="btn">Listado en tabla</a>
       <a href="/comprar" class="btn">Ir a comprar</a>
@@ -73,4 +78,43 @@ const fmt = (c: number) =>
       ))}
     </div>
   </section>
+
+  <!-- Aplica config del admin (tema/nombre/banner/tagline) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Si el Layout ya guardó la config en window.__storeConfig, úsala; si no, intentá leer de admin.js
+      const cfg = window.__storeConfig || (window.tpAdmin && tpAdmin.getConfig ? tpAdmin.getConfig() : {}) || {};
+
+      // Nombre de la tienda en el hero
+      const brandHome = document.getElementById('brandNameHome');
+      if (brandHome && cfg.storeName) brandHome.textContent = cfg.storeName;
+
+      // Imagen de fondo del hero
+      const hero = document.getElementById('homeHero');
+      const ov   = document.getElementById('homeHeroOv');
+      if (hero && cfg.heroImage) {
+        hero.style.minHeight = '340px';
+        hero.style.backgroundImage = `url('${cfg.heroImage}')`;
+        hero.style.backgroundSize = 'cover';
+        hero.style.backgroundPosition = 'center';
+        if (ov) {
+          ov.classList.remove('hidden');
+          ov.style.background = 'linear-gradient(to bottom, rgba(0,0,0,.30), rgba(0,0,0,.15))';
+        }
+        // texto blanco si hay imagen oscura (opcional, comentá si no te gusta)
+        hero.querySelectorAll('.h1, p, a.btn').forEach(el => {
+          el.classList.add('text-white');
+        });
+      }
+
+      // Tagline
+      const tag = document.getElementById('homeTagline');
+      if (tag && cfg.tagline) tag.textContent = cfg.tagline;
+
+      // Tema: si el Layout no lo aplicó, aplicalo acá
+      if (window.tpAdmin && tpAdmin.applyThemeClass) {
+        tpAdmin.applyThemeClass(cfg.themeClass || '');
+      }
+    });
+  </script>
 </Layout>

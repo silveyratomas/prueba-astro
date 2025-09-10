@@ -1,0 +1,52 @@
+---
+import "../../styles/global.css";
+---
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Iniciar sesión – Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body class="min-h-screen grid place-items-center bg-[var(--surface)] text-[var(--text)]">
+    <form class="w-full max-w-sm bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-4"
+          onsubmit="handleLogin(this)">
+      <h1 class="text-xl font-bold">Iniciar sesión</h1>
+
+      <div>
+        <label class="text-sm">Email</label>
+        <input name="email" type="email" required
+               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+      </div>
+
+      <div>
+        <label class="text-sm">Contraseña</label>
+        <input name="pass" type="password" required
+               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+      </div>
+
+      <button type="submit" class="btn w-full">Entrar</button>
+      <p class="text-xs text-[var(--muted)]">Demo: cualquier email/contraseña.</p>
+    </form>
+
+    <script src="/admin.js" defer></script>
+
+    <!-- IMPORTANTE: definir la función en window para que sea global -->
+    <script>
+      window.handleLogin = function (form) {
+        event.preventDefault();
+        try {
+          const email = form.email.value.trim();
+          const pass  = form.pass.value.trim();
+          tpAdmin.login(email, pass);      // viene de /admin.js
+          location.href = '/admin';
+        } catch (e) {
+          alert((e && e.message) || 'Error al iniciar sesión');
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.tpAdmin && tpAdmin.isLogged()) location.href = '/admin';
+      });
+    </script>
+  </body>
+</html>

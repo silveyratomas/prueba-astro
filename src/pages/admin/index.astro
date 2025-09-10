@@ -1,0 +1,78 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+<AdminLayout title="Admin – General">
+  <h1 class="text-2xl font-bold mb-4">General</h1>
+
+  <form id="cfgForm" class="grid gap-6 max-w-3xl"
+        onsubmit="event.preventDefault(); saveCfg();">
+    <!-- Nombre de la tienda -->
+    <div class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4">
+      <h2 class="font-semibold mb-2">Identidad</h2>
+      <label class="text-sm">Nombre de la tienda</label>
+      <input id="storeName" class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+      <p class="text-xs text-[var(--muted)] mt-1">Se muestra en el header.</p>
+    </div>
+
+    <!-- Tema -->
+    <div class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4">
+      <h2 class="font-semibold mb-2">Tema</h2>
+      <select id="themeClass" class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white">
+        <option value="">Default</option>
+        <option value="theme-profesional">Profesional (azul/verde)</option>
+        <option value="theme-azul">Azul</option>
+        <option value="theme-naranja-profesional">Naranja</option>
+        <!-- tu tema marrón por defecto ya está en :root -->
+      </select>
+      <p class="text-xs text-[var(--muted)] mt-1">Afecta colores del header, botones y fondos.</p>
+    </div>
+
+    <!-- Hero / Banner -->
+    <div class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4">
+      <h2 class="font-semibold mb-2">Home / Banner</h2>
+      <label class="text-sm">URL de imagen (fondo del hero)</label>
+      <input id="heroImage" class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" placeholder="/imgs/tu-banner.jpg" />
+      <label class="text-sm mt-3 block">Tagline (subtítulo opcional)</label>
+      <input id="tagline" class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" placeholder="Texto corto para el hero" />
+      <p class="text-xs text-[var(--muted)] mt-1">Se muestra en la portada.</p>
+    </div>
+
+    <div class="flex gap-3">
+      <button type="submit" class="btn">Guardar cambios</button>
+      <button type="button" class="inline-flex items-center rounded-lg px-4 py-2 border border-[var(--card-border)]"
+              onclick="resetCfg()">Restablecer</button>
+      <a href="/" target="_blank" class="inline-flex items-center rounded-lg px-4 py-2 border border-[var(--card-border)]">Ver tienda ↗</a>
+    </div>
+  </form>
+
+  <script src="/admin.js" defer></script>
+  <script>
+    function loadCfg() {
+      const cfg = tpAdmin.getConfig();
+      document.getElementById('storeName').value = cfg.storeName || '';
+      document.getElementById('themeClass').value = cfg.themeClass || '';
+      document.getElementById('heroImage').value = cfg.heroImage || '';
+      document.getElementById('tagline').value = cfg.tagline || '';
+    }
+    function saveCfg() {
+      const cfg = {
+        storeName: document.getElementById('storeName').value.trim(),
+        themeClass: document.getElementById('themeClass').value,
+        heroImage: document.getElementById('heroImage').value.trim(),
+        tagline: document.getElementById('tagline').value.trim(),
+      };
+      tpAdmin.saveConfig(cfg);
+      alert('Guardado. Actualizá la tienda para ver cambios.');
+    }
+    function resetCfg() {
+      if (!confirm('¿Restablecer a valores por defecto?')) return;
+      const cfg = tpAdmin.resetConfig();
+      loadCfg();
+      alert('Restablecido.');
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      tpAdmin.requireAuth();
+      loadCfg();
+    });
+  </script>
+</AdminLayout>

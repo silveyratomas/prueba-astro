@@ -1,138 +1,131 @@
 @import "tailwindcss";
 @tailwind utilities;
 
-/* Estilo base claro */
+/* ===== Base ===== */
 body {
   background-color: var(--surface);
   color: var(--text);
 }
 
-/* Contenedor centrado */
-.container {
-  @apply max-w-6xl mx-auto px-4;
-}
+.container { @apply max-w-6xl mx-auto px-4; }
 
-/* Botón principal */
-.btn {
-  @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 transition;
-  background-color: var(--accent);
-  color: var(--on-brand);
-}
+/* ===== Tipografía util ===== */
+.h1 { @apply text-4xl md:text-5xl font-extrabold tracking-tight text-center; }
+.h2 { @apply text-2xl font-bold mb-3; }
+.muted { color: var(--muted); }
 
-.btn:hover {
-  background-color: var(--accent-hover); /* Se aplica un hover más oscuro si no se define la variable */
-}
-
-/* Tarjetas de productos */
+/* ===== Tarjetas ===== */
 .card {
   @apply rounded-xl shadow-sm p-4 hover:shadow-md transition;
   background: var(--card);
   border: 1px solid var(--card-border);
 }
 
-/* Títulos */
-.h1 {
-  @apply text-4xl md:text-5xl font-extrabold tracking-tight text-center;
+/* ===== Botones ===== */
+.btn {
+  @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 transition;
+  background-color: var(--accent);
+  color: var(--on-brand);
+}
+/* hover válido en CSS puro (sin darken) */
+.btn:hover {
+  background-color: color-mix(in srgb, var(--accent) 85%, black);
 }
 
-.h2 {
-  @apply text-2xl font-bold mb-3;
+/* Botón sobre fondo claro (tipo “blanco”) */
+.btn-white {
+  background: var(--button-background);
+  color: var(--button-text);
+  border: 1px solid var(--card-border);
+}
+.btn-white:hover {
+  background: color-mix(in srgb, var(--button-background) 90%, black);
 }
 
-.muted {
-  color: var(--muted);
+/* Botón contorno (para acciones secundarias) */
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--card-border);
 }
+.btn-outline:hover { background: var(--surface); }
 
-/* Variables para los colores (tema personalizado) */
+/* Links: por defecto heredan color del contexto (NO forzamos blanco global) */
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-/* Tema Marrón */
+/* Links del header (fondo oscuro) */
+header a { color: var(--on-brand); opacity: .9; }
+header a:hover { opacity: 1; }
+
+/* Botón “Vaciar” del mini-carrito */
+#miniCartClear { color: var(--muted); }
+#miniCartClear:hover { color: var(--red-negativo); }
+
+/* ===== Temas (variables) ===== */
+
+/* Tema Marrón (default) */
 :root {
-  --brand: #4e342e;             /* Marrón oscuro para el header y los botones */
-  --on-brand: #ffffff;          /* Blanco para el texto sobre el fondo marrón */
-  --accent: #8d6e63;            /* Marrón claro para botones y acciones */
-  --accent-hover: #6d4c41;      /* Marrón más oscuro para hover */
-  --surface: #f5f5f5;           /* Fondo crema para las secciones */
-  --text: #3e2723;              /* Marrón oscuro para el texto principal */
-  --muted: #8d6e63;             /* Gris suave para texto secundario */
-  --card: #ffffff;              /* Fondo blanco para las tarjetas */
-  --card-border: #d7ccc8;       /* Borde suave para las tarjetas */
-  --button-background: #ffffff; /* Fondo blanco para botones */
+  --brand: #4e342e;
+  --on-brand: #ffffff;
+  --accent: #8d6e63;
+  --accent-hover: #6d4c41;
+  --surface: #f5f5f5;
+  --text: #3e2723;
+  --muted: #8d6e63;
+  --card: #ffffff;
+  --card-border: #d7ccc8;
+  --button-background: #ffffff;
   --button-text: #3e2723;
-  --red-negativo: #FF0000;     
+  --red-negativo: #e53935;
+  --button-wbg: #000000;
 }
 
-/* Tema estilo Profesional (Azul y Verde) */
+/* Profesional (azul/verde) */
 .theme-profesional {
-  --brand: #1e3a8a;             /* Azul oscuro */
-  --on-brand: #ffffff;          /* Blanco para el texto */
-  --accent: #10b981;            /* Verde brillante */
-  --accent-hover: #0284c7;      /* Hover verde más oscuro */
-  --surface: #f8fafc;           /* Gris claro de fondo */
-  --text: #111827;              /* Gris oscuro */
-  --muted: #6b7280;             /* Gris suave */
-  --card: #ffffff;              /* Fondo blanco para las tarjetas */
-  --card-border: #e5e7eb;       /* Borde suave */
+  --brand: #1e3a8a;
+  --on-brand: #ffffff;
+  --accent: #10b981;
+  --accent-hover: #0284c7;
+  --surface: #f8fafc;
+  --text: #111827;
+  --muted: #6b7280;
+  --card: #ffffff;
+  --card-border: #e5e7eb;
+  --button-background: #ffffff;
+  --button-text: #111827;
 }
 
-/* Tema Naranja */
+/* Naranja */
 .theme-naranja-profesional {
-  --brand: #1c1c1c;             /* Gris muy oscuro para el header */
-  --on-brand: #ffffff;          /* Blanco para el texto */
-  --accent: #f57c00;            /* Naranja brillante para botones y acciones */
-  --accent-hover: #e65100;      /* Naranja oscuro para hover */
-  --surface: #fafafa;           /* Fondo gris muy claro */
-  --text: #212121;              /* Gris muy oscuro para el texto */
-  --muted: #616161;             /* Gris suave para texto secundario */
-  --card: #ffffff;              /* Fondo blanco para las tarjetas */
-  --card-border: #e0e0e0;       /* Borde suave para las tarjetas */
-  --button-background: #ffffff; /* Fondo blanco para botones */
-  --button-text: #212121;       /* Texto oscuro para botones */
+  --brand: #1c1c1c;
+  --on-brand: #ffffff;
+  --accent: #f57c00;
+  --accent-hover: #e65100;
+  --surface: #fafafa;
+  --text: #212121;
+  --muted: #616161;
+  --card: #ffffff;
+  --card-border: #e0e0e0;
+  --button-background: #ffffff;
+  --button-text: #212121;
 }
 
-
+/* Azul */
 .theme-azul {
   --brand: #0ea5e9;
   --on-brand: #ffffff;
   --accent: #0284c7;
   --accent-hover: #026c9f;
+  --surface: #f0f9ff;
+  --text: #0f172a;
+  --muted: #475569;
+  --card: #ffffff;
+  --card-border: #e2e8f0;
+  --button-background: #ffffff;
+  --button-text: #0f172a;
 }
 
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-}
-
-
-header {
-  background-color: var(--brand);
-  color: var(--on-brand);
-}
-
-footer {
-  background-color: var(--brand);
-  color: var(--on-brand);
-}
-
-button,
-a {
-  color: var(--on-brand);
-}
-
-/* no funciona el hdp */
-button, .btnFondoBlanco {
-  color: var(--text);
-}
-
-
-button:hover,
-a:hover {
-  transition: background-color 0.6s ease;
-}
-
-#miniCartClear:hover {
- 
-  color: var(--color-red-700); /* Color de texto al pasar el cursor */
-}
+/* Header/Footer aplican el fondo de marca */
+header { background-color: var(--brand); color: var(--on-brand); }
+footer { background-color: var(--brand); color: var(--on-brand); }

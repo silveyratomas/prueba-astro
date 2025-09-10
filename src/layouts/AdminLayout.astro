@@ -1,0 +1,43 @@
+---
+// src/layouts/AdminLayout.astro
+import "../styles/global.css";
+const { title = "Admin – TuTienda" } = Astro.props;
+---
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body class="min-h-screen bg-[var(--surface)] text-[var(--text)]">
+    <header class="w-full bg-[var(--brand)] text-[var(--on-brand)] shadow">
+      <div class="container flex items-center justify-between py-3">
+        <div class="font-bold">Panel de Administración</div>
+        <nav class="flex items-center gap-3 text-sm">
+          <a href="/" class="underline">Ver tienda</a>
+          <button onclick="tpAdmin.logout(); location.href='/admin/login';" class="underline">Salir</button>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container grid md:grid-cols-[220px,1fr] gap-6 py-6">
+      <aside class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4">
+        <nav class="space-y-2 text-sm">
+          <a href="/admin" class="block hover:underline">General</a>
+          <!-- Podés sumar más secciones a futuro -->
+        </nav>
+      </aside>
+
+      <main class="min-h-[60vh]">
+        <slot />
+      </main>
+    </div>
+
+    <script src="/admin.js" defer></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        tpAdmin.requireAuth();
+      });
+    </script>
+  </body>
+</html>
