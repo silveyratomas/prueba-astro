@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-
+import MobileTabBar from "../components/MobileTabBar.astro";
 const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro.props;
 ---
 
@@ -22,7 +22,7 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
           <span>🛒</span> <span id="brandNameHeader">TuTienda</span>
         </a>
 
-        <!-- Buscador centrado -->
+        <!-- Buscador (sólo desktop/tablet) -->
         <form
           id="searchForm"
           class="hidden md:flex flex-1"
@@ -59,15 +59,15 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
           </span>
         </div>
 
-        <!-- Links usuario -->
+        <!-- Links usuario (sólo desktop/tablet) -->
         <nav class="hidden md:flex items-center gap-4 text-sm">
           <a href="#" class="hover:underline">Creá tu cuenta</a>
           <a href="#" class="hover:underline">Iniciar Sesión</a>
           <a href="#" class="hover:underline">Mis compras</a>
         </nav>
 
-        <!-- Carrito -->
-        <div class="relative">
+        <!-- Carrito (oculto en mobile; visible md+) -->
+        <div class="relative hidden md:block">
           <button
             id="cartBtn"
             aria-label="Abrir carrito"
@@ -127,7 +127,7 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
           <span class="truncate">Enviar a <strong>Posadas, Misiones</strong></span>
         </div>
 
-        <nav class="flex items-center gap-4 overflow-x-auto">
+        <nav class="hidden md:flex items-center gap-4 overflow-x-auto">
           <a href="/listado_box" class="hover:underline">Categorías</a>
           <a href="#" class="hover:underline">Ofertas</a>
           <a href="#" class="hover:underline">Cupones</a>
@@ -136,7 +136,7 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
         </nav>
 
         <!-- Selector de tema -->
-        <div class="ml-auto flex items-center gap-2">
+        <div class="ml-auto hidden md:flex items-center gap-2">
           <span class="text-xs opacity-80">Tema:</span>
           <button class="px-2 py-1 rounded bg-[var(--surface)] border border-[var(--card-border)]" onclick="setTheme('')">Default</button>
           <button class="px-2 py-1 rounded bg-[#1e3a8a] text-white" onclick="setTheme('theme-profesional')">Profesional</button>
@@ -146,8 +146,11 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
       </div>
     </header>
 
-    <!-- Main -->
-    <main class="container flex-1 py-5">
+    <!-- Main (padding extra por bottom bar móvil) -->
+    <main
+      class="container flex-1 py-5 pb-24 md:pb-6"
+      style="padding-bottom: calc(6rem + env(safe-area-inset-bottom))"
+    >
       <slot />
     </main>
 
@@ -217,7 +220,6 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
 
           document.addEventListener('click', (e) => {
             if (!dd.classList.contains('hidden')) {
-              // si clic fuera del dropdown y fuera del botón → cerrar
               if (!dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
                 dd.classList.add('hidden');
               }
@@ -257,10 +259,13 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
             .filter(c => !c.startsWith('theme-'))
             .join(' ')
             .trim();
-          if (name) html.classList.add(name);
+        if (name) html.classList.add(name);
           localStorage.setItem('theme', name || '');
         } catch {}
       };
     </script>
+
+    <!-- Bottom bar (sólo mobile) -->
+    <MobileTabBar />
   </body>
 </html>
