@@ -1,15 +1,17 @@
 ---
 /** No necesita props */
 ---
-<nav aria-label="Navegación inferior"
-     class="md:hidden fixed bottom-0 inset-x-0 z-[60] border-t border-[var(--card-border)]
-            bg-[color:var(--surface)]/95 backdrop-blur">
-  <ul class="grid grid-cols-4 h-16 items-center text-xs text-[var(--muted)]"
-      style="padding-bottom: env(safe-area-inset-bottom)">
+<nav
+  aria-label="Navegación inferior"
+  class="md:hidden fixed bottom-0 inset-x-0 z-[60] border-t border-[var(--card-border)]
+         bg-[var(--card)]/95 backdrop-blur-sm"
+  style="padding-bottom: env(safe-area-inset-bottom)"
+>
+  <ul class="grid grid-cols-4 h-16 items-center text-[11px] text-[var(--muted)]">
     <!-- Inicio -->
     <li class="flex flex-col items-center justify-center gap-1">
-      <a href="/" data-tab="home" class="flex flex-col items-center">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <a href="/" data-tab="home" class="flex flex-col items-center" aria-label="Inicio">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10.5Z"
                 stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
         </svg>
@@ -19,8 +21,8 @@
 
     <!-- Buscar -->
     <li class="flex flex-col items-center justify-center gap-1">
-      <button type="button" id="mbSearchBtn" class="flex flex-col items-center">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <button type="button" id="mbSearchBtn" class="flex flex-col items-center" aria-label="Buscar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/>
           <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
@@ -30,27 +32,29 @@
 
     <!-- Carrito -->
     <li class="flex flex-col items-center justify-center gap-1 relative">
-      <a href="/comprar" class="flex flex-col items-center" id="mbCartLink">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <a href="/comprar" class="flex flex-col items-center" id="mbCartLink" aria-label="Carrito">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 7h14l-1.5 8.5a2 2 0 0 1-2 1.5H9a2 2 0 0 1-2-1.5L5 4H2"
                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
           <circle cx="10" cy="20" r="1.6" fill="currentColor"/>
           <circle cx="18" cy="20" r="1.6" fill="currentColor"/>
         </svg>
         <span>Carrito</span>
+
         <!-- badge -->
-        <span id="mbCartBadge"
-              class="absolute -top-1 right-6 min-w-[1.25rem] h-5 rounded-full
-                     bg-[var(--accent)] text-white text-[10px] grid place-items-center px-1"
-              style="display: none;">
-        </span>
+        <span
+          id="mbCartBadge"
+          class="absolute -top-1 right-6 min-w-[1.1rem] h-4 rounded-full
+                 bg-[var(--accent)] text-white text-[10px] leading-none grid place-items-center px-1"
+          style="display:none;"
+        ></span>
       </a>
     </li>
 
-    <!-- Más (menú rápido / categorías) -->
+    <!-- Más -->
     <li class="flex flex-col items-center justify-center gap-1">
-      <button type="button" id="mbMoreBtn" class="flex flex-col items-center">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <button type="button" id="mbMoreBtn" class="flex flex-col items-center" aria-label="Más opciones">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
         <span>Más</span>
@@ -60,14 +64,21 @@
 </nav>
 
 <script>
-    // @ts-nocheck
-  // Sin frameworks: re-usar el carrito y el buscador del layout
+  // @ts-nocheck
   document.addEventListener('DOMContentLoaded', () => {
     const badge = document.getElementById('mbCartBadge');
 
-    function renderCartBadge() {
+    function getCartCount() {
       const api = (window.tpCart && typeof window.tpCart.getCart === 'function')
-        ? window.tpCart : { getCart: () => [] };
+        ? window.tpCart
+        : { getCart: () => [] };
+      const items = api.getCart() || [];
+      return items.reduce((a, i) => a + (i.qty || 0), 0);
+    }
+
+    function renderCartBadge() {
+      if (!badge) return;
+      const count = getCartCount();
       if (count > 0) {
         badge.textContent = String(count);
         badge.style.display = 'grid';
@@ -75,23 +86,38 @@
         badge.style.display = 'none';
       }
     }
-    // Buscar: enfoca el input del header si existe
+
+    // Buscar (overlay si existe, sino fallback)
     document.getElementById('mbSearchBtn')?.addEventListener('click', () => {
+      if (typeof window.__mb_open_search === 'function') {
+        window.__mb_open_search();
+        return;
+      }
+      // Fallback: enfoca el input del header si existe
       const input = document.querySelector('#searchForm input[name="q"]');
-      if (input) { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); input.focus(); }
-      else window.location.href = '/listado_box';
+      if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input.focus();
+      } else {
+        location.href = '/listado_box';
+      }
     });
 
-    // “Más”: ejemplo simple, podés abrir un sheet/menú
+    // “Más” (drawer si existe, sino fallback)
     document.getElementById('mbMoreBtn')?.addEventListener('click', () => {
-      window.location.href = '/listado_tablas';
+      if (typeof window.__mb_open_drawer === 'function') {
+        window.__mb_open_drawer();
+      } else {
+        // Fallback simple
+        location.href = '/listado_tablas';
+      }
     });
 
-    // Estado activo básico
-    const path = location.pathname;
+    // Estado activo básico para "Inicio"
+    const path = location.pathname.replace(/\/+$/, '') || '/';
     document.querySelectorAll('nav [data-tab]').forEach(a => {
-      const active = (a.getAttribute('href') === path);
-      if (active) a.classList.add('text-[var(--text)]');
+      const href = (a.getAttribute('href') || '').replace(/\/+$/, '') || '/';
+      if (href === path) a.classList.add('text-[var(--text)]');
     });
 
     renderCartBadge();
