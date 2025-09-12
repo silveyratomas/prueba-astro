@@ -1,5 +1,5 @@
 ---
-// src/layouts/AdminLayout.astro
+/* src/layouts/AdminLayout.astro */
 import "../styles/global.css";
 const { title = "Admin – TuTienda" } = Astro.props;
 ---
@@ -9,22 +9,41 @@ const { title = "Admin – TuTienda" } = Astro.props;
     <title>{title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
+
   <body class="min-h-screen bg-[var(--surface)] text-[var(--text)]">
+    <!-- Header admin -->
     <header class="w-full bg-[var(--brand)] text-[var(--on-brand)] shadow">
       <div class="container flex items-center justify-between py-3">
-        <div class="font-bold">Panel de Administración</div>
+        <div class="font-bold tracking-tight">Panel de Administración</div>
+
         <nav class="flex items-center gap-3 text-sm">
-          <a href="/" class="underline">Ver tienda</a>
-          <button onclick="tpAdmin.logout(); location.href='/admin/login';" class="underline">Salir</button>
+          <a href="/" class="underline opacity-90 hover:opacity-100">Ver tienda</a>
+          <button
+            id="btnLogout"
+            type="button"
+            class="underline opacity-90 hover:opacity-100"
+            aria-label="Cerrar sesión"
+          >
+            Salir
+          </button>
         </nav>
       </div>
     </header>
 
+    <!-- Layout con sidebar -->
     <div class="container grid md:grid-cols-[220px,1fr] gap-6 py-6">
-      <aside class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4">
-        <nav class="space-y-2 text-sm">
-          <a href="/admin" class="block hover:underline">General</a>
-          <!-- Podés sumar más secciones a futuro -->
+      <aside
+        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4
+               md:sticky md:top-6 h-max"
+      >
+        <nav class="space-y-2 text-sm" id="adminNav">
+          <a href="/admin" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">General</a>
+          <!-- Más secciones a futuro:
+               <a href="/admin/productos" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">Productos</a>
+               <a href="/admin/apariencia" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">Apariencia</a>
+               <a href="/admin/envios" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">Envíos</a>
+               <a href="/admin/pagos" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">Pagos</a>
+          -->
         </nav>
       </aside>
 
@@ -33,10 +52,49 @@ const { title = "Admin – TuTienda" } = Astro.props;
       </main>
     </div>
 
+    <!-- Scripts -->
     <script src="/admin.js" defer></script>
     <script>
+      // @ts-nocheck
       document.addEventListener('DOMContentLoaded', () => {
-        tpAdmin.requireAuth();
+        // Auth guard con fallback
+        try {
+          if (window.tpAdmin && typeof tpAdmin.requireAuth === 'function') {
+            tpAdmin.requireAuth();
+          }
+        } catch (e) {
+          console.warn('[admin] requireAuth error:', e);
+        }
+
+        // Logout seguro
+        const btnLogout = document.getElementById('btnLogout');
+        if (btnLogout) {
+          btnLogout.addEventListener('click', () => {
+            try {
+              if (window.tpAdmin && typeof tpAdmin.logout === 'function') {
+                tpAdmin.logout();
+              }
+            } catch (e) {
+              console.warn('[admin] logout error:', e);
+            } finally {
+              window.location.href = '/admin/login';
+            }
+          });
+        }
+
+        // Resaltar link activo en el sidebar
+        const nav = document.getElementById('adminNav');
+        if (nav) {
+          const links = Array.from(nav.querySelectorAll('a[href]'));
+          const here = window.location.pathname.replace(/\/+$/, '');
+          links.forEach(a => {
+            const href = a.getAttribute('href')?.replace(/\/+$/, '') || '';
+            if (href && (here === href || (href !== '/' && here.startsWith(href)))) {
+              a.classList.add('bg-[var(--surface)]', 'font-medium');
+              a.setAttribute('aria-current', 'page');
+            }
+          });
+        }
       });
     </script>
   </body>

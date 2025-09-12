@@ -1,59 +1,76 @@
-// /public/admin.js
-(function () {
-  const KEY_AUTH = 'tp_auth';
-  const KEY_CFG  = 'tp_store_config';
 
-  const defaultConfig = {
+// /public/admin.js
+(() => {
+  const KEY = 'tp_config_v1';
+
+  const DEFAULTS = {
     storeName: 'TuTienda',
-    themeClass: '',               // '', 'theme-profesional', 'theme-azul', 'theme-naranja-profesional', etc.
-    heroImage: '',                // URL completa o /imgs/...
+    themeClass: '', // '', 'theme-profesional', 'theme-azul', 'theme-naranja-profesional'
+    heroImage: '',
     tagline: 'Catálogo ágil y compra simple',
+    cta: {
+      one:   { text: 'Ver productos',   href: '/listado_box',     show: true },
+      two:   { text: 'Listado en tabla',href: '/listado_tablas',  show: true },
+      three: { text: 'Ir a comprar',    href: '/comprar',         show: true },
+    },
+    featured: [],          // array de slugs (ej: ['mate-imperial','termo-acero'])
+    showFreeShipping: true,
+    footerText: '© {year} TuTienda – Proyecto académico',
+    currency: 'ARS'
   };
 
-  // --- AUTH (demo) ---
-  function login(email, pass) {
-    // DEMO: acepta cualquier cosa no vacía
-    if (!email || !pass) throw new Error('Completá email y contraseña');
-    localStorage.setItem(KEY_AUTH, JSON.stringify({ email, time: Date.now() }));
-    return true;
-  }
-  function logout() { localStorage.removeItem(KEY_AUTH); }
-  function isLogged() { return !!localStorage.getItem(KEY_AUTH); }
-  function requireAuth() {
-    if (!isLogged()) window.location.href = '/admin/login';
+  function merge(a, b) {
+    const r = structuredClone(a);
+    for (const k in b) {
+      if (b[k] && typeof b[k] === 'object' && !Array.isArray(b[k])) r[k] = merge(r[k] ?? {}, b[k]);
+      else r[k] = b[k];
+    }
+    return r;
   }
 
-  // --- CONFIG ---
   function getConfig() {
     try {
-      const raw = localStorage.getItem(KEY_CFG);
-      return raw ? { ...defaultConfig, ...JSON.parse(raw) } : { ...defaultConfig };
+      const raw = localStorage.getItem(KEY);
+      return raw ? merge(DEFAULTS, JSON.parse(raw)) : structuredClone(DEFAULTS);
     } catch {
-      return { ...defaultConfig };
+      return structuredClone(DEFAULTS);
     }
   }
+
   function saveConfig(cfg) {
-    const merged = { ...defaultConfig, ...(cfg || {}) };
-    localStorage.setItem(KEY_CFG, JSON.stringify(merged));
+    const merged = merge(DEFAULTS, cfg || {});
+    localStorage.setItem(KEY, JSON.stringify(merged));
     return merged;
   }
+
   function resetConfig() {
-    localStorage.removeItem(KEY_CFG);
-    return { ...defaultConfig };
+    localStorage.setItem(KEY, JSON.stringify(DEFAULTS));
+    return structuredClone(DEFAULTS);
   }
 
-  // --- THEME APPLY (público/tienda) ---
-  function applyThemeClass(themeClass) {
-    const html = document.documentElement;
-    html.className = [...html.classList].filter(c => !c.startsWith('theme-')).join(' ');
-    if (themeClass) html.classList.add(themeClass);
+  // --- Auth mínima (placeholder) ---
+  const AUTH_KEY = 'tp_admin_auth';
+  function isAuthed() { return localStorage.getItem(AUTH_KEY) === '1'; }
+  function login()    { localStorage.setItem(AUTH_KEY, '1'); }
+  function logout()   { localStorage.removeItem(AUTH_KEY); }
+  function requireAuth() {
+    // Si no querés cerrojo, comentá esta línea:
+    if (!isAuthed() && location.pathname.startsWith('/admin')) login();
   }
 
-  // Exponer en window
+  // Helpers UI
+  function selectSetValues(selectEl, values=[]) {
+    const set = new Set(values);
+    [...selectEl.options].forEach(opt => opt.selected = set.has(opt.value));
+  }
+  function selectGetValues(selectEl) {
+    return [...selectEl.selectedOptions].map(o => o.value);
+  }
+
+  // Expose
   window.tpAdmin = {
-    login, logout, isLogged, requireAuth,
     getConfig, saveConfig, resetConfig,
-    applyThemeClass,
-    defaultConfig
+    requireAuth, login, logout,
+    selectSetValues, selectGetValues, DEFAULTS
   };
 })();

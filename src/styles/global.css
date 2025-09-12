@@ -1,38 +1,52 @@
 @import "tailwindcss";
 @tailwind utilities;
 
-/* ===== Base ===== */
+/* =========================
+   BASE
+   ========================= */
 body {
   background-color: var(--surface);
   color: var(--text);
 }
 
-.container { @apply max-w-6xl mx-auto px-4; }
+.container {
+  @apply max-w-6xl mx-auto px-4;
+}
 
-/* ===== Tipografía util ===== */
+/* Tipografía utilitaria */
 .h1 { @apply text-4xl md:text-5xl font-extrabold tracking-tight text-center; }
 .h2 { @apply text-2xl font-bold mb-3; }
 .muted { color: var(--muted); }
 
-/* ===== Tarjetas ===== */
+/* =========================
+   TARJETAS
+   ========================= */
 .card {
   @apply rounded-xl shadow-sm p-4 hover:shadow-md transition;
   background: var(--card);
   border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
 }
 
-/* ===== Botones ===== */
+/* =========================
+   BOTONES
+   ========================= */
 .btn {
   @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 transition;
-  background-color: var(--accent);
+  background: var(--accent);
   color: var(--on-brand);
 }
-/* hover válido en CSS puro (sin darken) */
 .btn:hover {
-  background-color: color-mix(in srgb, var(--accent) 85%, black);
+  /* usa la variable de hover del tema; fallback con color-mix */
+  background: var(--accent-hover, color-mix(in srgb, var(--accent) 85%, black));
+}
+/* Fallback extra para navegadores sin color-mix */
+@supports not (color: color-mix(in srgb, black, white)) {
+  .btn:hover { filter: brightness(.94); }
 }
 
-/* Botón sobre fondo claro (tipo “blanco”) */
+/* Botón sobre fondo claro */
 .btn-white {
   background: var(--button-background);
   color: var(--button-text);
@@ -42,7 +56,7 @@ body {
   background: color-mix(in srgb, var(--button-background) 90%, black);
 }
 
-/* Botón contorno (para acciones secundarias) */
+/* Botón contorno (secundario) */
 .btn-outline {
   background: transparent;
   color: var(--text);
@@ -50,19 +64,37 @@ body {
 }
 .btn-outline:hover { background: var(--surface); }
 
-/* Links: por defecto heredan color del contexto (NO forzamos blanco global) */
+/* =========================
+   LINKS
+   ========================= */
 a { color: inherit; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* Links del header (fondo oscuro) */
+/* Links dentro del header (fondo de marca) */
 header a { color: var(--on-brand); opacity: .9; }
 header a:hover { opacity: 1; }
 
-/* Botón “Vaciar” del mini-carrito */
+/* =========================
+   BUSCADOR (lupa negra sobre fondo claro)
+   ========================= */
+#searchForm button {
+  color: var(--text);                         /* el SVG usa currentColor */
+  background: var(--button-background);
+  border: 1px solid var(--card-border);
+}
+#searchForm button:hover {
+  background: color-mix(in srgb, var(--button-background) 90%, black);
+}
+
+/* =========================
+   MINI-CARRITO
+   ========================= */
 #miniCartClear { color: var(--muted); }
 #miniCartClear:hover { color: var(--red-negativo); }
 
-/* ===== Temas (variables) ===== */
+/* =========================
+   TEMAS (variables)
+   ========================= */
 
 /* Tema Marrón (default) */
 :root {
@@ -78,7 +110,6 @@ header a:hover { opacity: 1; }
   --button-background: #ffffff;
   --button-text: #3e2723;
   --red-negativo: #e53935;
-  --button-wbg: #000000;
 }
 
 /* Profesional (azul/verde) */
@@ -96,7 +127,7 @@ header a:hover { opacity: 1; }
   --button-text: #111827;
 }
 
-/* Naranja */
+/* Naranja profesional */
 .theme-naranja-profesional {
   --brand: #1c1c1c;
   --on-brand: #ffffff;
@@ -126,6 +157,6 @@ header a:hover { opacity: 1; }
   --button-text: #0f172a;
 }
 
-/* Header/Footer aplican el fondo de marca */
-header { background-color: var(--brand); color: var(--on-brand); }
-footer { background-color: var(--brand); color: var(--on-brand); }
+/* Header/Footer usan el color de marca */
+header { background: var(--brand); color: var(--on-brand); }
+footer { background: var(--brand); color: var(--on-brand); }

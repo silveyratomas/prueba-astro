@@ -3,55 +3,161 @@ import Layout from "../layouts/Layout.astro";
 import { products } from "../data/products";
 
 const fmt = (n: number) =>
-  new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(n);
+  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(n);
 ---
 
 <Layout title="Productos (tabla)">
   <h1 class="text-2xl font-bold mb-4 text-[var(--text)]">Productos (tabla)</h1>
 
+  <!-- Toolbar: filtro + orden -->
+  <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-2">
+      <label for="filter" class="text-sm text-[var(--muted)]">Buscar</label>
+      <input
+        id="filter"
+        type="search"
+        placeholder="Nombre o descripción…"
+        class="rounded-lg border border-[var(--card-border)] bg-white px-3 py-2 text-sm"
+      />
+    </div>
+    <div class="flex items-center gap-2">
+      <label for="sort" class="text-sm text-[var(--muted)]">Ordenar por</label>
+      <select
+        id="sort"
+        class="rounded-lg border border-[var(--card-border)] bg-white px-3 py-2 text-sm"
+      >
+        <option value="title-asc">Título (A→Z)</option>
+        <option value="title-desc">Título (Z→A)</option>
+        <option value="price-asc">Precio (menor→mayor)</option>
+        <option value="price-desc">Precio (mayor→menor)</option>
+      </select>
+    </div>
+  </div>
+
   <div class="overflow-x-auto rounded-xl border border-[var(--card-border)] shadow-sm">
     <table class="w-full text-sm text-[var(--text)]">
+      <caption class="sr-only">Tabla de productos con imagen, nombre, precio y acciones</caption>
       <thead class="bg-[var(--brand)] text-[var(--on-brand)] sticky top-0">
         <tr>
-          <th class="px-4 py-3 text-left w-[180px]">Imagen</th>
-          <th class="px-4 py-3 text-left">Producto</th>
-          <th class="px-4 py-3 text-right w-[160px]">Precio</th>
-          <th class="px-4 py-3 text-right w-[140px]">Acciones</th>
+          <th scope="col" class="px-4 py-3 text-left w-[180px]">Imagen</th>
+          <th scope="col" class="px-4 py-3 text-left">Producto</th>
+          <th scope="col" class="px-4 py-3 text-right w-[160px]">Precio</th>
+          <th scope="col" class="px-4 py-3 text-right w-[140px]">Acciones</th>
         </tr>
       </thead>
-      <tbody class="bg-[var(--surface)] divide-y divide-gray-100">
+
+      <tbody id="rows" class="bg-[var(--surface)] divide-y divide-[var(--card-border)]">
         {products.map((p) => (
-          <tr class="hover:bg-gray-50">
+          <tr
+            class="hover:bg-black/5"
+            data-title={p.title.toLowerCase()}
+            data-desc={p.description.toLowerCase()}
+            data-price={p.price}
+            data-search={(p.title + " " + p.description).toLowerCase()}
+          >
             <!-- Imagen con wrapper 16:9 -->
             <td class="px-4 py-3">
-              <div class="relative w-[160px] max-w-full overflow-hidden rounded-lg bg-[var(--card-border)]"
-                   style="padding-top:56.25%;">
-                <img src={p.img} alt={p.title}
-                     class="absolute inset-0 w-full h-full object-contain" loading="lazy" />
+              <div
+                class="relative w-[160px] max-w-full overflow-hidden rounded-lg bg-[var(--card-border)]"
+                style="padding-top:56.25%;"
+              >
+                <img
+                  src={p.img}
+                  alt={p.title}
+                  class="absolute inset-0 h-full w-full object-contain"
+                  loading="lazy"
+                />
               </div>
             </td>
 
             <td class="px-4 py-3">
               <div class="font-medium">{p.title}</div>
-              <div class="text-xs text-[var(--muted)] line-clamp-1">{p.description}</div>
+              <div class="text-xs text-[var(--muted)] line-clamp-1">
+                {p.description}
+              </div>
             </td>
 
             <td class="px-4 py-3 text-right font-medium">{fmt(p.price)}</td>
 
-            <td class="px-4 py-3 text-right">
+            <td class="px-4 py-3">
               <div class="flex justify-end gap-2">
-                <a class="inline-flex items-center rounded-lg bg-[var(--accent)] text-[var(--on-brand)] px-3 py-2 hover:bg-[var(--accent)]/80"
-                   href={`/producto/${p.slug}`}>Ver</a>
+                <a
+                  class="inline-flex items-center rounded-lg bg-[var(--accent)] text-[var(--on-brand)] px-3 py-2 hover:bg-[var(--accent)]/85 transition"
+                  href={`/producto/${p.slug}`}
+                  aria-label={`Ver ${p.title}`}
+                >
+                  Ver
+                </a>
                 <button
-                  class="inline-flex items-center rounded-lg border border-[var(--card-border)] px-3 py-2 hover:bg-[var(--surface)]"
-                  onclick={`tpCart.addToCart(${JSON.stringify({ slug:p.slug, title:p.title, price:p.price, qty:1 })})`}>
+                  class="inline-flex items-center rounded-lg border border-[var(--card-border)] px-3 py-2 hover:bg-[var(--surface)] transition"
+                  onclick={`tpCart.addToCart(${JSON.stringify({
+                    slug: p.slug,
+                    title: p.title,
+                    price: p.price,
+                    qty: 1,
+                  })})`}
+                  aria-label={`Agregar ${p.title} al carrito`}
+                >
                   Agregar
                 </button>
               </div>
             </td>
           </tr>
         ))}
+
+        <!-- Sin resultados -->
+        <tr id="noResults" class="hidden">
+          <td colspan="4" class="px-4 py-6 text-center text-[var(--muted)]">
+            No encontramos productos que coincidan con tu búsqueda.
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
+
+  <!-- Filtrado/ordenamiento en el cliente (progresivo) -->
+  <script>
+    // @ts-nocheck
+    document.addEventListener("DOMContentLoaded", () => {
+      const qInput = document.getElementById("filter");
+      const sortSel = document.getElementById("sort");
+      const tbody = document.getElementById("rows");
+      const noRes = document.getElementById("noResults");
+      const rows = Array.from(tbody.querySelectorAll("tr[data-title]"));
+
+      const by = {
+        "title-asc": (a, b) => a.dataset.title.localeCompare(b.dataset.title, "es"),
+        "title-desc": (a, b) => b.dataset.title.localeCompare(a.dataset.title, "es"),
+        "price-asc": (a, b) => Number(a.dataset.price) - Number(b.dataset.price),
+        "price-desc": (a, b) => Number(b.dataset.price) - Number(a.dataset.price),
+      };
+
+      function apply() {
+        const q = qInput.value.trim().toLowerCase();
+        const sorter = by[sortSel.value] || by["title-asc"];
+
+        // Reordenar en DOM
+        rows.sort(sorter).forEach((tr) => tbody.appendChild(tr));
+
+        // Filtrar visualmente
+        let visible = 0;
+        rows.forEach((tr) => {
+          const show = !q || tr.dataset.search.includes(q);
+          tr.style.display = show ? "" : "none";
+          if (show) visible++;
+        });
+
+        noRes.classList.toggle("hidden", visible > 0);
+      }
+
+      // Prefill desde ?q= del header
+      const params = new URLSearchParams(location.search);
+      const qParam = params.get("q");
+      if (qParam) qInput.value = qParam;
+
+      qInput.addEventListener("input", apply);
+      sortSel.addEventListener("change", apply);
+      apply();
+    });
+  </script>
 </Layout>

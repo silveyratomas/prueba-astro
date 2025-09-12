@@ -1,153 +1,347 @@
 ---
 import Layout from "../layouts/Layout.astro";
-const fmt = (c: number) => "$ " + (c / 100).toFixed(2);
+const fmt = (n: number) =>
+  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(n);
 ---
 <Layout title="Comprar – TuTienda">
   <h1 class="text-3xl font-bold mb-6 text-[var(--text)]">Finalizar compra</h1>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- 🧾 Formulario -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- =================== LEFT: FORM =================== -->
     <form
-      class="lg:col-span-2 bg-[var(--surface)] border border-[var(--card-border)] rounded-xl shadow-sm p-6 space-y-5"
-      onsubmit="event.preventDefault(); alert('Formulario enviado (demo).');"
+      id="checkoutForm"
+      class="bg-[var(--surface)] border border-[var(--card-border)] rounded-xl shadow-sm p-6 space-y-6"
+      onsubmit="event.preventDefault(); window.__checkout_submit && __checkout_submit();"
     >
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium mb-1 text-[var(--text)]" for="nombre">Nombre del cliente</label>
-          <input class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-                 id="nombre" name="nombre" required />
+      <!-- Datos del cliente -->
+      <fieldset class="space-y-4">
+        <legend class="font-semibold text-[var(--text)]">Datos del cliente</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="nombre" class="block text-sm font-medium mb-1 text-[var(--text)]">Nombre del cliente</label>
+            <input id="nombre" name="nombre" autocomplete="name" required
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+          </div>
+          <div>
+            <label for="telefono" class="block text-sm font-medium mb-1 text-[var(--text)]">Teléfono</label>
+            <input id="telefono" name="telefono" type="tel" inputmode="tel" autocomplete="tel" required
+              pattern="^[0-9+()\s-]{6,}$"
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+          </div>
+          <div class="sm:col-span-2">
+            <label for="email" class="block text-sm font-medium mb-1 text-[var(--text)]">E-mail</label>
+            <input id="email" name="email" type="email" autocomplete="email" required
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+          </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium mb-1 text-[var(--text)]" for="telefono">Teléfono</label>
-          <input class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-                 id="telefono" name="telefono" type="tel" required />
+      </fieldset>
+
+      <!-- Entrega -->
+      <fieldset class="space-y-3">
+        <legend class="font-semibold text-[var(--text)]">Entrega</legend>
+        <div class="flex flex-wrap gap-6">
+          <label class="inline-flex items-center gap-2 text-sm">
+            <input type="radio" name="shipping" value="retiro" class="rounded border-[var(--card-border)]" checked>
+            Retiro en tienda
+          </label>
+          <label class="inline-flex items-center gap-2 text-sm">
+            <input type="radio" name="shipping" value="envio" class="rounded border-[var(--card-border)]">
+            Envío a domicilio
+          </label>
         </div>
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium mb-1 text-[var(--text)]" for="direccion">Dirección</label>
-          <input class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-                 id="direccion" name="direccion" required />
+
+        <div id="direccionWrap" class="grid grid-cols-1 sm:grid-cols-2 gap-4" hidden>
+          <div class="sm:col-span-2">
+            <label for="direccion" class="block text-sm font-medium mb-1 text-[var(--text)]">Dirección completa</label>
+            <input id="direccion" name="direccion"
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              placeholder="Calle, número, localidad, provincia" />
+          </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium mb-1 text-[var(--text)]" for="email">E-mail</label>
-          <input class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-                 id="email" name="email" type="email" required />
+      </fieldset>
+
+      <!-- Pago & Cupón -->
+      <fieldset class="space-y-4">
+        <legend class="font-semibold text-[var(--text)]">Pago y cupón</legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="pago" class="block text-sm font-medium mb-1 text-[var(--text)]">Medio de pago</label>
+            <select id="pago" name="pago" required
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]">
+              <option value="">Seleccionar…</option>
+              <option>Tarjeta</option>
+              <option>Transferencia</option>
+              <option>Mercado Pago</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="cupon" class="block text-sm font-medium mb-1 text-[var(--text)]">Cupón (demo)</label>
+            <div class="grid grid-cols-[1fr_auto] gap-2">
+              <input id="cupon" name="cupon" placeholder="Ej: PROMO10"
+                class="min-w-0 rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+              <button type="button" id="aplicarCupon" class="btn shrink-0 px-3 py-2">Aplicar</button>
+            </div>
+            <p class="text-xs text-[var(--muted)] mt-1">Cupón de prueba: <strong>PROMO10</strong> (10% off)</p>
+          </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium mb-1 text-[var(--text)]" for="pago">Medio de pago</label>
-          <select class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-                  id="pago" name="pago" required>
-            <option value="">Seleccionar…</option>
-            <option>Tarjeta</option>
-            <option>Transferencia</option>
-            <option>Mercado Pago</option>
-          </select>
+      </fieldset>
+
+      <!-- Notas -->
+      <fieldset class="space-y-3">
+        <legend class="font-semibold text-[var(--text)]">Notas</legend>
+        <input id="notas" name="notas" placeholder="Observaciones del pedido (opcional)"
+          class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+      </fieldset>
+
+      <!-- Términos + acciones -->
+      <div class="flex items-center justify-between gap-3 pt-2">
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input id="terms" type="checkbox" class="rounded border-[var(--card-border)]" required>
+          Acepto términos y condiciones
+        </label>
+
+        <div class="flex gap-2">
+          <button type="reset" class="btn-outline">Limpiar</button>
+          <button id="submitBtn" type="submit" class="btn disabled:opacity-50 disabled:cursor-not-allowed">
+            Confirmar compra
+          </button>
         </div>
       </div>
 
-      <!-- se completa con el carrito para enviar al backend luego -->
+      <!-- Hidden para backend -->
       <input type="hidden" name="cart_json" id="cart_json" />
-
-      <div class="flex justify-end gap-3 pt-2">
-        <!-- Botón de Limpiar -->
-        <button type="reset"
-          class="inline-flex items-center rounded-lg px-4 py-2 border border-[var(--card-border)] text-[var(--text)] hover:bg-[var(--surface)] transition-colors">
-          Limpiar
-        </button>
-
-        <!-- Botón de Confirmar Compra -->
-        <button type="submit"
-          class="inline-flex items-center rounded-lg px-4 py-2 bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] hover:text-white transition-all">
-          Confirmar compra
-        </button>
-      </div>
-
+      <input type="hidden" name="total_final" id="total_final" />
     </form>
 
-    <!-- 🧺 Resumen de carrito -->
-    <aside class="lg:col-span-1">
-      <div class="bg-[var(--surface)] border border-[var(--card-border)] rounded-xl shadow-sm p-6 sticky top-6">
+    <!-- =================== RIGHT: SUMMARY =================== -->
+    <aside class="">
+      <div class="bg-[var(--surface)] border border-[var(--card-border)] rounded-xl shadow-sm p-6 md:sticky md:top-6">
         <h2 class="text-xl font-semibold mb-4 text-[var(--text)]">Tu carrito</h2>
 
         <div id="emptyCart" class="text-[var(--muted)]">No hay productos en el carrito todavía.</div>
 
-        <div id="cartBox" class="hidden">
+        <div id="cartBox" class="hidden space-y-3">
           <table class="w-full text-sm">
             <thead class="text-[var(--muted)]">
               <tr>
                 <th class="pb-2 text-left">Producto</th>
-                <th class="pb-2 text-left">Precio unit.</th>
+                <th class="pb-2 text-right">Precio</th>
                 <th class="pb-2 text-center">Cant.</th>
                 <th class="pb-2 text-right">Subtotal</th>
+                <th class="pb-2"></th>
               </tr>
             </thead>
-            <tbody id="cartRows" class="align-top divide-y divide-gray-100"></tbody>
-            <tfoot>
-              <tr>
-                <td colspan="3" class="pt-3 text-right font-semibold">Total</td>
-                <td class="pt-3 text-right font-extrabold" id="cartTotal">$ 0,00</td>
-              </tr>
-            </tfoot>
+            <tbody id="cartRows" class="align-top divide-y divide-[var(--card-border)]"></tbody>
           </table>
 
-          <div class="mt-3 text-right">
-            <button type="button" id="clearBtn" class="text-xs text-[var(--muted)] hover:text-red-600">
-              Vaciar carrito
-            </button>
+          <div class="border-t border-[var(--card-border)] pt-3 space-y-1 text-sm">
+            <div class="flex justify-between">
+              <span class="text-[var(--muted)]">Subtotal</span>
+              <span id="sumSubtotal">$ 0,00</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[var(--muted)]">Descuento</span>
+              <span id="sumDescuento">—</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[var(--muted)]">Envío</span>
+              <span id="sumEnvio">—</span>
+            </div>
+            <div class="flex justify-between font-semibold text-[var(--text)]">
+              <span>Total</span>
+              <span id="cartTotal">$ 0,00</span>
+            </div>
+          </div>
+
+          <div class="mt-3 flex items-center justify-between">
+            <button type="button" id="clearBtn" class="text-xs text-[var(--muted)] hover:text-red-600">Vaciar carrito</button>
+            <span class="text-xs text-[var(--muted)]">Envío gratis desde $100.000</span>
           </div>
         </div>
       </div>
     </aside>
   </div>
 
-  <!-- 👇 Script robusto: espera al DOM y valida nodos -->
+  <!-- =================== SCRIPT =================== -->
   <script>
-  // @ts-nocheck
-  document.addEventListener('DOMContentLoaded', () => {
-    const rowsEl     = document.getElementById('cartRows');
-    const totalEl    = document.getElementById('cartTotal');
-    const emptyEl    = document.getElementById('emptyCart');
-    const boxEl      = document.getElementById('cartBox');
-    const inputJson  = document.getElementById('cart_json');
-    const clearBtn   = document.getElementById('clearBtn');
+    // @ts-nocheck
+    document.addEventListener('DOMContentLoaded', () => {
+      const form         = document.getElementById('checkoutForm');
+      const submitBtn    = document.getElementById('submitBtn');
+      const terms        = document.getElementById('terms');
 
-    if (!rowsEl || !totalEl || !emptyEl || !boxEl || !inputJson || !clearBtn) return;
+      // Entrega
+      const dirWrap = document.getElementById('direccionWrap');
 
-    const fmt = (c) => new Intl.NumberFormat('es-AR', {
-        style: 'currency',
-        currency: 'ARS'
-    }).format(c);
+      // Cupón
+      const cuponInput = document.getElementById('cupon');
+      const aplicarCuponBtn = document.getElementById('aplicarCupon');
 
-    const cartApi = (window.tpCart && typeof window.tpCart.getCart === 'function')
-        ? window.tpCart
-        : { getCart: () => [], clearCart: () => {} };
+      // Totales / resumen
+      const rowsEl     = document.getElementById('cartRows');
+      const totalEl    = document.getElementById('cartTotal');
+      const emptyEl    = document.getElementById('emptyCart');
+      const boxEl      = document.getElementById('cartBox');
+      const inputJson  = document.getElementById('cart_json');
+      const inputTotal = document.getElementById('total_final');
+      const clearBtn   = document.getElementById('clearBtn');
+      const sumSubtotal = document.getElementById('sumSubtotal');
+      const sumDescuento = document.getElementById('sumDescuento');
+      const sumEnvio = document.getElementById('sumEnvio');
 
-    // 👉 Orden: por nombre de producto (A→Z)
-    const cart = (cartApi.getCart() || []).slice().sort((a,b) =>
-        a.title.localeCompare(b.title, 'es', { sensitivity: 'base' })
-    );
+      const fmt = (c) => new Intl.NumberFormat('es-AR',{ style:'currency', currency:'ARS' }).format(c);
 
-    if (cart.length) {
-        emptyEl.classList.add('hidden');
-        boxEl.classList.remove('hidden');
+      // API carrito
+      const cartApi = (window.tpCart && typeof window.tpCart.getCart === 'function')
+        ? window.tpCart : { getCart: () => [], setCart: ()=>{}, clearCart: () => {} };
+
+      let cupon = null; // { code, pct }
+
+      // Mostrar/ocultar dirección
+      function toggleAddress() {
+        const ship = (form.elements['shipping'].value || 'retiro');
+        dirWrap.hidden = ship !== 'envio';
+        if (ship === 'envio') form.direccion?.setAttribute('required', 'required');
+        else form.direccion?.removeAttribute('required');
+      }
+      form.addEventListener('change', (e) => { if (e.target.name === 'shipping') toggleAddress(); });
+
+      // Render carrito + totales
+      function render() {
+        const cart = cartApi.getCart() || [];
+        const has = cart.length > 0;
+        emptyEl.classList.toggle('hidden', has);
+        boxEl.classList.toggle('hidden', !has);
+
+        // submit habilitado sólo si hay carrito + términos aceptados + form válido (se re-checkea en submit)
+        submitBtn.disabled = !has || !terms.checked;
+
+        if (!has) {
+          rowsEl.innerHTML = '';
+          inputJson.value = '[]';
+          inputTotal.value = '0';
+          totalEl.textContent = fmt(0);
+          sumSubtotal.textContent = fmt(0);
+          sumDescuento.textContent = '—';
+          sumEnvio.textContent = '—';
+          return;
+        }
+
         inputJson.value = JSON.stringify(cart);
 
-        rowsEl.innerHTML = cart.map(i => `
-        <tr class="h-12">
-            <td class="py-2 pr-3">
-            <div class="font-medium">${i.title}</div>
+        rowsEl.innerHTML = cart.map((i, idx) => `
+          <tr class="h-12">
+            <td class="py-2 pr-3"><div class="font-medium">${i.title}</div></td>
+            <td class="py-2 text-right text-[color:var(--muted)]">${fmt(i.price)}</td>
+            <td class="py-2 text-center">
+              <div class="inline-flex items-center gap-2">
+                <button type="button" data-act="dec" data-idx="${idx}"
+                  class="rounded-md border border-[color:var(--card-border)] px-2 hover:bg-[color:var(--surface)]">−</button>
+                <span class="min-w-[2ch] inline-block text-center">${i.qty}</span>
+                <button type="button" data-act="inc" data-idx="${idx}"
+                  class="rounded-md border border-[color:var(--card-border)] px-2 hover:bg-[color:var(--surface)]">+</button>
+              </div>
             </td>
-            <td class="py-2 text-right text-gray-600">${fmt(i.price)}</td>
-            <td class="py-2 text-center">${i.qty}</td>
             <td class="py-2 text-right font-medium">${fmt(i.price * i.qty)}</td>
-        </tr>
+            <td class="py-2 text-right">
+              <button type="button" data-act="del" data-idx="${idx}" class="text-xs text-[color:var(--muted)] hover:text-red-600">✕</button>
+            </td>
+          </tr>
         `).join('');
 
-        const total = cart.reduce((a, i) => a + i.price * i.qty, 0);
+        rowsEl.querySelectorAll('button[data-act]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = Number(btn.dataset.idx);
+            const act = btn.dataset.act;
+            const items = cartApi.getCart() || [];
+            if (!items[idx]) return;
+            if (act === 'inc') items[idx].qty = (items[idx].qty || 1) + 1;
+            if (act === 'dec') items[idx].qty = Math.max(1, (items[idx].qty || 1) - 1);
+            if (act === 'del') items.splice(idx, 1);
+            cartApi.setCart ? cartApi.setCart(items) : localStorage.setItem('tp_cart', JSON.stringify(items));
+            render();
+          });
+        });
+
+        const subtotal = cart.reduce((a, i) => a + i.price * i.qty, 0);
+        const descuento = cupon ? Math.round(subtotal * cupon.pct) : 0;
+        const envio = (subtotal - descuento) >= 100000 ? 0 : (subtotal ? 1500 : 0);
+        const total = subtotal - descuento + envio;
+
+        sumSubtotal.textContent = fmt(subtotal);
+        sumDescuento.textContent = descuento ? `− ${fmt(descuento)} (cupón ${cupon.code})` : '—';
+        sumEnvio.textContent = envio ? fmt(envio) : 'Gratis';
         totalEl.textContent = fmt(total);
-    }
 
-    clearBtn.addEventListener('click', () => { cartApi.clearCart(); location.reload(); });
-  });
+        inputTotal.value = String(total);
+      }
+
+      // Cupón
+      aplicarCuponBtn.addEventListener('click', () => {
+        const code = (cuponInput.value || '').trim().toUpperCase();
+        if (!code) { cupon = null; render(); return; }
+        if (code === 'PROMO10') {
+          cupon = { code, pct: 0.10 };
+          alert('Cupón aplicado: 10% de descuento.');
+        } else {
+          cupon = null;
+          alert('Cupón inválido (demo).');
+        }
+        render();
+      });
+
+      // Vaciar
+      clearBtn.addEventListener('click', () => {
+        if (!confirm('¿Vaciar el carrito?')) return;
+        cartApi.clearCart();
+        render();
+      });
+
+      // Guardar/recuperar formulario
+      const FORM_KEY = 'tp_checkout';
+      function loadForm() {
+        try {
+          const data = JSON.parse(localStorage.getItem(FORM_KEY) || '{}');
+          for (const [k,v] of Object.entries(data)) {
+            const el = form.elements[k];
+            if (!el) continue;
+            if (el instanceof RadioNodeList) {
+              [...el].forEach(r => r.checked = (r.value === v));
+            } else el.value = v;
+          }
+          toggleAddress();
+        } catch {}
+      }
+      function saveForm() {
+        const data = {};
+        for (const el of form.elements) {
+          if (!el.name) continue;
+          if (el.type === 'radio') { if (el.checked) data[el.name] = el.value; }
+          else data[el.name] = el.value;
+        }
+        localStorage.setItem(FORM_KEY, JSON.stringify(data));
+      }
+      form.addEventListener('input', saveForm);
+
+      // Submit demo
+      window.__checkout_submit = function () {
+        if (submitBtn.disabled) return;
+        if (!form.reportValidity()) return;
+        const cart = cartApi.getCart() || [];
+        if (!cart.length) { alert('El carrito está vacío.'); return; }
+        const payload = Object.fromEntries(new FormData(form).entries());
+        console.log('[checkout] payload', payload);
+        alert('Formulario enviado (demo). Mirá la consola para ver el payload.');
+      };
+
+      // init
+      loadForm();
+      toggleAddress();
+      render();
+      terms.addEventListener('change', () => render());
+      window.addEventListener('storage', render);
+      window.addEventListener('focus', render);
+    });
   </script>
-
 </Layout>

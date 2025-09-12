@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+
 const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro.props;
 ---
 
@@ -14,25 +15,34 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
   <body class="min-h-screen flex flex-col bg-[var(--surface)] text-[var(--text)]">
     <!-- Header -->
     <header id="siteHeader" class="w-full text-[var(--on-brand)] shadow transition-colors">
-      <!-- fila superior -->
-      <div class="container flex items-center gap-4 py-3 ">
-        <!-- logo -->
+      <!-- Fila superior -->
+      <div class="container flex items-center gap-4 py-3">
+        <!-- Logo -->
         <a href="/" class="shrink-0 font-bold text-xl flex items-center gap-2">
-          <span>🛒</span> <span>TuTienda</span>
+          <span>🛒</span> <span id="brandNameHeader">TuTienda</span>
         </a>
 
         <!-- Buscador centrado -->
-        <form id="searchForm" class="hidden md:flex flex-1"
-          onsubmit="window.location.href='/listado_box?q='+encodeURIComponent(this.q.value); return false;">
+        <form
+          id="searchForm"
+          class="hidden md:flex flex-1"
+          onsubmit="window.location.href='/listado_box?q='+encodeURIComponent(this.q.value); return false;"
+        >
           <div class="relative w-full">
-            <input name="q" type="search" placeholder="Buscar productos, marcas y más…"
+            <input
+              name="q"
+              type="search"
+              placeholder="Buscar productos, marcas y más…"
               class="w-full rounded-full bg-[var(--surface)] text-[var(--text)]
-                    px-5 py-3 pr-12 text-sm placeholder-gray-400
-                    border border-[var(--card-border)]
-                    focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+                     px-5 py-3 pr-12 text-sm placeholder-gray-400
+                     border border-[var(--card-border)]
+                     focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            />
             <button
               type="submit"
-              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-full w-10 h-10 grid place-items-center border border-[var(--card-border)] text-[var(--text)]"
+              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-full w-10 h-10 grid place-items-center
+                     border border-[var(--card-border)] text-[var(--text)]"
+              aria-label="Buscar"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="block">
                 <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/>
@@ -40,7 +50,7 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
               </svg>
             </button>
           </div>
-        </form> 
+        </form>
 
         <!-- Promo pill -->
         <div class="hidden lg:block">
@@ -49,48 +59,58 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
           </span>
         </div>
 
-        <!-- User links -->
+        <!-- Links usuario -->
         <nav class="hidden md:flex items-center gap-4 text-sm">
           <a href="#" class="hover:underline">Creá tu cuenta</a>
           <a href="#" class="hover:underline">Iniciar Sesión</a>
           <a href="#" class="hover:underline">Mis compras</a>
         </nav>
 
-        <!-- Carrito + badge + dropdown -->
+        <!-- Carrito -->
         <div class="relative">
-          <button id="cartBtn" aria-label="Abrir carrito"
-            class="relative inline-flex items-center justify-center rounded-lg px-3 py-2
-                  bg-[var(--brand)] text-[var(--on-brand)]">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
-                  <path d="M7 7h14l-1.5 8.5a2 2 0 0 1-2 1.5H9a2 2 0 0 1-2-1.5L5 4H2"
-                      stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="10" cy="20" r="1.6" fill="currentColor"/>
-                  <circle cx="18" cy="20" r="1.6" fill="currentColor"/>
-              </svg>
-              <span id="cartBadge"
-                    class="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 rounded-full
-                          bg-[var(--accent)] text-white text-xs grid place-items-center px-1"
-                    style="transform: translate(25%,-25%);">0</span>
+          <button
+            id="cartBtn"
+            aria-label="Abrir carrito"
+            class="relative inline-flex items-center justify-center rounded-lg px-3 py-2 bg-[var(--brand)] text-[var(--on-brand)]"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
+              <path
+                d="M7 7h14l-1.5 8.5a2 2 0 0 1-2 1.5H9a2 2 0 0 1-2-1.5L5 4H2"
+                stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+              />
+              <circle cx="10" cy="20" r="1.6" fill="currentColor"/>
+              <circle cx="18" cy="20" r="1.6" fill="currentColor"/>
+            </svg>
+            <span
+              id="cartBadge"
+              class="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 rounded-full
+                     bg-[var(--accent)] text-white text-xs grid place-items-center px-1"
+              style="transform: translate(25%,-25%);"
+            >0</span>
           </button>
 
           <!-- Dropdown -->
-          <div id="cartDropdown"
+          <div
+            id="cartDropdown"
             class="absolute right-0 mt-2 w-80
-                  bg-[var(--surface)] text-[var(--text)]
-                  border border-[var(--card-border)]
-                  rounded-xl shadow-xl p-4 hidden
-                  z-50">   <!-- 👈 SUBIR CAPA -->
+                   bg-[var(--surface)] text-[var(--text)]
+                   border border-[var(--card-border)]
+                   rounded-xl shadow-xl p-4 hidden z-50"
+            role="dialog" aria-label="Resumen del carrito"
+          >
             <h3 class="font-semibold mb-2">Carrito</h3>
             <div id="miniCartEmpty" class="text-sm text-[var(--muted)]">Tu carrito está vacío.</div>
             <div id="miniCartList" class="hidden max-h-64 overflow-auto space-y-2"></div>
             <div class="mt-3 flex items-center justify-between">
               <div class="font-bold" id="miniCartTotal">$ 0,00</div>
               <div class="flex gap-2">
-                <a href="/comprar"
-                  class="inline-flex items-center rounded-lg bg-[var(--accent)] text-white px-3 py-2 hover:brightness-110">
-                  Comprar
-                </a>
-                <button id="miniCartClear" class="text-xs text-[var(--muted)] hover:text-[var(--text)]">Vaciar</button>
+                <a
+                  href="/comprar"
+                  class="inline-flex items-center rounded-lg bg-[var(--accent)] text-white px-3 py-2 hover:brightness-110"
+                >Comprar</a>
+                <button id="miniCartClear" class="text-xs text-[var(--muted)] hover:text-[var(--text)]">
+                  Vaciar
+                </button>
               </div>
             </div>
           </div>
@@ -106,6 +126,7 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
           </svg>
           <span class="truncate">Enviar a <strong>Posadas, Misiones</strong></span>
         </div>
+
         <nav class="flex items-center gap-4 overflow-x-auto">
           <a href="/listado_box" class="hover:underline">Categorías</a>
           <a href="#" class="hover:underline">Ofertas</a>
@@ -114,13 +135,13 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
           <a href="/comprar" class="hover:underline">Comprar</a>
         </nav>
 
-        <!-- Selector de tema (demo) -->
+        <!-- Selector de tema -->
         <div class="ml-auto flex items-center gap-2">
           <span class="text-xs opacity-80">Tema:</span>
-          <button class="px-2 py-1 rounded bg-[var(--surface)] border border-[var(--card-border)]"
-                  onclick="setTheme('')">Default</button>
-          <button class="px-2 py-1 rounded bg-[#fff159]" onclick="setTheme('theme-profesional')">ML</button>
-          <button class="px-2 py-1 rounded bg-[#111827] text-white" onclick="setTheme('theme-oscuro')">Oscuro</button>
+          <button class="px-2 py-1 rounded bg-[var(--surface)] border border-[var(--card-border)]" onclick="setTheme('')">Default</button>
+          <button class="px-2 py-1 rounded bg-[#1e3a8a] text-white" onclick="setTheme('theme-profesional')">Profesional</button>
+          <button class="px-2 py-1 rounded bg-[#f57c00] text-white" onclick="setTheme('theme-naranja-profesional')">Naranja</button>
+          <button class="px-2 py-1 rounded bg-[#0ea5e9] text-white" onclick="setTheme('theme-azul')">Azul</button>
         </div>
       </div>
     </header>
@@ -137,34 +158,42 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
       </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- Scripts base -->
     <script src="/cart.js" defer></script>
-    
-    <!-- 3) Mini-carrito: badge + dropdown -->
+    <script src="/hook-admin.js" defer></script>
+
+    <!-- Mini-carrito + Theming (con guardas) -->
     <script>
+      // @ts-nocheck
       document.addEventListener('DOMContentLoaded', () => {
-        const btn = document.getElementById('cartBtn');
-        const dd  = document.getElementById('cartDropdown');
-        const badge = document.getElementById('cartBadge');
-        const list = document.getElementById('miniCartList');
-        const empty = document.getElementById('miniCartEmpty');
-        const totalEl = document.getElementById('miniCartTotal');
+        const btn      = document.getElementById('cartBtn');
+        const dd       = document.getElementById('cartDropdown');
+        const badge    = document.getElementById('cartBadge');
+        const list     = document.getElementById('miniCartList');
+        const empty    = document.getElementById('miniCartEmpty');
+        const totalEl  = document.getElementById('miniCartTotal');
         const clearBtn = document.getElementById('miniCartClear');
 
-        const fmt = (n) => new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS'}).format(n);
-        const api = (window.tpCart && typeof window.tpCart.getCart==='function')
-          ? window.tpCart : { getCart:()=>[], clearCart:()=>[] };
+        const fmt = (n) => new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS' }).format(n);
+        const api = (window.tpCart && typeof window.tpCart.getCart === 'function')
+          ? window.tpCart
+          : { getCart: () => [], clearCart: () => {} };
 
-        function render() {
+        function renderMiniCart() {
+          if (!badge || !list || !empty || !totalEl) return;
           const cart = api.getCart();
-          const count = cart.reduce((a,i)=>a + (i.qty||0), 0);
-          badge.textContent = count;
+          const count = cart.reduce((a, i) => a + (i.qty || 0), 0);
+          badge.textContent = String(count);
 
           if (!cart.length) {
-            empty.classList.remove('hidden'); list.classList.add('hidden');
-            totalEl.textContent = fmt(0); return;
+            empty.classList.remove('hidden');
+            list.classList.add('hidden');
+            totalEl.textContent = fmt(0);
+            return;
           }
-          empty.classList.add('hidden'); list.classList.remove('hidden');
+
+          empty.classList.add('hidden');
+          list.classList.remove('hidden');
 
           list.innerHTML = cart.map(i => `
             <div class="flex items-center justify-between gap-2">
@@ -174,34 +203,64 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
               </div>
               <div class="text-right font-medium">${fmt(i.price * i.qty)}</div>
             </div>
-          `).join(''); 
+          `).join('');
 
-          totalEl.textContent = fmt(cart.reduce((a,i)=>a + i.price*i.qty, 0));
+          totalEl.textContent = fmt(cart.reduce((a, i) => a + i.price * i.qty, 0));
         }
 
-        btn.addEventListener('click', (e) => { e.stopPropagation(); dd.classList.toggle('hidden'); render(); });
-        document.addEventListener('click', (e) => { if (!dd.contains(e.target) && e.target !== btn) dd.classList.add('hidden'); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') dd.classList.add('hidden'); });
-        clearBtn.addEventListener('click', () => { api.clearCart(); render(); });
-        window.addEventListener('storage', render);
-        window.addEventListener('focus', render);
-        render();
+        if (btn && dd) {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dd.classList.toggle('hidden');
+            renderMiniCart();
+          });
+
+          document.addEventListener('click', (e) => {
+            if (!dd.classList.contains('hidden')) {
+              // si clic fuera del dropdown y fuera del botón → cerrar
+              if (!dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+                dd.classList.add('hidden');
+              }
+            }
+          });
+
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') dd.classList.add('hidden');
+          });
+        }
+
+        if (clearBtn) {
+          clearBtn.addEventListener('click', () => {
+            api.clearCart();
+            renderMiniCart();
+          });
+        }
+
+        window.addEventListener('storage', renderMiniCart);
+        window.addEventListener('focus', renderMiniCart);
+        renderMiniCart();
       });
 
-      /* Theming: guarda/aplica tema sin tocar código */
-      (function(){
-        const saved = localStorage.getItem('theme');
-        if (saved) document.documentElement.classList.add(saved);
+      // Theming simple (persistido)
+      (function () {
+        try {
+          const saved = localStorage.getItem('theme');
+          if (saved) document.documentElement.classList.add(saved);
+        } catch {}
       })();
-      window.setTheme = function(name){
-        const html = document.documentElement;
-        html.className = [...html.classList].filter(c=>!c.startsWith('theme-')).join(' ');
-        if (name) html.classList.add(name);
-        localStorage.setItem('theme', name || '');
-      }
-    </script>
 
-    <!-- 4) Hook admin: aplica cambios de config sin tocar build-time -->
-    <script src="/hook-admin.js" defer></script>
+      window.setTheme = function (name) {
+        try {
+          const html = document.documentElement;
+          html.className = html.className
+            .split(/\s+/)
+            .filter(c => !c.startsWith('theme-'))
+            .join(' ')
+            .trim();
+          if (name) html.classList.add(name);
+          localStorage.setItem('theme', name || '');
+        } catch {}
+      };
+    </script>
   </body>
 </html>

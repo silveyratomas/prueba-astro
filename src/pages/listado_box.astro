@@ -1,14 +1,61 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { products } from "../data/products";
-const fmt = (c: number) => '$ ' + (c).toFixed(2);
+
+const fmt = (n: number) =>
+  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(n);
 ---
 
 <Layout title="Listado (box)">
-  <h1 class="text-2xl font-bold mb-4 text-[var(--text)]">Productos (box)</h1>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    {products.map(p => (
-      <article class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl shadow-sm p-4 flex flex-col">
+  <nav class="text-sm text-[var(--muted)] mb-4" aria-label="Breadcrumb">
+    <ol class="flex items-center gap-2">
+      <li><a href="/" class="hover:underline">Inicio</a></li>
+      <li aria-hidden="true">/</li>
+      <li><a href="/listado_box" class="text-[var(--text)] font-medium line-clamp-1">Productos</a></li>
+    </ol>
+  </nav>
+
+  <!-- Toolbar: filtro + orden + solo destacados -->
+  <div class="mb-4 grid gap-2 sm:grid-cols-3 items-center">
+    <div class="flex items-center gap-2">
+      <label for="filter" class="text-sm text-[var(--muted)]">Buscar</label>
+      <input
+        id="filter"
+        type="search"
+        placeholder="Nombre o descripción…"
+        class="w-full rounded-lg border border-[var(--card-border)] bg-white px-3 py-2 text-sm"
+      />
+    </div>
+
+    <div class="flex items-center gap-2">
+      <label for="sort" class="text-sm text-[var(--muted)]">Ordenar por</label>
+      <select
+        id="sort"
+        class="w-full rounded-lg border border-[var(--card-border)] bg-white px-3 py-2 text-sm"
+      >
+        <option value="title-asc">Título (A→Z)</option>
+        <option value="title-desc">Título (Z→A)</option>
+        <option value="price-asc">Precio (menor→mayor)</option>
+        <option value="price-desc">Precio (mayor→menor)</option>
+      </select>
+    </div>
+
+    <label class="inline-flex items-center gap-2 justify-self-start sm:justify-self-end text-sm">
+      <input id="onlyFeatured" type="checkbox" class="rounded border-[var(--card-border)]" />
+      <span class="text-[var(--muted)]">Solo destacados</span>
+    </label>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="cards">
+    {products.map((p) => (
+      <article
+        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl shadow-sm p-4 flex flex-col hover:shadow-md transition"
+        data-title={p.title.toLowerCase()}
+        data-desc={p.description.toLowerCase()}
+        data-price={p.price}
+        data-slug={p.slug}
+        data-featured={p.featured ? "1" : "0"}
+      >
         <!-- wrapper 16:9 + object-contain (NO recorta) -->
         <div class="relative w-full overflow-hidden rounded-lg bg-[var(--surface)]" style="padding-top:56.25%;">
           <img
@@ -21,17 +68,92 @@ const fmt = (c: number) => '$ ' + (c).toFixed(2);
 
         <h3 class="mt-3 text-lg font-semibold text-[var(--text)]">{p.title}</h3>
         <p class="text-[var(--muted)]">{fmt(p.price)}</p>
-        <p class="text-sm text-[var(--muted)] mb-3">{p.description}</p>
+        <p class="text-sm text-[var(--muted)] mb-3 line-clamp-2">{p.description}</p>
 
         <div class="mt-auto flex gap-2">
-          <a class="inline-flex items-center rounded-lg bg-[var(--accent)] text-white px-4 py-2 hover:bg-[var(--accent)]/80"
-             href={`/producto/${p.slug}`}>Ver</a>
-          <button class="inline-flex items-center rounded-lg bg-[var(--accent)] text-white px-4 py-2 hover:bg-[var(--accent)]/80"
-            onclick={`tpCart.addToCart(${JSON.stringify({ slug:p.slug, title:p.title, price:p.price, qty:1 })})`}>
+          <a
+            class="inline-flex items-center rounded-lg bg-[var(--accent)] text-white px-4 py-2 hover:bg-[var(--accent)]/80 transition"
+            href={`/producto/${p.slug}`}
+            aria-label={`Ver ${p.title}`}
+          >
+            Ver
+          </a>
+          <button
+            class="inline-flex items-center rounded-lg border border-[var(--card-border)] px-4 py-2 hover:bg-[var(--surface)] transition"
+            onclick={`tpCart.addToCart(${JSON.stringify({
+              slug: p.slug,
+              title: p.title,
+              price: p.price,
+              qty: 1,
+            })})`}
+            aria-label={`Agregar ${p.title} al carrito`}
+          >
             Agregar
           </button>
         </div>
       </article>
     ))}
   </div>
+
+  <!-- Sin resultados -->
+  <p id="noResults" class="hidden mt-6 text-center text-[var(--muted)]">
+    No encontramos productos que coincidan con tu búsqueda.
+  </p>
+
+  <!-- Filtro/ordenamiento progresivo -->
+  <script>
+    // @ts-nocheck
+    document.addEventListener("DOMContentLoaded", () => {
+      const cardsWrap = document.getElementById("cards");
+      const noRes = document.getElementById("noResults");
+      const filter = document.getElementById("filter");
+      const sort = document.getElementById("sort");
+      const onlyFeatured = document.getElementById("onlyFeatured");
+      const cards = Array.from(cardsWrap.children);
+
+      // Config de admin: featuredSlugs (si existe)
+      const cfg = (window.__storeConfig || {});
+      const featuredSet = new Set((cfg.featuredSlugs || []));
+
+      // Prefill desde URL (?q= & only=featured)
+      const params = new URLSearchParams(location.search);
+      const qParam = params.get("q");
+      const onlyParam = params.get("only");
+      if (qParam) filter.value = qParam;
+      if (onlyParam === "featured") onlyFeatured.checked = true;
+
+      const comparators = {
+        "title-asc": (a, b) => a.dataset.title.localeCompare(b.dataset.title, "es"),
+        "title-desc": (a, b) => b.dataset.title.localeCompare(a.dataset.title, "es"),
+        "price-asc": (a, b) => Number(a.dataset.price) - Number(b.dataset.price),
+        "price-desc": (a, b) => Number(b.dataset.price) - Number(a.dataset.price),
+      };
+
+      function apply() {
+        const q = filter.value.trim().toLowerCase();
+        const comp = comparators[sort.value] || comparators["title-asc"];
+        const only = onlyFeatured.checked;
+
+        // ordenar (reinsertar en DOM)
+        cards.sort(comp).forEach((c) => cardsWrap.appendChild(c));
+
+        // filtrar
+        let vis = 0;
+        cards.forEach((c) => {
+          const text = (c.dataset.title + " " + c.dataset.desc);
+          const isFeatured = c.dataset.featured === "1" || featuredSet.has(c.dataset.slug);
+          const matches = (!q || text.includes(q)) && (!only || isFeatured);
+          c.style.display = matches ? "" : "none";
+          if (matches) vis++;
+        });
+
+        noRes.classList.toggle("hidden", vis > 0);
+      }
+
+      filter.addEventListener("input", apply);
+      sort.addEventListener("change", apply);
+      onlyFeatured.addEventListener("change", apply);
+      apply();
+    });
+  </script>
 </Layout>
