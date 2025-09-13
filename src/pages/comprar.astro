@@ -207,6 +207,20 @@ const fmt = (n: number) =>
       }
       form.addEventListener('change', (e) => { if (e.target.name === 'shipping') toggleAddress(); });
 
+      // Prefill desde tpUser (si existe)
+      try {
+        const u = window.tpUser?.get?.();
+        if (u) {
+          const f = document.getElementById('checkoutForm');
+          if (f) {
+            if (f.nombre)    f.nombre.value    = u.name     || '';
+            if (f.telefono)  f.telefono.value  = u.phone    || '';
+            if (f.email)     f.email.value     = u.email    || '';
+            if (f.direccion) f.direccion.value = u.address  || '';
+          }
+        }
+      } catch {}
+
       // Render carrito + totales
       function render() {
         const cart = cartApi.getCart() || [];

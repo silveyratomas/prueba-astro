@@ -1,0 +1,123 @@
+--- 
+import "../../styles/global.css"; 
+--- 
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Iniciar sesión – Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body class="min-h-screen grid place-items-center bg-[var(--surface)] text-[var(--text)]">
+    <!-- Formulario de inicio de sesión -->
+    <form id="loginForm"
+          class="w-full max-w-sm bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-4"
+          onsubmit="handleLogin(this)">
+      <h1 class="text-xl font-bold">Iniciar sesión</h1>
+
+      <!-- Email -->
+      <div>
+        <label class="text-sm">Email</label>
+        <input name="email" type="email" required
+               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+      </div>
+
+      <!-- Contraseña -->
+      <div>
+        <label class="text-sm">Contraseña</label>
+        <input name="pass" type="password" required
+               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+      </div>
+
+      <button type="submit" class="btn w-full">Entrar</button>
+      <p class="text-xs text-[var(--muted)]">Demo: cualquier email/contraseña.</p>
+    </form>
+
+    <!-- Formulario de registro -->
+    <form id="registerForm" 
+          class="w-full max-w-sm bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-4 mt-8 hidden"
+          onsubmit="handleRegister(this)">
+      <h1 class="text-xl font-bold">Crear cuenta</h1>
+
+      <!-- Nombre -->
+      <div>
+        <label class="text-sm">Nombre</label>
+        <input name="name" type="text" required
+               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="text-sm">Email</label>
+        <input name="email" type="email" required
+               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+      </div>
+
+      <!-- Contraseña -->
+      <div>
+        <label class="text-sm">Contraseña</label>
+        <input name="pass" type="password" required
+               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+      </div>
+
+      <button type="submit" class="btn w-full">Crear cuenta</button>
+      <p class="text-xs text-[var(--muted)]">Ya tienes cuenta? <a href="#" onclick="toggleForms()">Inicia sesión</a></p>
+    </form>
+
+    <script src="/user.js" defer></script>
+
+    <!-- Funciones de inicio de sesión y registro -->
+    <script>
+        // @ts-nocheck
+      window.handleLogin = function (form) {
+        event.preventDefault();
+        try {
+          const email = form.email.value.trim();
+          const pass  = form.pass.value.trim();
+
+          // Llamar a la función login de user.js
+          const user = tpUser.login(email, pass); // Llama a login desde user.js
+
+          alert("¡Bienvenido! Has iniciado sesión correctamente.");
+          location.href = '/admin'; // Redirige al panel de administración
+
+        } catch (e) {
+          alert((e && e.message) || 'Error al iniciar sesión');
+        }
+      };
+
+      // Función para registrar un nuevo usuario
+      window.handleRegister = function (form) {
+        event.preventDefault();
+        try {
+          const name = form.name.value.trim();
+          const email = form.email.value.trim();
+          const pass  = form.pass.value.trim();
+
+          // Llamar a la función register de user.js
+          const user = tpUser.register({ name, email, password: pass }); // Llama a register desde user.js
+
+          alert("¡Cuenta creada! Ahora puedes iniciar sesión.");
+          toggleForms(); // Oculta el formulario de registro y muestra el de login
+
+        } catch (e) {
+          alert((e && e.message) || 'Error al registrar');
+        }
+      };
+
+      // Función para cambiar entre el formulario de login y registro
+      window.toggleForms = function () {
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        loginForm.classList.toggle('hidden');
+        registerForm.classList.toggle('hidden');
+      };
+
+      // Verifica si el usuario ya está logueado
+      document.addEventListener('DOMContentLoaded', () => {
+        if (tpUser.isLogged()) {
+          location.href = '/admin'; // Si ya está logueado, redirige al panel de administración
+        }
+      });
+    </script>
+  </body>
+</html>

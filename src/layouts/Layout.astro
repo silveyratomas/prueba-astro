@@ -64,12 +64,18 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
         </span>
       </div>
 
-      <!-- Links usuario (sólo md+) -->
+      <!-- Links usuario -->
       <nav class="hidden md:flex items-center gap-4 text-sm">
-        <a href="#" class="hover:underline">Creá tu cuenta</a>
-        <a href="#" class="hover:underline">Iniciar Sesión</a>
-        <a href="#" class="hover:underline">Mis compras</a>
+        <a id="linkCreate" href="/cuenta/registrar" class="hover:underline">Creá tu cuenta</a>
+        <a id="linkLogin" href="/cuenta/ingresar" class="hover:underline">Iniciar Sesión</a>
+
+        <a id="linkAccount" href="/cuenta/perfil" class="hover:underline" style="display:none;">Mi cuenta</a>
+        <button id="linkLogout" class="hover:underline" style="display:none;"
+                onclick="window.tpUser?.logout(); location.reload();">Salir</button>
+
+        <a href="/comprar" class="hover:underline">Mis compras</a>
       </nav>
+
 
       <!-- Carrito (sólo md+) -->
       <div class="relative hidden md:block">
@@ -253,7 +259,35 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
         window.__mb_open_drawer = openDrawer;
       });
     </script>
+    <!-- JS de usuarios (DEMO) -->
+    <script src="/user.js" defer></script>
 
+    <script>
+      // @ts-nocheck
+      document.addEventListener('DOMContentLoaded', () => {
+        const linkCreate  = document.getElementById('linkCreate');
+        const linkLogin   = document.getElementById('linkLogin');
+        const linkAccount = document.getElementById('linkAccount');
+        const linkLogout  = document.getElementById('linkLogout');
+        const brandHeader = document.getElementById('brandNameHeader');
+
+        function refreshUserUI() {
+          const u = window.tpUser?.get?.();
+          const logged = !!u;
+
+          if (linkCreate)  linkCreate.style.display  = logged ? 'none' : '';
+          if (linkLogin)   linkLogin.style.display   = logged ? 'none' : '';
+          if (linkAccount) linkAccount.style.display = logged ? '' : 'none';
+          if (linkLogout)  linkLogout.style.display  = logged ? '' : 'none';
+
+          // Si querés, mostrás el nombre en el header:
+          if (brandHeader && u?.name) brandHeader.textContent = u.name.split(' ')[0] + ' – TuTienda';
+        }
+
+        refreshUserUI();
+        window.addEventListener('tpuser', refreshUserUI);
+      });
+    </script>
 
 
     <!-- Bottom bar (sólo mobile) -->

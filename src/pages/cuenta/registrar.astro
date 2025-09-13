@@ -1,0 +1,82 @@
+--- 
+import "../../styles/global.css"; 
+--- 
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Crear cuenta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body class="min-h-screen grid place-items-center bg-[var(--surface)] text-[var(--text)] py-9">
+    <form class="w-full max-w-md bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 py-3 space-y-4"
+          onsubmit="event.preventDefault(); registerUser(this);">
+      <h1 class="text-xl font-bold">Crear cuenta</h1>
+
+      <div>
+        <label class="text-sm">Nombre y apellido</label>
+        <input name="name" required class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"/>
+      </div>
+
+      <div>
+        <label class="text-sm">E-mail</label>
+        <input name="email" type="email" required class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"/>
+      </div>
+
+      <div>
+        <label class="text-sm">Teléfono</label>
+        <input name="phone" inputmode="tel" class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"/>
+      </div>
+
+      <div>
+        <label class="text-sm">Dirección</label>
+        <input name="address" class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"/>
+      </div>
+
+      <div>
+        <label class="text-sm">Contraseña</label>
+        <input name="password" type="password" minlength="6" required class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" id="password"/>
+      </div>
+
+      <div>
+        <label class="text-sm">Confirmar contraseña</label>
+        <input name="confirmPassword" type="password" minlength="6" required class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" id="confirmPassword"/>
+        <p id="passwordError" class="text-xs text-red-600 hidden">Las contraseñas no coinciden.</p>
+      </div>
+
+      <button class="btn w-full" type="submit">Crear cuenta</button>
+      <p class="text-xs text-[var(--muted)]">Al crear tu cuenta aceptás los términos y condiciones.</p>
+      <p class="text-xs"><a class="hover:underline" href="/cuenta/ingresar">¿Ya tenés cuenta? Iniciá sesión</a></p>
+    </form>
+
+    <script src="/user.js" defer></script>
+    <script>
+        // @ts-nocheck
+      // Función global para el registro
+      window.registerUser = function(form) {
+        const password = form.password.value;
+        const confirmPassword = form.confirmPassword.value;
+
+        // Verifica que las contraseñas coincidan
+        if (password !== confirmPassword) {
+          document.getElementById('passwordError').classList.remove('hidden');
+          return;
+        }
+
+        try {
+          const data = Object.fromEntries(new FormData(form).entries()); // Obtiene los datos del formulario
+          tpUser.register(data); // Llama a la función de registro de tpUser
+          alert('Cuenta creada. ¡Bienvenid@!');
+          location.href = '/cuenta/perfil'; // Redirige al perfil de usuario
+        } catch (e) {
+          alert(e?.message || 'Error al crear la cuenta.');
+        }
+      }
+
+      // Verifica si el usuario ya está logueado, si lo está redirige al perfil
+      document.addEventListener('DOMContentLoaded', () => {
+        if (tpUser.isLogged()) location.href = '/cuenta/perfil';
+      });
+    </script>
+  </body>
+</html>
