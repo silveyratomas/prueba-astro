@@ -5,7 +5,7 @@ import { products } from "../../data/products"; // para selector de destacados
 
 <AdminLayout title="Panel de Administración">
   <div class="grid lg:grid-cols-[520px,1fr] gap-6 items-start">
-    <!-- Columna izquierda: Formulario (Borrador) -->
+    <!-- Columna izquierda: Formulario -->
     <section class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4">
       <header class="flex items-center justify-between gap-3 mb-3">
         <h1 class="text-xl font-bold">Ajustes de la tienda</h1>
@@ -130,7 +130,7 @@ import { products } from "../../data/products"; // para selector de destacados
     </section>
   </div>
 
-  <!-- ===== Script de administración profesional (borrador/publicado/preview/history) ===== -->
+  <!-- Script de administración profesional (borrador/publicado/preview/history) -->
   <script>
     // @ts-nocheck
     (function(){
@@ -162,11 +162,11 @@ import { products } from "../../data/products"; // para selector de destacados
 
       function setStatus(text) { statusBadge.textContent = text; }
 
-      // Historial (deshacer/rehacer) ---------------------------------------
+      // Historial (deshacer/rehacer)
       function pushHistory(cfg){
         let hist = read(K_HIST, []);
         let idx  = read(K_HIDX, -1);
-        // Si hay "futuro", lo cortamos
+        // Si hay "futuro", se corta
         if (idx < hist.length - 1) hist = hist.slice(0, idx + 1);
         hist.push(cfg);
         if (hist.length > 30) hist = hist.slice(-30);
@@ -232,7 +232,7 @@ import { products } from "../../data/products"; // para selector de destacados
         Array.from(sel.options).forEach(o => o.selected = want.has(o.value));
       }
 
-      // Preview -------------------------------------------------------------
+      // Preview 
       function syncPreviewCache(cfg){
         write(K_PREV, cfg);                 // el iframe leerá esto
         // Para que el sitio en preview cambie de tema sin recargar demasiado:
@@ -240,7 +240,7 @@ import { products } from "../../data/products"; // para selector de destacados
       }
       function refreshPreview(){ iframe.contentWindow?.location?.reload(); }
 
-      // API pública para botones -------------------------------------------
+      // API pública para botones
       window.__adm = {
         saveDraft(){
           const cfg = formToCfg();

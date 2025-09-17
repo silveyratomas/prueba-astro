@@ -1,5 +1,5 @@
 ---
-/** No necesita props */
+/** Sin props */
 ---
 <nav
   aria-label="Navegación inferior"
@@ -41,7 +41,7 @@
         </svg>
         <span>Carrito</span>
 
-        <!-- badge -->
+        <!-- Badge -->
         <span
           id="mbCartBadge"
           class="absolute -top-1 right-6 min-w-[1.1rem] h-4 rounded-full
@@ -103,7 +103,7 @@
       }
     });
 
-    // “Más” (drawer si existe, sino fallback)
+    // Más (drawer si existe, sino fallback)
     document.getElementById('mbMoreBtn')?.addEventListener('click', () => {
       if (typeof window.__mb_open_drawer === 'function') {
         window.__mb_open_drawer();

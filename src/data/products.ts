@@ -5,7 +5,7 @@ export type Product = {
   price: number;      // en PESOS (no centavos)
   img: string;
   description: string;
-  featured?: boolean; // true = aparece en "Destacados"
+  featured?: boolean; // true = aparece en Destacados
 };
 
 export const products: Product[] = [

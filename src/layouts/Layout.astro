@@ -13,8 +13,8 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
   </head>
 
   <body class="min-h-screen flex flex-col bg-[var(--surface)] text-[var(--text)]">
-    <!-- Header -->
-<!-- Header -->
+
+  <!-- Header -->
   <header id="siteHeader" class="w-full text-[var(--on-brand)] shadow transition-colors">
     <!-- Fila superior -->
     <div class="container flex items-center gap-3 py-2 md:py-3">
@@ -68,18 +68,62 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
       <nav class="hidden md:flex items-center gap-4 text-sm">
         <a id="linkCreate" href="/cuenta/registrar" class="hover:underline">Creá tu cuenta</a>
         <a id="linkLogin" href="/cuenta/ingresar" class="hover:underline">Iniciar Sesión</a>
-
         <a id="linkAccount" href="/cuenta/perfil" class="hover:underline" style="display:none;">Mi cuenta</a>
         <button id="linkLogout" class="hover:underline" style="display:none;"
                 onclick="window.tpUser?.logout(); location.reload();">Salir</button>
-
         <a href="/comprar" class="hover:underline">Mis compras</a>
       </nav>
 
-
-      <!-- Carrito (sólo md+) -->
+      <!-- Mini-carrito -->
       <div class="relative hidden md:block">
-        <!-- ... (tu botón + dropdown del carrito, igual que antes) ... -->
+        <button
+          id="cartBtn"
+          aria-label="Abrir carrito"
+          class="relative inline-flex items-center justify-center rounded-lg px-3 py-2 bg-[var(--brand)] text-[var(--on-brand)]"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
+            <path
+              d="M7 7h14l-1.5 8.5a2 2 0 0 1-2 1.5H9a2 2 0 0 1-2-1.5L5 4H2"
+              stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+            />
+            <circle cx="10" cy="20" r="1.6" fill="currentColor"/>
+            <circle cx="18" cy="20" r="1.6" fill="currentColor"/>
+          </svg>
+          <span
+            id="cartBadge"
+            class="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 rounded-full
+                  bg-[var(--accent)] text-white text-xs grid place-items-center px-1"
+            style="transform: translate(25%,-25%);"
+          >0</span>
+        </button>
+
+        <!-- Dropdown -->
+        <div
+          id="cartDropdown"
+          class="absolute right-0 mt-2 w-80
+                bg-[var(--surface)] text-[var(--text)]
+                border border-[var(--card-border)]
+                rounded-xl shadow-xl p-4 hidden z-50"
+          role="dialog" aria-label="Resumen del carrito"
+        >
+          <h3 class="font-semibold mb-2">Carrito</h3>
+          <div id="miniCartEmpty" class="text-sm text-[var(--muted)]">Tu carrito está vacío.</div>
+          <div id="miniCartList" class="hidden max-h-64 overflow-auto space-y-2"></div>
+          <div class="mt-3 flex items-center justify-between">
+            <div class="font-bold" id="miniCartTotal">$ 0,00</div>
+            <div class="flex gap-2">
+              <a
+                href="/comprar"
+                class="inline-flex items-center rounded-lg 
+                bg-[var(--accent)] text-white px-3 py-2 
+                hover:brightness-110"
+              >Comprar</a>
+              <button id="miniCartClear" class="text-xs text-[var(--muted)] hover:text-[var(--text)]">
+                Vaciar
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -131,7 +175,7 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
     <script src="/cart.js" defer></script>
     <script src="/hook-admin.js" defer></script>
 
-    <!-- Mini-carrito + Theming (con guardas) -->
+    <!-- Mini-carrito + Theming (chat gpt puro y duro) -->
     <script>
       // @ts-nocheck
       document.addEventListener('DOMContentLoaded', () => {
@@ -261,7 +305,6 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
     </script>
     <!-- JS de usuarios (DEMO) -->
     <script src="/user.js" defer></script>
-
     <script>
       // @ts-nocheck
       document.addEventListener('DOMContentLoaded', () => {
@@ -290,7 +333,7 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
     </script>
 
 
-    <!-- Bottom bar (sólo mobile) -->
+    <!-- Bottom bar celular -->
     <MobileTabBar />
 
     <!-- ====== OVERLAY: Búsqueda móvil ====== -->
