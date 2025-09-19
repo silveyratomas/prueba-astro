@@ -164,10 +164,11 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
     <slot />
   </main>
 
-    <!-- Footer -->
+    <!-- Footer --> 
     <footer class="bg-gray-900 text-gray-300 border-t border-gray-800">
       <div class="container py-4 text-center text-sm">
-        © {new Date().getFullYear()} TuTienda – Proyecto académico
+        © {new Date().getFullYear()} Proyecto académico, by
+      <a href="/admin/login">TuTienda</a>
       </div>
     </footer>
 
@@ -335,7 +336,7 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
 
     <!-- Bottom bar celular -->
     <MobileTabBar />
-
+                    
     <!-- ====== OVERLAY: Búsqueda móvil ====== -->
     <div id="mbSearchSheet" class="md:hidden fixed inset-0 z-50 hidden">
       <div class="absolute inset-0 bg-black/40" data-close="mbSearch"></div>
