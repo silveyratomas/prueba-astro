@@ -145,11 +145,11 @@ model StoreCustomer {
 }
 
 // ===== Catálogo =====
-
 model Category {
   id           String   @id @default(cuid())
   storeId      String
   name         String
+  slug         String
   parentId     String?
   isFeaturedIn Boolean  @default(false)
   createdAt    DateTime @default(now())
@@ -163,6 +163,7 @@ model Category {
 
   @@index([storeId])
   @@index([parentId])
+  @@unique([storeId, slug])// <— único por tienda
 }
 
 model Product {

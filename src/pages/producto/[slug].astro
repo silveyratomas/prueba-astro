@@ -1,32 +1,118 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { products } from "../../data/products";
+/* src/pages/producto/[slug].astro */
+export const prerender = false;
 
-// Rutas estáticas para cada producto del mock
-export function getStaticPaths() {
-  return products.map((p) => ({
-    params: { slug: p.slug },
-    props: { product: p },
-  }));
+import Layout from "../../layouts/Layout.astro";
+import { products as localProducts } from "../../data/products";
+import { API_BASE, DEFAULT_STORE_SLUG } from "../../config";
+
+/* =====================
+   Params & query
+===================== */
+// En algunos tipos/linters, Astro.params.slug puede marcar error de tipo;
+// lo casteamos explícitamente a string para evitar el subrayado rojo.
+const slug = (Astro.params.slug ?? "") as string;
+
+// Tomamos la tienda desde ?store=... o usamos la default
+const storeSlug =
+  Astro.url?.searchParams.get("store") ?? DEFAULT_STORE_SLUG;
+
+/* =====================
+   Tipos mínimos
+===================== */
+type Prod = {
+  id?: string | number;
+  slug: string;
+  title: string;
+  price: number;
+  imageUrl?: string;
+  img?: string;
+  description?: string;
+  isFeatured?: boolean;
+};
+
+/* =====================
+   Helpers
+===================== */
+const CURRENCY = "ARS";
+const fmt = (n: number) =>
+  new Intl.NumberFormat("es-AR", { style: "currency", currency: CURRENCY }).format(Number(n || 0));
+
+/* =====================
+   1) Buscar el producto: API -> fallback a mock
+===================== */
+let product: Prod | null = null;
+let source: "api" | "mock" = "api";
+
+try {
+  const res = await fetch(`${API_BASE}/products?store=${encodeURIComponent(storeSlug)}`, { cache: 'no-store' });
+  if (res.ok) {
+    const data = await res.json();
+    const list: Prod[] = Array.isArray(data?.products) ? data.products : [];
+    product = list.find(p => p.slug === slug) ?? null;
+  }
+} catch {
+  // ignoramos; vamos al mock
 }
 
-// Props
-const { product } = Astro.props;
+if (!product) {
+  const p = localProducts.find(p => p.slug === slug);
+  if (p) {
+    product = {
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      price: p.price,
+      imageUrl: p.img,
+      description: p.description,
+      isFeatured: !!p.featured,
+    };
+    source = "mock";
+  }
+}
 
-// Moneda local
-const CURRENCY = "ARS";
-const fmt = (c: number) =>
-  new Intl.NumberFormat("es-AR", { style: "currency", currency: CURRENCY }).format(c);
+// 404 suave si no existe
+if (!product) {
+  throw new Error("Producto no encontrado");
+}
 
-// Recomendados (excluye el actual)
-const recomendados = products.filter((p) => p.slug !== product.slug).slice(0, 3);
+/* =====================
+   2) Recomendados (misma fuente)
+===================== */
+let recomendados: Prod[] = [];
 
-// JSON-LD
+if (source === "api") {
+  try {
+    const res = await fetch(`${API_BASE}/products?store=${encodeURIComponent(storeSlug)}`, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      const list: Prod[] = Array.isArray(data?.products) ? data.products : [];
+      recomendados = list.filter(p => p.slug !== product!.slug).slice(0, 3);
+    }
+  } catch {}
+} else {
+  recomendados = localProducts
+    .filter(p => p.slug !== product!.slug)
+    .slice(0, 3)
+    .map(p => ({
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      price: p.price,
+      imageUrl: p.img,
+      description: p.description,
+      isFeatured: !!p.featured,
+    }));
+}
+
+/* =====================
+   3) JSON-LD
+===================== */
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Product",
   name: product.title,
-  image: product.img,
+  image: product.imageUrl || "/imgs/placeholder.png",
   description: product.description,
   sku: product.slug,
   offers: {
@@ -34,7 +120,7 @@ const jsonLd = {
     priceCurrency: CURRENCY,
     price: product.price,
     availability: "https://schema.org/InStock",
-    url: `/producto/${product.slug}`,
+    url: `/producto/${product.slug}?store=${encodeURIComponent(storeSlug)}`,
   },
 };
 ---
@@ -45,36 +131,32 @@ const jsonLd = {
     <ol class="flex items-center gap-2">
       <li><a href="/" class="hover:underline">Inicio</a></li>
       <li aria-hidden="true">/</li>
-      <li><a href="/listado_box" class="hover:underline">Productos</a></li>
+      <li>
+        <a href={`/listado_box?store=${encodeURIComponent(storeSlug)}`} class="hover:underline">
+          Productos
+        </a>
+      </li>
       <li aria-hidden="true">/</li>
       <li class="text-[var(--text)] font-medium line-clamp-1">{product.title}</li>
     </ol>
   </nav>
 
   <!-- Detalle -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start"
-       itemscope itemtype="https://schema.org/Product">
-
-    <!-- Imagen principal -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start" itemscope itemtype="https://schema.org/Product">
+    <!-- Imagen -->
     <div class="relative w-full overflow-hidden rounded-xl bg-[color:var(--card-border)]/30 md:sticky md:top-6"
          style="padding-top:56.25%;">
-      <img
-        src={product.img}
-        alt={product.title}
-        class="absolute inset-0 w-full h-full object-contain"
-        loading="lazy"
-        itemprop="image"
-      />
+      <img src={product.imageUrl || "/imgs/placeholder.png"} alt={product.title}
+           class="absolute inset-0 w-full h-full object-contain" loading="lazy" itemprop="image" />
     </div>
 
-    <!-- Información -->
+    <!-- Info -->
     <section class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm">
       <h1 class="text-3xl font-semibold mb-2" itemprop="name">{product.title}</h1>
 
-      <!-- Precio -->
       <div class="flex items-center gap-3 mb-4" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
         <div class="text-2xl font-bold text-[var(--text)]">
-          <span aria-label="Precio">{fmt(product.price)}</span>
+          <span>{fmt(product.price)}</span>
           <meta itemprop="price" content={String(product.price)} />
           <meta itemprop="priceCurrency" content={CURRENCY} />
           <link itemprop="availability" href="https://schema.org/InStock" />
@@ -86,20 +168,15 @@ const jsonLd = {
 
       <p class="text-sm text-[var(--muted)] mb-6" itemprop="description">{product.description}</p>
 
-      <!-- Cantidad + Acciones -->
+      <!-- Cantidad + acciones -->
       <div class="flex items-end gap-4 flex-wrap">
         <div>
           <label for="qty" class="block text-sm font-medium mb-1">Cantidad</label>
           <div class="flex items-center gap-2">
-            <button type="button" id="qtyMinus"
-                    class="inline-flex items-center rounded-lg border border-[var(--card-border)] px-3 py-2 hover:bg-[var(--surface)]"
-                    aria-label="Disminuir unidades">–</button>
-            <input id="qty" name="qty" type="number" min="1" value="1" inputmode="numeric" pattern="[0-9]*"
-                   class="w-16 text-center rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-                   aria-label="Cantidad" />
-            <button type="button" id="qtyPlus"
-                    class="inline-flex items-center rounded-lg border border-[var(--card-border)] px-3 py-2 hover:bg-[var(--surface)]"
-                    aria-label="Aumentar unidades">+</button>
+            <button id="qtyMinus" type="button" class="inline-flex items-center rounded-lg border border-[var(--card-border)] px-3 py-2 hover:bg-[var(--surface)]">–</button>
+            <input id="qty" name="qty" type="number" min="1" value="1"
+                   class="w-16 text-center rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+            <button id="qtyPlus" type="button" class="inline-flex items-center rounded-lg border border-[var(--card-border)] px-3 py-2 hover:bg-[var(--surface)]">+</button>
           </div>
         </div>
 
@@ -109,16 +186,16 @@ const jsonLd = {
         </div>
       </div>
 
-      <!-- Live region accesible -->
+      <!-- Live region -->
       <div id="live" class="sr-only" aria-live="polite"></div>
 
-      <!-- Datos para JS (incluye id e imagen) -->
+      <!-- Datos para JS -->
       <div id="productData" class="hidden"
-           data-id={product.id}
+           data-id={String(product.id ?? "")}
            data-slug={product.slug}
            data-title={product.title}
-           data-price={product.price}
-           data-img={product.img}></div>
+           data-price={String(product.price)}
+           data-img={product.imageUrl ?? ""}></div>
     </section>
   </div>
 
@@ -131,23 +208,23 @@ const jsonLd = {
           <article class="card flex flex-col">
             <div class="relative w-full overflow-hidden rounded-lg bg-[color:var(--card-border)]/30"
                  style="padding-top:56.25%;">
-              <img src={p.img} alt={p.title} class="absolute inset-0 w-full h-full object-contain" loading="lazy" />
+              <img src={p.imageUrl || "/imgs/placeholder.png"} alt={p.title}
+                   class="absolute inset-0 w-full h-full object-contain" loading="lazy" />
             </div>
             <h3 class="mt-3 font-semibold text-lg">{p.title}</h3>
             <p class="text-[var(--muted)]">{fmt(p.price)}</p>
             <div class="mt-2 flex gap-2">
-              <a class="btn" href={`/producto/${p.slug}`}>Ver más</a>
+              <a class="btn" href={`/producto/${p.slug}?store=${encodeURIComponent(storeSlug)}`}>Ver más</a>
               <button
                 class="btn-outline"
                 onclick={`tpCart.addToCart(${JSON.stringify({
                   productId: p.id,
                   slug: p.slug,
                   title: p.title,
-                  price: Number(p.price),
+                  price: Number(p.price || 0),
                   qty: 1,
-                  img: p.img
-                })})`}
-              >
+                  img: p.imageUrl || ""
+                })})`}>
                 Agregar
               </button>
             </div>
@@ -162,14 +239,14 @@ const jsonLd = {
     {JSON.stringify(jsonLd)}
   </script>
 
-  <!-- JS: cantidad + addToCart -->
+  <!-- JS de carrito para este detalle -->
   <script>
     // @ts-nocheck
     document.addEventListener('DOMContentLoaded', () => {
       if (!window.tpCart) return;
 
       const data = document.getElementById('productData');
-      const id    = Number(data?.dataset.id || 0);
+      const id    = data?.dataset.id || '';
       const slug  = data?.dataset.slug || '';
       const title = data?.dataset.title || '';
       const price = Number(data?.dataset.price || 0);
@@ -190,7 +267,7 @@ const jsonLd = {
 
       function addItem() {
         const qty = getQty();
-        tpCart.addToCart({ productId: id, slug, title, price: Number(price), qty, img });
+        tpCart.addToCart({ productId: id, slug, title, price, qty, img });
         announce(`Se agregaron ${qty} unidad(es) de ${title} al carrito.`);
       }
 

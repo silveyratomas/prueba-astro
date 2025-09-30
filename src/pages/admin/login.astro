@@ -1,170 +1,64 @@
 ---
 import "../../styles/global.css";
 ---
-
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <title>TuTienda – Crea y gestioná tu tienda online</title>
+    <title>Iniciar sesión – Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
+  <body class="min-h-screen grid place-items-center bg-[var(--surface)] text-[var(--text)]">
+    <form id="loginForm"
+          action="#"
+          method="post"
+          class="w-full max-w-sm bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-4"
+          onsubmit="return __login(event)">
+      <h1 class="text-xl font-bold">Iniciar sesión</h1>
 
-  <body class="min-h-screen bg-[var(--surface)] text-[var(--text)]">
-    <!-- Barra simple -->
-    <header class="border-b border-[var(--card-border)] bg-[var(--brand)] text-[var(--on-brand)]">
-      <div class="container flex items-center justify-between py-3">
-        <a href="/" class="font-bold text-lg flex items-center gap-2">
-          🛒 TuTienda
-        </a>
-        <nav class="flex items-center gap-4 text-sm opacity-90">
-          <a href="/">Ver demo</a>
-          <a href="/listado_box">Catálogo</a>
-          <a href="/comprar">Checkout</a>
-        </nav>
+      <div>
+        <label class="text-sm">Email</label>
+        <input name="email" type="email" required
+               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
       </div>
-    </header>
 
-    <main>
-      <!-- Hero (presentación) -->
-      <section class="relative">
-        <div
-          class="absolute inset-0 pointer-events-none"
-          style="background: radial-gradient(60% 60% at 50% 0%, rgba(0,0,0,.08), transparent 60%);"
-        ></div>
+      <div>
+        <label class="text-sm">Contraseña</label>
+        <input name="pass" type="password" required
+               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+      </div>
 
-        <div class="container grid grid-cols-1 lg:grid-cols-2 gap-10 py-12 lg:py-16 items-center">
-          <div>
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">
-              Creá tu tienda, <span class="text-[var(--accent)]">vendé sin complicarte</span>
-            </h1>
-            <p class="mt-4 text-lg text-[var(--muted)] max-w-xl">
-              TuTienda es un panel simple para administrar productos, temas y contenido. Publicá rápido,
-              aceptá pedidos y mantené todo bajo control desde un solo lugar.
-            </p>
+      <button type="submit" class="btn w-full">Entrar</button>
+      <p class="text-xs text-[var(--muted)]">Demo: buleria.games@gmail.com / owner123</p>
+    </form>
 
-            <div class="mt-6 flex flex-wrap gap-3">
-              <a class="btn" href="#acceso">Comenzar ahora</a>
-              <a class="btn-white" href="/listado_box">Ver catálogo de ejemplo</a>
-            </div>
+    <!-- Cargar helper primero -->
+    <script src="/admin-auth.js?v=7" is:inline defer></script>
 
-            <!-- bullets -->
-            <ul class="mt-8 grid sm:grid-cols-2 gap-3 text-sm">
-              <li class="rounded-xl border border-[var(--card-border)] bg-[var(--card)] px-4 py-3">
-                ⚡ Carga masiva de productos (CSV/JSON)*
-              </li>
-              <li class="rounded-xl border border-[var(--card-border)] bg-[var(--card)] px-4 py-3">
-                🎨 Temas por variables: cambiá colores sin tocar código
-              </li>
-              <li class="rounded-xl border border-[var(--card-border)] bg-[var(--card)] px-4 py-3">
-                🛒 Carrito local + Checkout simple listo para integrar
-              </li>
-              <li class="rounded-xl border border-[var(--card-border)] bg-[var(--card)] px-4 py-3">
-                🔌 Integraciones futuras (MP, envíos, analítica)
-              </li>
-            </ul>
-
-            <p class="text-xs text-[var(--muted)] mt-2">* En el demo aún no activado; pensado para la siguiente etapa.</p>
-          </div>
-
-          <!-- Login card -->
-          <aside id="acceso" class="lg:justify-self-end">
-            <form id="loginForm"
-              class="w-full max-w-sm bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-4 shadow-sm">
-              <h2 class="text-xl font-bold">Iniciar sesión</h2>
-              <p class="text-sm text-[var(--muted)] -mt-1">
-                Accedé a tu panel para gestionar tu tienda.
-              </p>
-
-              <div>
-                <label class="text-sm">Email</label>
-                <input name="email" type="email" autocomplete="email" required
-                  class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-              </div>
-
-              <div>
-                <label class="text-sm">Contraseña</label>
-                <input name="pass" type="password" autocomplete="current-password" required
-                  class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-              </div>
-
-              <button type="submit" class="btn w-full">Entrar</button>
-              <p class="text-xs text-[var(--muted)]">Demo: cualquier email/contraseña.</p>
-            </form>
-          </aside>
-        </div>
-      </section>
-
-      <!-- Cómo funciona -->
-      <section class="container py-10">
-        <h3 class="h2">¿Cómo funciona?</h3>
-        <ol class="grid md:grid-cols-3 gap-4 text-sm">
-          <li class="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <strong>1) Ingresá</strong>
-            <p class="text-[var(--muted)] mt-1">Entrá con tu usuario y accedé al panel.</p>
-          </li>
-          <li class="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <strong>2) Personalizá</strong>
-            <p class="text-[var(--muted)] mt-1">Cambiá colores, nombre y cargá productos.</p>
-          </li>
-          <li class="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <strong>3) Compartí tu link</strong>
-            <p class="text-[var(--muted)] mt-1">TuTienda queda online para que recibas pedidos.</p>
-          </li>
-        </ol>
-      </section>
-
-      <!-- Preguntas rápidas -->
-      <section class="container pb-12">
-        <h3 class="h2">Preguntas rápidas</h3>
-        <div class="grid md:grid-cols-2 gap-4 text-sm">
-          <div class="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <strong>¿Necesito hosting?</strong>
-            <p class="text-[var(--muted)] mt-1">No en el demo. En producción podés desplegar estático.</p>
-          </div>
-          <div class="rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-4">
-            <strong>¿Puedo cambiar la paleta?</strong>
-            <p class="text-[var(--muted)] mt-1">Sí, todo se maneja con variables CSS del tema.</p>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="border-t border-[var(--card-border)] py-6 text-center text-sm text-[var(--muted)]">
-      © {new Date().getFullYear()} TuTienda — Demo académico
-    </footer>
-
-    <!-- Tu lógica real del admin -->
-    <script src="/admin.js" defer></script>
-
-    <!-- Login robusto (sin onsubmit inline) -->
     <script>
       // @ts-nocheck
-      (function () {
-        // Fallback por si /admin.js no está
-        window.tpAdmin = window.tpAdmin || {
-          login: (email, pass) => { localStorage.setItem('tp_admin_demo_auth', '1'); },
-          isLogged: () => !!localStorage.getItem('tp_admin_demo_auth'),
-        };
-
-        // Si ya está logueado, al admin
-        if (tpAdmin.isLogged && tpAdmin.isLogged()) {
-          location.replace('/admin');
-          return;
-        }
-
-        const form = document.getElementById('loginForm');
-        form?.addEventListener('submit', (ev) => {
-          ev.preventDefault();
+      window.__login = async function (ev) {
+        ev.preventDefault(); // <-- evita el GET con ?email=...&pass=...
+        try {
+          const form  = document.getElementById('loginForm');
           const email = form.email.value.trim();
           const pass  = form.pass.value.trim();
-          try {
-            tpAdmin.login(email, pass);   // en demo, valida cualquier cosa
+          await tpAdminAuth.login(email, pass); // guarda token
+          location.href = '/admin';
+          return false;
+        } catch (e) {
+          alert(e?.message || 'No se pudo iniciar sesión');
+          return false;
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        // si ya hay token válido, pasá directo
+        try {
+          if (window.tpAdminAuth?.isLogged() && (await tpAdminAuth.me())) {
             location.href = '/admin';
-          } catch (e) {
-            alert((e && e.message) || 'Error al iniciar sesión');
           }
-        });
-      })();
+        } catch {}
+      });
     </script>
   </body>
 </html>

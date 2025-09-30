@@ -1,47 +1,31 @@
+// server/index.ts
 import express from 'express';
 import cors from 'cors';
 import { authRouter } from './routes/auth';
-import { PrismaClient } from '@prisma/client';
+import { productsRouter } from './routes/products';
+import { categoriesRouter } from './routes/categories';
 
 const app = express();
-const prisma = new PrismaClient();
 
-app.use(cors());
+const FRONT_ORIGIN = process.env.FRONT_ORIGIN || 'http://localhost:4321';
+const API_PORT = Number(process.env.API_PORT || 8787);
+
+app.use('/api/categories', categoriesRouter);
+
+app.use(cors({ origin: FRONT_ORIGIN, credentials: true }));
 app.use(express.json());
 
-// healthcheck
-app.get('/health', (_req, res) => res.json({ ok: true }));
-
-// rutas
-app.use('/api/auth', authRouter);
-
-// ejemplo opcional: listar productos por tienda (por slug)
-// GET /api/stores/:slug/products
-app.get('/api/stores/:slug/products', async (req, res) => {
-  try {
-    const { slug } = req.params;
-    const store = await prisma.store.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-    if (!store) return res.status(404).json({ error: 'Store not found' });
-
-    const items = await prisma.product.findMany({
-      where: { storeId: store.id },
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true, slug: true, title: true, description: true,
-        price: true, imageUrl: true, isFeatured: true
-      }
-    });
-    res.json({ items });
-  } catch (e:any) {
-    console.error(e);
-    res.status(500).json({ error: 'Server error' });
-  }
+// Healthcheck
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true, service: 'api', ts: new Date().toISOString() });
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`API escuchando en http://localhost:${PORT}`);
+// Rutas
+app.use('/api/auth', authRouter);
+app.use('/api', productsRouter); // expone /api/stores/:slug/products
+app.use('/api/products', productsRouter);     // expone /api/products (CRUD)
+
+app.listen(API_PORT, () => {
+  console.log(`[api] escuchando en http://localhost:${API_PORT}`);
+  console.log(`[api] CORS allow: ${FRONT_ORIGIN}`);
 });

@@ -38,12 +38,8 @@ const { title = "Admin – TuTienda" } = Astro.props;
       >
         <nav class="space-y-2 text-sm" id="adminNav">
           <a href="/admin" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">General</a>
-          <!-- Más secciones a futuro:
-               <a href="/admin/productos" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">Productos</a>
-               <a href="/admin/apariencia" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">Apariencia</a>
-               <a href="/admin/envios" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">Envíos</a>
-               <a href="/admin/pagos" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">Pagos</a>
-          -->
+          <a href="/admin/productos" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">Productos</a>
+          <!-- a futuro: /admin/apariencia /admin/envios /admin/pagos ... -->
         </nav>
       </aside>
 
@@ -52,43 +48,40 @@ const { title = "Admin – TuTienda" } = Astro.props;
       </main>
     </div>
 
-    <!-- Scripts -->
-    <script src="/admin.js" defer></script>
+    <!-- helper de auth SIEMPRE primero -->
+    <script src="/admin-auth.js?v=6" is:inline defer></script>
+    <!-- lógica del panel después -->
+    <script src="/admin.js?v=6" is:inline defer></script>
+    <!-- en el layout o en la vista, debajo de admin-auth.js -->
+    <script src="/admin-products.js?v=1" is:inline defer></script>
+
+
     <script>
       // @ts-nocheck
-      document.addEventListener('DOMContentLoaded', () => {
-        // Auth guard con fallback
+      document.addEventListener('DOMContentLoaded', async () => {
+        // Proteger todas las vistas del admin
         try {
-          if (window.tpAdmin && typeof tpAdmin.requireAuth === 'function') {
-            tpAdmin.requireAuth();
+          if (window.tpAdmin?.requireSessionOrRedirect) {
+            const ok = await tpAdmin.requireSessionOrRedirect();
+            if (!ok) return; // te redirige al login si falla
           }
         } catch (e) {
-          console.warn('[admin] requireAuth error:', e);
+          console.warn('[admin] guard error:', e);
         }
 
-        // Logout seguro
+        // Logout
         const btnLogout = document.getElementById('btnLogout');
-        if (btnLogout) {
-          btnLogout.addEventListener('click', () => {
-            try {
-              if (window.tpAdmin && typeof tpAdmin.logout === 'function') {
-                tpAdmin.logout();
-              }
-            } catch (e) {
-              console.warn('[admin] logout error:', e);
-            } finally {
-              window.location.href = '/admin/login';
-            }
-          });
-        }
+        btnLogout?.addEventListener('click', () => {
+          try { window.tpAdminAuth?.logout?.(); } finally { location.href = '/admin/login'; }
+        });
 
-        // Resaltar link activo en el sidebar
+        // Resaltar link activo
         const nav = document.getElementById('adminNav');
         if (nav) {
           const links = Array.from(nav.querySelectorAll('a[href]'));
-          const here = window.location.pathname.replace(/\/+$/, '');
+          const here = location.pathname.replace(/\/+$/, '');
           links.forEach(a => {
-            const href = a.getAttribute('href')?.replace(/\/+$/, '') || '';
+            const href = (a.getAttribute('href') || '').replace(/\/+$/, '');
             if (href && (here === href || (href !== '/' && here.startsWith(href)))) {
               a.classList.add('bg-[var(--surface)]', 'font-medium');
               a.setAttribute('aria-current', 'page');

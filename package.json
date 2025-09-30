@@ -13,7 +13,8 @@
     "db:migrate": "prisma migrate dev --name init_schema",
     "db:seed": "prisma db seed",
     "api": "tsx server/index.ts",
-    "api:watch": "nodemon --watch server --ext ts,js --exec \"pnpm api\""
+    "api:watch": "nodemon --watch server --ext ts,js --exec \"pnpm api\"",
+    "db:push": "prisma db push"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
