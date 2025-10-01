@@ -24,7 +24,7 @@
     }
   }
 
-  // Handler opcional para un form de producto si existe en la página
+  // handler para un form de producto si existe en la pagina
   async function wireProductForm(selector = '#productForm') {
     const form = document.querySelector(selector);
     if (!form) return;

@@ -1,7 +1,9 @@
 // server.mjs
 import express from 'express';
 import cors from 'cors';
-import { PrismaClient } from '@prisma/client';
+import pkg from '@prisma/client';
+const { PrismaClient } = pkg;
+
 
 const db = new PrismaClient();
 const app = express();
@@ -10,7 +12,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 /* =======================
-   Helpers simples
+  Helpers simples
 ======================= */
 const peso = (n) => Number(n).toFixed(2);
 
@@ -36,7 +38,7 @@ async function getOrCreateCart({ storeId, token, userId }) {
 }
 
 /* =======================
-   Endpoints
+  Endpoints
 ======================= */
 
 /** Productos de una tienda */
