@@ -1,211 +1,541 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
+
 <AdminLayout title="Productos – Admin">
-  <h1 class="text-2xl font-bold mb-4">Productos</h1>
+  <h1 class="text-2xl font-bold mb-5">Productos</h1>
 
-  <!-- Formulario de alta -->
-  <form id="prodForm" class="grid gap-4 max-w-2xl bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4"
-        onsubmit="return __saveProduct(event)">
-    <div class="grid md:grid-cols-2 gap-3">
-      <div>
-        <label class="text-sm">Categorías</label>
-        <select id="catSelect" name="categorySlugs" multiple
-                class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"></select>
-        <p class="text-xs text-[var(--muted)]">Usá Ctrl/Cmd para elegir varias.</p>
+  <!-- CONTENEDOR -->
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,520px)_1fr]">
+    <!-- ============ FORM ============ -->
+    <form
+      id="prodForm"
+      class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-5 shadow-sm"
+      onsubmit="return __onSubmit(event)"
+    >
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h2 id="formTitle" class="text-lg font-semibold">Añadir producto</h2>
+          <p id="formSubtitle" class="text-xs text-[var(--muted)]">
+            Completá los campos y guardá.
+          </p>
+        </div>
+        <span id="formStatus" class="text-xs text-[var(--muted)]"></span>
       </div>
-      <div>
-        <label class="text-sm">Título</label>
-        <input name="title" required class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-      </div>
-      <div>
-        <label class="text-sm">Slug</label>
-        <input name="slug" required placeholder="moto-g15" class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-      </div>
-      <div>
-        <label class="text-sm">Precio (ARS)</label>
-        <input name="price" type="number" min="0" step="0.01" required class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-      </div>
-      <div>
-        <label class="text-sm">Imagen (URL)</label>
-        <input name="imageUrl" class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-      </div>
-    </div>
 
-    <div>
-      <label class="text-sm">Descripción</label>
-      <textarea name="description" rows="3" class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"></textarea>
-    </div>
+      <input type="hidden" name="id" id="prodId" />
 
-    <div class="grid md:grid-cols-2 gap-3 items-center">
-      <div>
-        <label class="text-sm">Tienda (slug)</label>
-        <input name="storeSlug" required value="mi-tienda-demo" class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="md:col-span-2">
+          <label class="text-sm">Categorías</label>
+          <!-- Chips + input -->
+          <div
+            class="mt-1 rounded-xl border border-[var(--card-border)] bg-white p-2"
+          >
+            <div id="catChips" class="flex flex-wrap gap-2"></div>
+            <input
+              id="catInput"
+              type="text"
+              placeholder="Escribí una categoría y presioná Enter"
+              class="w-full outline-none px-2 py-2"
+              onkeydown="return __catKeydown(event)"
+            />
+            <div class="mt-1 text-xs text-[var(--muted)]">
+              Podés cargar varias. Si no existen, se crean automáticamente.
+            </div>
+          </div>
+          <div class="mt-1">
+            <button
+              type="button"
+              class="btn-outline text-xs"
+              onclick="__pickExistingCats()">Elegir de existentes</button
+            >
+          </div>
+        </div>
+
+        <div>
+          <label class="text-sm">Título</label>
+          <input
+            name="title"
+            required
+            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          />
+        </div>
+
+        <div>
+          <label class="text-sm">Slug</label>
+          <input
+            name="slug"
+            required
+            placeholder="moto-g15"
+            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          />
+        </div>
+
+        <div>
+          <label class="text-sm">Precio (ARS)</label>
+          <input
+            name="price"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          />
+        </div>
+
+        <div>
+          <label class="text-sm">Imagen (URL)</label>
+          <input
+            name="imageUrl"
+            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="text-sm">Descripción</label>
+          <textarea
+            name="description"
+            rows="3"
+            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="text-sm">Tienda (slug)</label>
+          <input
+            name="storeSlug"
+            required
+            value="mi-tienda-demo"
+            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          />
+        </div>
+
+        <label class="inline-flex items-center gap-2 mt-7">
+          <input type="checkbox" name="isFeatured" />
+          <span class="text-sm">Destacado</span>
+        </label>
       </div>
-      <label class="inline-flex items-center gap-2 mt-6 md:mt-0">
-        <input type="checkbox" name="isFeatured" />
-        <span class="text-sm">Destacado</span>
-      </label>
-    </div>
 
-    <div class="flex gap-3">
-      <button class="btn" type="submit">Guardar</button>
-      <button class="inline-flex items-center rounded-lg px-4 py-2 border border-[var(--card-border)]" type="button" onclick="__reset()">Limpiar</button>
-    </div>
-  </form>
-
-  <!-- Listado -->
-  <div class="mt-6 bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="font-semibold">Productos cargados</h2>
-      <div class="flex items-center gap-2">
-        <input id="storeFilter" value="mi-tienda-demo" class="rounded-lg border border-[var(--card-border)] px-3 py-1 bg-white text-sm" />
-        <button class="btn-outline text-sm" onclick="__loadList()">Actualizar</button>
+      <div class="flex gap-3 mt-5">
+        <button id="submitBtn" class="btn" type="submit">Guardar</button>
+        <button type="button" class="btn-outline" onclick="__resetForm()"
+          >Limpiar</button
+        >
       </div>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="text-left border-b border-[var(--card-border)]">
-            <th class="py-2 pr-3">Título</th>
-            <th class="py-2 pr-3">Slug</th>
-            <th class="py-2 pr-3">Precio</th>
-            <th class="py-2 pr-3">Creado</th>
-          </tr>
-        </thead>
-        <tbody id="prodRows">
-          <tr><td colspan="4" class="py-3 text-[var(--muted)]">Sin datos…</td></tr>
-        </tbody>
-      </table>
+    </form>
+
+    <!-- ============ LISTADO ============ -->
+    <div
+      class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-5 shadow-sm"
+    >
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-lg font-semibold">Productos cargados</h2>
+          <p class="text-xs text-[var(--muted)]">
+            Editá, destacá o eliminá desde acá.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input
+            id="storeFilter"
+            value="mi-tienda-demo"
+            class="rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
+          />
+          <button class="btn-outline text-sm" onclick="__loadList()"
+            >Actualizar</button
+          >
+        </div>
+      </div>
+
+      <div class="overflow-x-auto -mx-2">
+        <table class="w-full text-sm min-w-[720px] mx-2">
+          <thead>
+            <tr class="text-left border-b border-[var(--card-border)]">
+              <th class="py-2 pr-3 w-[32px]"></th>
+              <th class="py-2 pr-3">Título</th>
+              <th class="py-2 pr-3">Slug</th>
+              <th class="py-2 pr-3 text-right">Precio</th>
+              <th class="py-2 pr-3">Creado</th>
+              <th class="py-2 pr-3 text-center">Destacado</th>
+              <th class="py-2 pr-3 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="prodRows">
+            <tr
+              ><td colspan="7" class="py-4 text-[var(--muted)]">Cargando…</td
+              ></tr
+            >
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- Carga el helper de auth ANTES del script inline -->
+  <!-- auth helper primero -->
   <script src="/admin-auth.js" defer></script>
 
   <script>
     // @ts-nocheck
-    // ===== util =====
-    function fmt(n){ try { return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS'}).format(n); } catch { return n; } }
-    const $ = (s, r=document) => r.querySelector(s);
+    /*********************
+     * Utils
+     *********************/
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
-    function getStoreSlug() {
-      const cand = [
-        '[name="storeSlug"]', '#storeSlug',
-        '[name="store"]',     '#store',
-        '#storeFilter'
-      ];
-      for (const sel of cand) {
-        const el = $(sel);
-        if (el && typeof el.value === 'string' && el.value.trim()) return el.value.trim();
+    const toast = (msg, type = "ok") => {
+      const el = document.createElement("div");
+      el.className =
+        "fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-2 rounded-xl text-sm text-white shadow-lg";
+      el.style.background = type === "err" ? "#c0392b" : "#16a085";
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1800);
+    };
+
+    const fmt = (n) => {
+      try {
+        return new Intl.NumberFormat("es-AR", {
+          style: "currency",
+          currency: "ARS",
+        }).format(Number(n || 0));
+      } catch {
+        return n;
       }
-      return '';
-    }
+    };
 
-    async function __guard(){
-      // usa /api/auth/me por debajo
+    const slugify = (s) =>
+      (s || "")
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)+/g, "");
+
+    const getStoreSlug = () => {
+      const cand = ['[name="storeSlug"]', "#storeFilter"];
+      for (const c of cand) {
+        const el = $(c);
+        if (el?.value?.trim()) return el.value.trim();
+      }
+      return "";
+    };
+
+    async function __guard() {
       const m = await tpAdminAuth.me();
-      if (!m?.user) location.href = '/admin/login';
+      if (!m?.user) location.href = "/admin/login";
       return m.user;
     }
 
-    // ===== crear producto =====
-    async function __saveProduct(eOrForm){
-      try{
-        await __guard();
+    /*********************
+     * Categorías (chips + alta inline)
+     *********************/
+    let selectedCatSlugs = []; // slugs elegidos
+    let pendingNewCatNames = []; // nombres que no existen todavía (se crearán)
 
-        let form, ev = null;
-        if (eOrForm && typeof eOrForm.preventDefault === 'function') {
-          ev = eOrForm;
-          ev.preventDefault();
-          form = ev.target;
+    function renderCatChips() {
+      const wrap = $("#catChips");
+      wrap.innerHTML = selectedCatSlugs
+        .map(
+          (slug) => `
+        <span class="inline-flex items-center gap-2 px-2 py-1 rounded-lg bg-[var(--card-border)]/30">
+          <span class="text-xs">${slug}</span>
+          <button type="button" class="text-xs text-[var(--muted)] hover:text-red-600" onclick="__removeCat('${slug}')">✕</button>
+        </span>
+      `,
+        )
+        .join("");
+    }
+
+    function __removeCat(slug) {
+      selectedCatSlugs = selectedCatSlugs.filter((s) => s !== slug);
+      renderCatChips();
+    }
+
+    async function __catKeydown(ev) {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        const v = ev.target.value.trim();
+        if (!v) return false;
+        const slug = slugify(v);
+        if (!selectedCatSlugs.includes(slug)) selectedCatSlugs.push(slug);
+        // Marcamos este nombre para crear si no existe
+        if (!pendingNewCatNames.find((n) => slugify(n) === slug))
+          pendingNewCatNames.push(v);
+        ev.target.value = "";
+        renderCatChips();
+        return false;
+      }
+      return true;
+    }
+
+    // Selector rápido de categorías existentes
+    async function __pickExistingCats() {
+      try {
+        await __guard();
+        const store = getStoreSlug();
+        const res = await tpAdminAuth.api(
+          `/categories?store=${encodeURIComponent(store)}`,
+        );
+        const list = Array.isArray(res?.categories) ? res.categories : [];
+        if (!list.length) {
+          toast("No hay categorías existentes");
+          return;
+        }
+
+        const names = list.map((c) => `${c.name} (${c.slug})`);
+        const choice = prompt(
+          `Elegí una categoría existente (pegá el slug):\n\n${names.join("\n")}\n\nSlug:`,
+        );
+        const slug = (choice || "").trim();
+        if (!slug) return;
+        if (!selectedCatSlugs.includes(slug)) selectedCatSlugs.push(slug);
+        renderCatChips();
+      } catch (e) {
+        console.error(e);
+        toast("No se pudieron traer categorías", "err");
+      }
+    }
+
+    // Crea las categorías que estén en pendingNewCatNames y no existan aún.
+    async function ensureCategoriesExist(storeSlug) {
+      if (!pendingNewCatNames.length) return;
+      // Traigo existentes para no duplicar
+      const existRes = await tpAdminAuth.api(
+        `/categories?store=${encodeURIComponent(storeSlug)}`,
+      );
+      const exist = (existRes?.categories || []).map((c) => c.slug);
+      const toCreate = pendingNewCatNames
+        .map((name) => ({ name, slug: slugify(name) }))
+        .filter((c) => !exist.includes(c.slug));
+
+      for (const c of toCreate) {
+        await tpAdminAuth.api("/categories", {
+          method: "POST",
+          body: JSON.stringify({ storeSlug, name: c.name, slug: c.slug }),
+        });
+      }
+      // limpiar cola
+      pendingNewCatNames = [];
+    }
+
+    /*********************
+     * Form crear/editar
+     *********************/
+    let editingId = null;
+
+    function fillForm(p) {
+      editingId = p?.id || null;
+      $("#prodId").value = p?.id || "";
+      $('[name="title"]').value = p?.title || "";
+      $('[name="slug"]').value = p?.slug || "";
+      $('[name="price"]').value = p?.price ?? "";
+      $('[name="imageUrl"]').value = p?.imageUrl || "";
+      $('[name="description"]').value = p?.description || "";
+      $('[name="storeSlug"]').value =
+        p?.store?.slug || getStoreSlug() || "mi-tienda-demo";
+      $('[name="isFeatured"]').checked = !!p?.isFeatured;
+
+      selectedCatSlugs = (p?.categories || []).map((c) => c.slug) || [];
+      renderCatChips();
+
+      $("#formTitle").textContent = editingId
+        ? "Editar producto"
+        : "Añadir producto";
+      $("#formSubtitle").textContent = editingId
+        ? "Modificá y guardá los cambios."
+        : "Completá los campos y guardá.";
+      $("#submitBtn").textContent = editingId ? "Actualizar" : "Guardar";
+    }
+
+    function __resetForm() {
+      editingId = null;
+      $("#prodForm").reset();
+      selectedCatSlugs = [];
+      pendingNewCatNames = [];
+      renderCatChips();
+      $("#formTitle").textContent = "Añadir producto";
+      $("#formSubtitle").textContent = "Completá los campos y guardá.";
+      $("#submitBtn").textContent = "Guardar";
+      $("#formStatus").textContent = "";
+    }
+
+    async function __onSubmit(ev) {
+      ev.preventDefault();
+      await __guard();
+
+      const form = ev.target;
+      const fd = new FormData(form);
+      const data = Object.fromEntries(fd.entries());
+      const price = parseFloat(data.price);
+
+      const body = {
+        title: (data.title || "").trim(),
+        slug: (data.slug || "").trim(),
+        price: isNaN(price) ? 0 : price,
+        description: (data.description || "").trim() || null,
+        imageUrl: (data.imageUrl || "").trim() || null,
+        storeSlug: (data.storeSlug || getStoreSlug() || "").trim(),
+        isFeatured: data.isFeatured === "on" || data.isFeatured === "true",
+        categorySlugs: selectedCatSlugs.slice(),
+      };
+      if (!body.title || !body.slug || !body.storeSlug) {
+        toast("Completá título, slug y tienda", "err");
+        return false;
+      }
+
+      try {
+        $("#formStatus").textContent = editingId
+          ? "Actualizando…"
+          : "Guardando…";
+
+        // 1) asegurar categorías nuevas
+        await ensureCategoriesExist(body.storeSlug);
+
+        // 2) guardar / actualizar
+        if (editingId) {
+          await tpAdminAuth.api(`/products/${editingId}`, {
+            method: "PATCH",
+            body: JSON.stringify(body),
+          });
+          toast("Producto actualizado");
         } else {
-          form = eOrForm; // vino "this"
-        }
-        if (!form) return false;
-
-        const data = Object.fromEntries(new FormData(form).entries());
-        const price = parseFloat(data.price);
-        const body = {
-          title: (data.title||'').trim(),
-          slug:  (data.slug||'').trim(),
-          price: isNaN(price) ? 0 : price,
-          description: (data.description||'').trim() || null,
-          imageUrl:    (data.imageUrl||'').trim() || null,
-          storeSlug:   (data.storeSlug||getStoreSlug()||'').trim(),
-          isFeatured:  data.isFeatured === 'on' // explícito para checkbox
-        };
-
-        if (!body.title || !body.slug || !body.storeSlug) {
-          alert('Completá título, slug y tienda (slug).');
-          return false;
+          await tpAdminAuth.api("/products", {
+            method: "POST",
+            body: JSON.stringify(body),
+          });
+          toast("Producto creado");
         }
 
-        // POST /api/products (tpAdminAuth.api ya agrega Authorization y Content-Type)
-        await tpAdminAuth.api('/products', { method:'POST', body: JSON.stringify(body) });
-
-        alert('Producto creado');
-        __reset();
-        // conservar el slug
-        const s = $('[name="storeSlug"]'); if (s) s.value = body.storeSlug;
-        const f = $('#storeFilter');       if (f) f.value = body.storeSlug;
-
+        // 3) refrescar
         await __loadList();
-        return false;
-      }catch(e){
+        __resetForm();
+      } catch (e) {
         console.error(e);
-        alert(e?.message || 'Error al crear');
-        return false;
+        toast(e?.message || "Error al guardar", "err");
+      } finally {
+        $("#formStatus").textContent = "";
       }
+      return false;
     }
 
-    // ===== limpiar =====
-    function __reset(){
-      const f = document.getElementById('prodForm');
-      if (f) f.reset();
-    }
-
-    // ===== listar =====
-    async function __loadList(){
-      try{
-        await __guard();
-        const store = ( $('#storeFilter')?.value || getStoreSlug() || '' ).trim();
-        if (!store) {
-          $('#prodRows').innerHTML = `<tr><td colspan="4" class="py-3 text-[var(--muted)]">
-            Configurá el <strong>slug de la tienda</strong> para listar.
-          </td></tr>`;
-          return;
-        }
-
-        const res = await tpAdminAuth.api(`/products?store=${encodeURIComponent(store)}`);
+    /*********************
+     * Listado + acciones
+     *********************/
+    async function __loadList() {
+      await __guard();
+      const store = ($("#storeFilter")?.value || getStoreSlug() || "").trim();
+      const rows = $("#prodRows");
+      if (!store) {
+        rows.innerHTML = `<tr><td colspan="7" class="py-4 text-[var(--muted)]">Definí el <b>slug</b> de la tienda.</td></tr>`;
+        return;
+      }
+      try {
+        rows.innerHTML = `<tr><td colspan="7" class="py-4 text-[var(--muted)]">Cargando…</td></tr>`;
+        const res = await tpAdminAuth.api(
+          `/products?store=${encodeURIComponent(store)}`,
+        );
         const list = Array.isArray(res?.products) ? res.products : [];
-        const rows = document.getElementById('prodRows');
-
-        if (!list.length){
-          rows.innerHTML = `<tr><td colspan="4" class="py-3 text-[var(--muted)]">No hay productos.</td></tr>`;
+        if (!list.length) {
+          rows.innerHTML = `<tr><td colspan="7" class="py-4 text-[var(--muted)]">No hay productos.</td></tr>`;
           return;
         }
 
-        rows.innerHTML = list.map(p => `
-          <tr class="border-b border-[var(--card-border)]">
-            <td class="py-2 pr-3">${p.title}</td>
-            <td class="py-2 pr-3 text-[var(--muted)]">${p.slug}</td>
-            <td class="py-2 pr-3">${fmt(Number(p.price||0))}</td>
-            <td class="py-2 pr-3 text-[var(--muted)]">${p.createdAt ? new Date(p.createdAt).toLocaleString('es-AR') : '-'}</td>
-          </tr>
-        `).join('');
-      }catch(e){
+        rows.innerHTML = list
+          .map((p) => {
+            const created = p.createdAt
+              ? new Date(p.createdAt).toLocaleString("es-AR")
+              : "-";
+            const feat = !!p.isFeatured;
+            return `
+            <tr class="border-b border-[var(--card-border)] hover:bg-[var(--card-border)]/10">
+              <td class="py-2 pr-3">${p.imageUrl ? `<img src="${p.imageUrl}" class="w-8 h-8 object-cover rounded-md"/>` : ""}</td>
+              <td class="py-2 pr-3">${p.title || "-"}</td>
+              <td class="py-2 pr-3 text-[var(--muted)]">${p.slug}</td>
+              <td class="py-2 pr-3 text-right">${fmt(p.price)}</td>
+              <td class="py-2 pr-3 text-[var(--muted)]">${created}</td>
+              <td class="py-2 pr-3 text-center">
+                <button class="text-xs px-2 py-1 rounded-md ${feat ? "bg-emerald-600 text-white" : "bg-[var(--card-border)]/50"}"
+                        onclick="__toggleFeatured('${p.id}', ${feat})">${feat ? "Sí" : "No"}</button>
+              </td>
+              <td class="py-2 pr-1">
+                <div class="flex items-center gap-2 justify-end">
+                  <button class="btn-outline text-xs" onclick='__edit(${JSON.stringify(p)})'>Editar</button>
+                  <button class="text-xs px-3 py-1 rounded-md bg-red-600 text-white" onclick="__remove('${p.id}')">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+          `;
+          })
+          .join("");
+      } catch (e) {
         console.error(e);
-        alert(e?.message || 'Error al listar');
+        rows.innerHTML = `<tr><td colspan="7" class="py-4 text-red-700">Error al listar.</td></tr>`;
       }
     }
 
-    // Exponer helpers porque los usás desde HTML
-    window.__saveProduct = __saveProduct;
-    window.__reset       = __reset;
-    window.__loadList    = __loadList;
+    function __edit(p) {
+      // p.categories (si tu endpoint las devuelve) → normalizar a slugs
+      if (Array.isArray(p.categories)) {
+        selectedCatSlugs = p.categories.map((c) => c.slug);
+      } else {
+        selectedCatSlugs = [];
+      }
+      renderCatChips();
+      fillForm(p);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
-    document.addEventListener('DOMContentLoaded', __loadList);
+    async function __remove(id) {
+      await __guard();
+      if (!confirm("¿Eliminar este producto?")) return;
+      try {
+        await tpAdminAuth.api(`/products/${id}`, { method: "DELETE" });
+        toast("Producto eliminado");
+        await __loadList();
+      } catch (e) {
+        console.error(e);
+        toast("No se pudo eliminar", "err");
+      }
+    }
+
+    async function __toggleFeatured(id, current) {
+      await __guard();
+      try {
+        await tpAdminAuth.api(`/products/${id}`, {
+          method: "PATCH",
+          body: JSON.stringify({ isFeatured: !current }),
+        });
+        await __loadList();
+      } catch (e) {
+        console.error(e);
+        toast("No se pudo cambiar destacado", "err");
+      }
+    }
+
+    // Exponer helpers globales usados en HTML
+    window.__loadList = __loadList;
+    window.__edit = __edit;
+    window.__remove = __remove;
+    window.__toggleFeatured = __toggleFeatured;
+    window.__resetForm = __resetForm;
+    window.__catKeydown = __catKeydown;
+    window.__pickExistingCats = __pickExistingCats;
+    window.__onSubmit = __onSubmit;
+    window.__removeCat = __removeCat;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      await __loadList();
+      // autogenerar slug al tipear título (si slug vacío o coincide con anterior)
+      const titleInput = $('[name="title"]');
+      const slugInput = $('[name="slug"]');
+      let manualSlug = false;
+      slugInput.addEventListener("input", () => (manualSlug = true));
+      titleInput.addEventListener("input", () => {
+        if (!manualSlug || !slugInput.value)
+          slugInput.value = slugify(titleInput.value);
+      });
+    });
   </script>
-
 </AdminLayout>

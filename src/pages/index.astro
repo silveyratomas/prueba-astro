@@ -1,9 +1,21 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { products } from "../data/products";
+import { API_BASE, DEFAULT_STORE_SLUG } from "../config";
 
-// Base: si admin no define destacados, usamos los que tengan p.featured === true
-const baseDestacados = products.filter((p) => p.featured);
+// Traemos productos desde la API de la tienda por defecto
+const store = DEFAULT_STORE_SLUG;
+
+let products: any[] = [];
+try {
+  const r = await fetch(`${API_BASE}/products?store=${encodeURIComponent(store)}`);
+  if (r.ok) {
+    const j = await r.json();
+    products = Array.isArray(j?.products) ? j.products : [];
+  }
+} catch { /* silencioso: si querés, podrías loggear */ }
+
+// Filtramos los destacados
+const baseDestacados = products.filter((p: any) => p?.isFeatured);
 
 // Formateador ARS
 const fmt = (c: number) =>
@@ -58,11 +70,11 @@ const fmt = (c: number) =>
     </div>
 
     <div id="destGrid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {baseDestacados.map((p) => (
+      {baseDestacados.map((p: any) => (
         <article
           class="card flex flex-col"
           data-slug={p.slug}
-          data-featured={p.featured ? "1" : "0"}
+          data-featured={p.isFeatured ? "1" : "0"}
         >
           <!-- wrapper 16:9 para imágenes -->
           <div
@@ -70,14 +82,14 @@ const fmt = (c: number) =>
             style="padding-top:56.25%;"
           >
             <img
-              src={p.img}
+              src={p.imageUrl || "/imgs/placeholder.png"}
               alt={p.title}
               class="absolute inset-0 h-full w-full object-contain"
               loading="lazy"
             />
           </div>
           <h3 class="text-lg font-semibold text-[var(--text)]">{p.title}</h3>
-          <p class="text-[var(--muted)]">{fmt(p.price)}</p>
+          <p class="text-[var(--muted)]">{fmt(Number(p.price || 0))}</p>
           <p class="mb-3 text-sm text-[var(--muted)]">{p.description}</p>
           <div class="mt-auto flex gap-2">
             <a class="btn" href={`/producto/${p.slug}`}>Ver</a>
@@ -86,8 +98,9 @@ const fmt = (c: number) =>
               onclick={`tpCart.addToCart(${JSON.stringify({
                 slug: p.slug,
                 title: p.title,
-                price: p.price,
+                price: Number(p.price || 0),
                 qty: 1,
+                img: p.imageUrl || ''
               })})`}
             >
               Agregar
@@ -145,7 +158,6 @@ const fmt = (c: number) =>
           ov.style.background =
             "linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.20) 70%, rgba(0,0,0,0) 100%)";
         }
-        // Forzamos contraste legible sobre imagen
         hero.querySelectorAll("h1, p, a.btn").forEach((el) => {
           el.classList.add("!text-white");
         });
@@ -165,13 +177,11 @@ const fmt = (c: number) =>
         });
         noMsg?.classList.toggle("hidden", visible > 0);
       } else {
-        // Si no hay featuredSlugs ni productos featured, mostramos el mensaje
         const any = destGrid?.querySelector("[data-slug]");
         const anyVisible = any != null;
         noMsg?.classList.toggle("hidden", anyVisible);
       }
 
-      // (Opcional) Aplicar clase de tema si Layout no lo hizo
       if (window.tpAdmin?.applyThemeClass) {
         tpAdmin.applyThemeClass(cfg.themeClass || "");
       }

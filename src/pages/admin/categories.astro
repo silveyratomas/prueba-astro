@@ -1,0 +1,125 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Categorías – Admin">
+    <h1 class="text-2xl font-bold mb-4">Categorías</h1>
+
+    <form
+        id="catForm"
+        class="grid gap-3 max-w-xl bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4"
+        onsubmit="return __saveCat(event)"
+    >
+        <div class="grid md:grid-cols-2 gap-3">
+            <div>
+                <label class="text-sm">Tienda (slug)</label>
+                <input
+                    name="storeSlug"
+                    required
+                    value="mi-tienda-demo"
+                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                />
+            </div>
+            <div>
+                <label class="text-sm">Nombre</label>
+                <input
+                    name="name"
+                    required
+                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                />
+            </div>
+            <div>
+                <label class="text-sm">Slug</label>
+                <input
+                    name="slug"
+                    required
+                    placeholder="celulares"
+                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                />
+            </div>
+            <div>
+                <label class="text-sm">Padre (slug) — opcional</label>
+                <input
+                    name="parentSlug"
+                    placeholder="electro"
+                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                />
+            </div>
+        </div>
+
+        <div class="flex gap-3">
+            <button class="btn" type="submit">Crear categoría</button>
+            <button type="button" class="btn-outline" onclick="__loadList()"
+                >Actualizar</button
+            >
+        </div>
+    </form>
+
+    <div
+        class="mt-6 bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4"
+    >
+        <h2 class="font-semibold mb-3">Categorías de la tienda</h2>
+        <div class="flex items-center gap-2 mb-3">
+            <input
+                id="storeFilter"
+                value="mi-tienda-demo"
+                class="rounded-lg border border-[var(--card-border)] px-3 py-1 bg-white text-sm"
+            />
+            <button class="btn-outline text-sm" onclick="__loadList()"
+                >Actualizar</button
+            >
+        </div>
+        <ul id="catList" class="text-sm space-y-1"></ul>
+    </div>
+
+    <script src="/admin-auth.js" defer></script>
+    <script>
+        // @ts-nocheck
+        async function __saveCat(ev) {
+            ev.preventDefault();
+            await tpAdminAuth.requireAuth();
+
+            const f = ev.target;
+            const body = {
+                storeSlug: f.storeSlug.value.trim(),
+                name: f.name.value.trim(),
+                slug: f.slug.value.trim(),
+                parentSlug: f.parentSlug.value.trim() || undefined,
+            };
+            if (!body.storeSlug || !body.name || !body.slug)
+                return alert("Completá los campos obligatorios.");
+
+            await tpAdminAuth.api("/categories", { method: "POST", body });
+            alert("Categoría creada");
+            f.reset();
+            document.getElementById("storeFilter").value = body.storeSlug;
+            __loadList();
+        }
+
+        async function __loadList() {
+            await tpAdminAuth.requireAuth();
+            const store = document.getElementById("storeFilter").value.trim();
+            if (!store) return;
+
+            const res = await tpAdminAuth.api(
+                `/categories?store=${encodeURIComponent(store)}`,
+            );
+            const list = Array.isArray(res?.categories) ? res.categories : [];
+
+            const ul = document.getElementById("catList");
+            if (!list.length) {
+                ul.innerHTML =
+                    '<li class="text-[var(--muted)]">No hay categorías.</li>';
+                return;
+            }
+            ul.innerHTML = list
+                .map(
+                    (c) =>
+                        `<li>• <strong>${c.name}</strong> <span class="text-[var(--muted)]">(${c.slug})</span>${c.parentId ? " — hijo" : ""}</li>`,
+                )
+                .join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", __loadList);
+    </script>
+</AdminLayout>

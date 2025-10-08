@@ -1,8 +1,8 @@
 ---
-/* src/layouts/AdminLayout.astro */
 import "../styles/global.css";
 const { title = "Admin – TuTienda" } = Astro.props;
 ---
+
 <html lang="es">
   <head>
     <meta charset="utf-8" />
@@ -11,17 +11,29 @@ const { title = "Admin – TuTienda" } = Astro.props;
   </head>
 
   <body class="min-h-screen bg-[var(--surface)] text-[var(--text)]">
-    <!-- Header admin -->
-    <header class="w-full bg-[var(--brand)] text-[var(--on-brand)] shadow">
-      <div class="container flex items-center justify-between py-3">
-        <div class="font-bold tracking-tight">Panel de Administración</div>
+    <!-- Header admin (sticky + limpio) -->
+    <header
+      class="sticky top-0 z-40 border-b border-[var(--card-border)] bg-[var(--card)]/90 backdrop-blur"
+    >
+      <div class="container flex items-center justify-between h-14">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-[var(--brand)]"></div>
+          <div class="leading-tight">
+            <p class="text-xs text-[var(--muted)]">Panel de Administración</p>
+            <h1 class="text-sm font-semibold">{title}</h1>
+          </div>
+        </div>
 
-        <nav class="flex items-center gap-3 text-sm">
-          <a href="/" class="underline opacity-90 hover:opacity-100">Ver tienda</a>
+        <nav class="flex items-center gap-2 text-sm">
+          <a
+            href="/"
+            class="rounded-lg border border-[var(--card-border)] px-3 py-1.5 hover:bg-[var(--surface)]"
+            >Ver tienda</a
+          >
           <button
             id="btnLogout"
             type="button"
-            class="underline opacity-90 hover:opacity-100"
+            class="rounded-lg bg-[var(--brand)] text-[var(--on-brand)] px-3 py-1.5 hover:opacity-95"
             aria-label="Cerrar sesión"
           >
             Salir
@@ -33,13 +45,20 @@ const { title = "Admin – TuTienda" } = Astro.props;
     <!-- Layout con sidebar -->
     <div class="container grid md:grid-cols-[220px,1fr] gap-6 py-6">
       <aside
-        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4
-               md:sticky md:top-6 h-max"
+        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4 md:sticky md:top-20 h-max"
       >
-        <nav class="space-y-2 text-sm" id="adminNav">
-          <a href="/admin" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">General</a>
-          <a href="/admin/productos" class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]">Productos</a>
-          <!-- a futuro: /admin/apariencia /admin/envios /admin/pagos ... -->
+        <nav class="space-y-1 text-sm" id="adminNav">
+          <a
+            href="/admin"
+            class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]"
+            >General</a
+          >
+          <a
+            href="/admin/productos"
+            class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]"
+            >Productos</a
+          >
+          <!-- futuro: /admin/apariencia /admin/envios /admin/pagos -->
         </nav>
       </aside>
 
@@ -48,43 +67,48 @@ const { title = "Admin – TuTienda" } = Astro.props;
       </main>
     </div>
 
-    <!-- helper de auth SIEMPRE primero -->
-    <script src="/admin-auth.js?v=6" is:inline defer></script>
-    <!-- lógica del panel después -->
-    <script src="/admin.js?v=6" is:inline defer></script>
-    <!-- en el layout o en la vista, debajo de admin-auth.js -->
-    <script src="/admin-products.js?v=1" is:inline defer></script>
-
+    <!-- helper de auth primero -->
+    <script src="/admin-auth.js?v=7" is:inline defer></script>
+    <!-- opcional: tu lógica general de panel -->
+    <script src="/admin.js?v=7" is:inline defer></script>
+    <!-- ⚠️ SUGERENCIA: quitar admin-products.js para evitar conflictos con la vista nueva -->
+    <!-- <script src="/admin-products.js?v=1" is:inline defer></script> -->
 
     <script>
       // @ts-nocheck
-      document.addEventListener('DOMContentLoaded', async () => {
+      document.addEventListener("DOMContentLoaded", async () => {
         // Proteger todas las vistas del admin
         try {
           if (window.tpAdmin?.requireSessionOrRedirect) {
             const ok = await tpAdmin.requireSessionOrRedirect();
-            if (!ok) return; // te redirige al login si falla
+            if (!ok) return;
           }
         } catch (e) {
-          console.warn('[admin] guard error:', e);
+          console.warn("[admin] guard error:", e);
         }
 
         // Logout
-        const btnLogout = document.getElementById('btnLogout');
-        btnLogout?.addEventListener('click', () => {
-          try { window.tpAdminAuth?.logout?.(); } finally { location.href = '/admin/login'; }
+        document.getElementById("btnLogout")?.addEventListener("click", () => {
+          try {
+            window.tpAdminAuth?.logout?.();
+          } finally {
+            location.href = "/admin/login";
+          }
         });
 
-        // Resaltar link activo
-        const nav = document.getElementById('adminNav');
+        // Sidebar activo
+        const nav = document.getElementById("adminNav");
         if (nav) {
-          const links = Array.from(nav.querySelectorAll('a[href]'));
-          const here = location.pathname.replace(/\/+$/, '');
-          links.forEach(a => {
-            const href = (a.getAttribute('href') || '').replace(/\/+$/, '');
-            if (href && (here === href || (href !== '/' && here.startsWith(href)))) {
-              a.classList.add('bg-[var(--surface)]', 'font-medium');
-              a.setAttribute('aria-current', 'page');
+          const links = Array.from(nav.querySelectorAll("a[href]"));
+          const here = location.pathname.replace(/\/+$/, "");
+          links.forEach((a) => {
+            const href = (a.getAttribute("href") || "").replace(/\/+$/, "");
+            if (
+              href &&
+              (here === href || (href !== "/" && here.startsWith(href)))
+            ) {
+              a.classList.add("bg-[var(--surface)]", "font-medium");
+              a.setAttribute("aria-current", "page");
             }
           });
         }

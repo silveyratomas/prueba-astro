@@ -1,6 +1,5 @@
-// ===========================
 // prisma/schema.prisma
-// ===========================
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,9 +9,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ===== Enums =====
+// enums
 enum UserRole {
-  ADMIN // superadmin del SaaS
+  ADMIN // superadmin del saas
   MERCHANT // dueño/operador de tienda
   CUSTOMER // cliente final
 }
@@ -66,7 +65,7 @@ enum PreferenceStatus {
   MUTE
 }
 
-// ===== Core =====
+// core
 
 model User {
   id           String   @id @default(cuid())
@@ -77,7 +76,7 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  // Back-relations
+  // back relations
   ownedStores       Store[] // dueño (ownerUserId)
   adminOf           StoreAdmin[] // admin/operador de tiendas
   customerOf        StoreCustomer[] // suscripciones a tiendas
@@ -98,7 +97,7 @@ model Store {
 
   owner User @relation(fields: [ownerUserId], references: [id])
 
-  // Back-relations
+  // back relations
   admins            StoreAdmin[]
   customers         StoreCustomer[]
   categories        Category[]
@@ -128,7 +127,6 @@ model StoreCustomer {
   storeId            String
   userId             String
   subscribedToNotifs Boolean  @default(true)
-  // Datos opcionales que viste en el ERD
   name               String?
   email              String?
   address            String?
@@ -144,7 +142,7 @@ model StoreCustomer {
   @@unique([storeId, userId])
 }
 
-// ===== Catálogo =====
+// catalogo
 model Category {
   id           String   @id @default(cuid())
   storeId      String
@@ -161,9 +159,9 @@ model Category {
 
   productLinks ProductCategory[]
 
+  @@unique([storeId, slug]) // unico por tienda
   @@index([storeId])
   @@index([parentId])
-  @@unique([storeId, slug])// <— único por tienda
 }
 
 model Product {
@@ -184,7 +182,7 @@ model Product {
   cartItems     CartItem[]
   orderItems    OrderItem[]
 
-  @@unique([storeId, slug]) // slug único por tienda
+  @@unique([storeId, slug]) // slug unico por tienda
   @@index([storeId])
 }
 
@@ -213,7 +211,7 @@ model ProductCategory {
   @@id([productId, categoryId])
 }
 
-// ===== Carritos =====
+// carrito de compras
 
 model Cart {
   id        String    @id @default(cuid())
@@ -253,7 +251,7 @@ model CartItem {
   @@index([variantId])
 }
 
-// ===== Órdenes / Pagos / Envíos =====
+// =ordenes, pagos, envios
 
 model Order {
   id        String      @id @default(cuid())

@@ -6,47 +6,68 @@ import { products } from "../../data/products"; // para selector de destacados
 <AdminLayout title="Panel de Administración">
   <div class="grid lg:grid-cols-[520px,1fr] gap-6 items-start">
     <!-- Columna izquierda: Formulario -->
-    <section class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4">
+    <section
+      class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4"
+    >
       <header class="flex items-center justify-between gap-3 mb-3">
         <h1 class="text-xl font-bold">Ajustes de la tienda</h1>
-        <span id="statusBadge"
-          class="text-xs rounded-full px-2 py-1 border border-[var(--card-border)] text-[var(--muted)]">—</span>
+        <span
+          id="statusBadge"
+          class="text-xs rounded-full px-2 py-1 border border-[var(--card-border)] text-[var(--muted)]"
+          >—</span
+        >
       </header>
 
-      <form id="cfgForm" class="grid gap-6" onsubmit="event.preventDefault(); window.__adm.saveDraft();">
+      <form
+        id="cfgForm"
+        class="grid gap-6"
+        onsubmit="event.preventDefault(); window.__adm.saveDraft();"
+      >
         <!-- Identidad -->
         <div>
           <h2 class="font-semibold mb-2">Identidad</h2>
           <label class="text-sm">Nombre de la tienda</label>
-          <input id="storeName"
-                 class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-          <p class="text-xs text-[var(--muted)] mt-1">Se muestra en el header.</p>
+          <input
+            id="storeName"
+            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          />
+          <p class="text-xs text-[var(--muted)] mt-1">
+            Se muestra en el header.
+          </p>
         </div>
 
         <!-- Tema -->
         <div>
           <h2 class="font-semibold mb-2">Tema</h2>
-          <select id="themeClass"
-                  class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white">
+          <select
+            id="themeClass"
+            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          >
             <option value="">Default</option>
             <option value="theme-profesional">Profesional (azul/verde)</option>
             <option value="theme-azul">Azul</option>
             <option value="theme-naranja-profesional">Naranja</option>
           </select>
-          <p class="text-xs text-[var(--muted)] mt-1">Colores de header, botones y fondos.</p>
+          <p class="text-xs text-[var(--muted)] mt-1">
+            Colores de header, botones y fondos.
+          </p>
         </div>
 
         <!-- Home / Banner -->
         <div>
           <h2 class="font-semibold mb-2">Home / Banner</h2>
           <label class="text-sm">URL de imagen (fondo del hero)</label>
-          <input id="heroImage"
-                 placeholder="/imgs/tu-banner.jpg"
-                 class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+          <input
+            id="heroImage"
+            placeholder="/imgs/tu-banner.jpg"
+            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          />
           <label class="text-sm mt-3 block">Tagline (subtítulo)</label>
-          <input id="tagline"
-                 placeholder="Texto corto debajo del título"
-                 class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+          <input
+            id="tagline"
+            placeholder="Texto corto debajo del título"
+            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          />
         </div>
 
         <!-- Home / CTA -->
@@ -55,117 +76,207 @@ import { products } from "../../data/products"; // para selector de destacados
           <div class="grid md:grid-cols-3 gap-4">
             <div>
               <label class="text-xs">CTA 1 – texto</label>
-              <input id="cta1_text" class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white">
+              <input
+                id="cta1_text"
+                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+              />
               <label class="text-xs mt-2 block">CTA 1 – link</label>
-              <input id="cta1_href" class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white">
+              <input
+                id="cta1_href"
+                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+              />
             </div>
             <div>
               <label class="text-xs">CTA 2 – texto</label>
-              <input id="cta2_text" class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white">
+              <input
+                id="cta2_text"
+                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+              />
               <label class="text-xs mt-2 block">CTA 2 – link</label>
-              <input id="cta2_href" class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white">
+              <input
+                id="cta2_href"
+                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+              />
             </div>
             <div>
               <label class="text-xs">CTA 3 – texto</label>
-              <input id="cta3_text" class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white">
+              <input
+                id="cta3_text"
+                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+              />
               <label class="text-xs mt-2 block">CTA 3 – link</label>
-              <input id="cta3_href" class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white">
+              <input
+                id="cta3_href"
+                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+              />
             </div>
           </div>
-          <p class="text-xs text-[var(--muted)] mt-1">Editá textos y destinos de los botones principales.</p>
+          <p class="text-xs text-[var(--muted)] mt-1">
+            Editá textos y destinos de los botones principales.
+          </p>
         </div>
 
         <!-- Destacados -->
         <div>
           <h2 class="font-semibold mb-2">Productos destacados</h2>
-          <select id="featured" multiple
-                  class="w-full h-40 rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white">
-            {products.map(p => <option value={p.slug}>{p.title}</option>)}
+          <select
+            id="featured"
+            multiple
+            class="w-full h-40 rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          >
+            {products.map((p) => <option value={p.slug}>{p.title}</option>)}
           </select>
-          <p class="text-xs text-[var(--muted)] mt-1">Tip: Ctrl/Cmd + click para seleccionar varios.</p>
+          <p class="text-xs text-[var(--muted)] mt-1">
+            Tip: Ctrl/Cmd + click para seleccionar varios.
+          </p>
         </div>
 
         <!-- Footer -->
         <div>
           <h2 class="font-semibold mb-2">Footer</h2>
           <label class="text-sm">Texto de pie</label>
-          <input id="footerText"
-                 placeholder="© 2025 MiTienda — Todos los derechos reservados"
-                 class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+          <input
+            id="footerText"
+            placeholder="© 2025 MiTienda — Todos los derechos reservados"
+            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+          />
         </div>
 
         <!-- Acciones -->
         <div class="flex flex-wrap gap-2 pt-2">
           <button type="submit" class="btn">Guardar borrador</button>
-          <button type="button" class="btn-white" onclick="window.__adm.publish()">Publicar</button>
-          <button type="button" class="btn-white" onclick="window.__adm.revertToPublished()">Revertir a publicado</button>
+          <button
+            type="button"
+            class="btn-white"
+            onclick="window.__adm.publish()">Publicar</button
+          >
+          <button
+            type="button"
+            class="btn-white"
+            onclick="window.__adm.revertToPublished()"
+            >Revertir a publicado</button
+          >
 
           <span class="flex-1"></span>
 
-          <button type="button" class="btn-white" onclick="window.__adm.undo()" title="Ctrl+Z">Deshacer</button>
-          <button type="button" class="btn-white" onclick="window.__adm.redo()" title="Ctrl+Shift+Z">Rehacer</button>
-          <button type="button" class="btn-white" onclick="window.__adm.exportJSON()">Exportar</button>
+          <button
+            type="button"
+            class="btn-white"
+            onclick="window.__adm.undo()"
+            title="Ctrl+Z">Deshacer</button
+          >
+          <button
+            type="button"
+            class="btn-white"
+            onclick="window.__adm.redo()"
+            title="Ctrl+Shift+Z">Rehacer</button
+          >
+          <button
+            type="button"
+            class="btn-white"
+            onclick="window.__adm.exportJSON()">Exportar</button
+          >
 
           <label class="btn-white cursor-pointer">
             Importar
-            <input id="importFile" type="file" accept="application/json" class="hidden" />
+            <input
+              id="importFile"
+              type="file"
+              accept="application/json"
+              class="hidden"
+            />
           </label>
         </div>
       </form>
     </section>
 
     <!-- Columna derecha: Vista previa -->
-    <section class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden">
-      <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-[var(--card-border)]">
+    <section
+      class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden"
+    >
+      <div
+        class="flex items-center justify-between gap-3 px-4 py-3 border-b border-[var(--card-border)]"
+      >
         <div class="flex items-center gap-2">
           <strong>Vista previa</strong>
-          <span class="text-xs text-[var(--muted)]">Borrador (no afecta público)</span>
+          <span class="text-xs text-[var(--muted)]"
+            >Borrador (no afecta público)</span
+          >
         </div>
         <div class="flex items-center gap-2">
-          <button class="btn-white" onclick="window.__adm.refreshPreview()">Actualizar</button>
-          <a class="btn-white" href="/?preview=1" target="_blank">Abrir en nueva pestaña ↗</a>
+          <button class="btn-white" onclick="window.__adm.refreshPreview()"
+            >Actualizar</button
+          >
+          <a class="btn-white" href="/?preview=1" target="_blank"
+            >Abrir en nueva pestaña ↗</a
+          >
         </div>
       </div>
-      <iframe id="previewFrame" src="/?preview=1" class="w-full h-[70vh] bg-white"></iframe>
+      <iframe
+        id="previewFrame"
+        src="/?preview=1"
+        class="w-full h-[70vh] bg-white"></iframe>
     </section>
   </div>
 
   <!-- Script de administración profesional (borrador/publicado/preview/history) -->
   <script>
     // @ts-nocheck
-    (function(){
+    (function () {
       // Claves de storage
-      const K_PUB   = 'tp_cfg';           // publicado
-      const K_DRAFT = 'tp_cfg_draft';     // borrador
-      const K_PREV  = 'tp_cfg_preview';   // cache que lee la vista previa
-      const K_HIST  = 'tp_cfg_hist';      // pila de cambios de borrador
-      const K_HIDX  = 'tp_cfg_hist_idx';  // puntero actual en el historial
+      const K_PUB = "tp_cfg"; // publicado
+      const K_DRAFT = "tp_cfg_draft"; // borrador
+      const K_PREV = "tp_cfg_preview"; // cache que lee la vista previa
+      const K_HIST = "tp_cfg_hist"; // pila de cambios de borrador
+      const K_HIDX = "tp_cfg_hist_idx"; // puntero actual en el historial
 
       // Utils ---------------------------------------------------------------
       const $ = (id) => document.getElementById(id);
-      const form = $('cfgForm');
-      const statusBadge = $('statusBadge');
-      const iframe = $('previewFrame');
-      const importInput = $('importFile');
+      const form = $("cfgForm");
+      const statusBadge = $("statusBadge");
+      const iframe = $("previewFrame");
+      const importInput = $("importFile");
 
       function read(key, fallback) {
-        try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
-        catch { return fallback; }
+        try {
+          const v = localStorage.getItem(key);
+          return v ? JSON.parse(v) : fallback;
+        } catch {
+          return fallback;
+        }
       }
-      function write(key, obj) { localStorage.setItem(key, JSON.stringify(obj)); }
-      function stamp() { return new Date().toLocaleTimeString(); }
+      function write(key, obj) {
+        localStorage.setItem(key, JSON.stringify(obj));
+      }
+      function stamp() {
+        return new Date().toLocaleTimeString();
+      }
 
-      function getDraft()     { return read(K_DRAFT, read(K_PUB, {})); }
-      function getPublished() { return read(K_PUB, {}); }
-      function setDraft(cfg)  { write(K_DRAFT, cfg); pushHistory(cfg); syncPreviewCache(cfg); }
-      function publish()      { const d = getDraft(); write(K_PUB, d); setStatus('Publicado ' + stamp()); }
+      function getDraft() {
+        return read(K_DRAFT, read(K_PUB, {}));
+      }
+      function getPublished() {
+        return read(K_PUB, {});
+      }
+      function setDraft(cfg) {
+        write(K_DRAFT, cfg);
+        pushHistory(cfg);
+        syncPreviewCache(cfg);
+      }
+      function publish() {
+        const d = getDraft();
+        write(K_PUB, d);
+        setStatus("Publicado " + stamp());
+      }
 
-      function setStatus(text) { statusBadge.textContent = text; }
+      function setStatus(text) {
+        statusBadge.textContent = text;
+      }
 
       // Historial (deshacer/rehacer)
-      function pushHistory(cfg){
+      function pushHistory(cfg) {
         let hist = read(K_HIST, []);
-        let idx  = read(K_HIDX, -1);
+        let idx = read(K_HIDX, -1);
         // Si hay "futuro", se corta
         if (idx < hist.length - 1) hist = hist.slice(0, idx + 1);
         hist.push(cfg);
@@ -174,22 +285,22 @@ import { products } from "../../data/products"; // para selector de destacados
         write(K_HIST, hist);
         write(K_HIDX, idx);
       }
-      function applyFromHistory(){
+      function applyFromHistory() {
         const hist = read(K_HIST, []);
-        const idx  = read(K_HIDX, -1);
+        const idx = read(K_HIDX, -1);
         const snap = hist[idx] || {};
         write(K_DRAFT, snap);
         fillForm(snap);
         syncPreviewCache(snap);
-        setStatus('Borrador (historial) ' + stamp());
+        setStatus("Borrador (historial) " + stamp());
       }
-      function undo(){
+      function undo() {
         let idx = read(K_HIDX, -1);
         if (idx <= 0) return;
         write(K_HIDX, --idx);
         applyFromHistory();
       }
-      function redo(){
+      function redo() {
         const hist = read(K_HIST, []);
         let idx = read(K_HIDX, -1);
         if (idx >= hist.length - 1) return;
@@ -198,121 +309,160 @@ import { products } from "../../data/products"; // para selector de destacados
       }
 
       // Form <-> objeto ----------------------------------------------------
-      function formToCfg(){
-        const sel = $('featured');
-        const featured = Array.from(sel.selectedOptions).map(o => o.value);
+      function formToCfg() {
+        const sel = $("featured");
+        const featured = Array.from(sel.selectedOptions).map((o) => o.value);
         return {
-          storeName: $('storeName').value.trim(),
-          themeClass: $('themeClass').value,
-          heroImage: $('heroImage').value.trim(),
-          tagline: $('tagline').value.trim(),
+          storeName: $("storeName").value.trim(),
+          themeClass: $("themeClass").value,
+          heroImage: $("heroImage").value.trim(),
+          tagline: $("tagline").value.trim(),
           cta: {
-            one:   { text: $('cta1_text').value.trim(), href: $('cta1_href').value.trim(), show: true },
-            two:   { text: $('cta2_text').value.trim(), href: $('cta2_href').value.trim(), show: true },
-            three: { text: $('cta3_text').value.trim(), href: $('cta3_href').value.trim(), show: true },
+            one: {
+              text: $("cta1_text").value.trim(),
+              href: $("cta1_href").value.trim(),
+              show: true,
+            },
+            two: {
+              text: $("cta2_text").value.trim(),
+              href: $("cta2_href").value.trim(),
+              show: true,
+            },
+            three: {
+              text: $("cta3_text").value.trim(),
+              href: $("cta3_href").value.trim(),
+              show: true,
+            },
           },
           featured,
-          footerText: $('footerText').value.trim(),
+          footerText: $("footerText").value.trim(),
         };
       }
-      function fillForm(cfg){
-        $('storeName').value = cfg.storeName || '';
-        $('themeClass').value = cfg.themeClass || '';
-        $('heroImage').value = cfg.heroImage || '';
-        $('tagline').value   = cfg.tagline   || '';
-        $('cta1_text').value = cfg.cta?.one?.text   || '';
-        $('cta1_href').value = cfg.cta?.one?.href   || '';
-        $('cta2_text').value = cfg.cta?.two?.text   || '';
-        $('cta2_href').value = cfg.cta?.two?.href   || '';
-        $('cta3_text').value = cfg.cta?.three?.text || '';
-        $('cta3_href').value = cfg.cta?.three?.href || '';
-        $('footerText').value= cfg.footerText || '';
+      function fillForm(cfg) {
+        $("storeName").value = cfg.storeName || "";
+        $("themeClass").value = cfg.themeClass || "";
+        $("heroImage").value = cfg.heroImage || "";
+        $("tagline").value = cfg.tagline || "";
+        $("cta1_text").value = cfg.cta?.one?.text || "";
+        $("cta1_href").value = cfg.cta?.one?.href || "";
+        $("cta2_text").value = cfg.cta?.two?.text || "";
+        $("cta2_href").value = cfg.cta?.two?.href || "";
+        $("cta3_text").value = cfg.cta?.three?.text || "";
+        $("cta3_href").value = cfg.cta?.three?.href || "";
+        $("footerText").value = cfg.footerText || "";
         // featured
-        const sel = $('featured'); const want = new Set(cfg.featured || []);
-        Array.from(sel.options).forEach(o => o.selected = want.has(o.value));
+        const sel = $("featured");
+        const want = new Set(cfg.featured || []);
+        Array.from(sel.options).forEach(
+          (o) => (o.selected = want.has(o.value)),
+        );
       }
 
-      // Preview 
-      function syncPreviewCache(cfg){
-        write(K_PREV, cfg);                 // el iframe leerá esto
+      // Preview
+      function syncPreviewCache(cfg) {
+        write(K_PREV, cfg); // el iframe leerá esto
         // Para que el sitio en preview cambie de tema sin recargar demasiado:
-        try { iframe.contentWindow?.localStorage?.setItem(K_PREV, JSON.stringify(cfg)); } catch {}
+        try {
+          iframe.contentWindow?.localStorage?.setItem(
+            K_PREV,
+            JSON.stringify(cfg),
+          );
+        } catch {}
       }
-      function refreshPreview(){ iframe.contentWindow?.location?.reload(); }
+      function refreshPreview() {
+        iframe.contentWindow?.location?.reload();
+      }
 
       // API pública para botones
       window.__adm = {
-        saveDraft(){
+        saveDraft() {
           const cfg = formToCfg();
           setDraft(cfg);
-          setStatus('Borrador guardado ' + stamp());
+          setStatus("Borrador guardado " + stamp());
         },
-        publish(){
+        publish() {
           publish();
           refreshPreview();
-          alert('¡Publicado! El sitio público ya toma esta configuración.');
+          alert("¡Publicado! El sitio público ya toma esta configuración.");
         },
-        revertToPublished(){
+        revertToPublished() {
           const pub = getPublished();
           write(K_DRAFT, pub);
           pushHistory(pub);
           fillForm(pub);
           syncPreviewCache(pub);
-          setStatus('Borrador = Publicado ' + stamp());
+          setStatus("Borrador = Publicado " + stamp());
         },
         refreshPreview,
-        undo, redo,
-        exportJSON(){
-          const blob = new Blob([JSON.stringify(getDraft(), null, 2)], {type:'application/json'});
-          const a = document.createElement('a');
+        undo,
+        redo,
+        exportJSON() {
+          const blob = new Blob([JSON.stringify(getDraft(), null, 2)], {
+            type: "application/json",
+          });
+          const a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
-          a.download = 'tutienda-config.json';
+          a.download = "tutienda-config.json";
           a.click();
           URL.revokeObjectURL(a.href);
         },
-        importJSON(obj){
-          if (!obj || typeof obj !== 'object') return;
+        importJSON(obj) {
+          if (!obj || typeof obj !== "object") return;
           write(K_DRAFT, obj);
           pushHistory(obj);
           fillForm(obj);
           syncPreviewCache(obj);
-          setStatus('Borrador importado ' + stamp());
+          setStatus("Borrador importado " + stamp());
           refreshPreview();
-        }
+        },
       };
 
       // Eventos del form (auto estado “sin guardar”)
-      form.addEventListener('input', () => setStatus('Cambios sin guardar…'));
+      form.addEventListener("input", () => setStatus("Cambios sin guardar…"));
 
       // Importar
-      importInput.addEventListener('change', async () => {
-        const f = importInput.files?.[0]; if (!f) return;
+      importInput.addEventListener("change", async () => {
+        const f = importInput.files?.[0];
+        if (!f) return;
         const txt = await f.text();
-        try { window.__adm.importJSON(JSON.parse(txt)); }
-        catch { alert('JSON inválido'); }
-        finally { importInput.value = ''; }
+        try {
+          window.__adm.importJSON(JSON.parse(txt));
+        } catch {
+          alert("JSON inválido");
+        } finally {
+          importInput.value = "";
+        }
       });
 
       // Atajos teclado: Ctrl+S / Ctrl+Z / Ctrl+Shift+Z
-      document.addEventListener('keydown', (e) => {
+      document.addEventListener("keydown", (e) => {
         const mod = e.ctrlKey || e.metaKey;
-        if (mod && e.key.toLowerCase() === 's'){ e.preventDefault(); window.__adm.saveDraft(); }
-        if (mod && e.key.toLowerCase() === 'z' && !e.shiftKey){ e.preventDefault(); undo(); }
-        if (mod && e.key.toLowerCase() === 'z' && e.shiftKey){ e.preventDefault(); redo(); }
+        if (mod && e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          window.__adm.saveDraft();
+        }
+        if (mod && e.key.toLowerCase() === "z" && !e.shiftKey) {
+          e.preventDefault();
+          undo();
+        }
+        if (mod && e.key.toLowerCase() === "z" && e.shiftKey) {
+          e.preventDefault();
+          redo();
+        }
       });
 
       // Init: aseguramos borrador, historial y preview
-      (function init(){
+      (function init() {
         // si no hay publicado, partimos de vacío
         const pub = getPublished();
         if (!localStorage.getItem(K_DRAFT)) write(K_DRAFT, pub);
-        if (!localStorage.getItem(K_HIST))  write(K_HIST, [getDraft()]);
+        if (!localStorage.getItem(K_HIST)) write(K_HIST, [getDraft()]);
         if (read(K_HIDX, -1) === -1) write(K_HIDX, 0);
 
         const draft = getDraft();
         fillForm(draft);
         syncPreviewCache(draft);
-        setStatus('Borrador cargado ' + stamp());
+        setStatus("Borrador cargado " + stamp());
       })();
     })();
   </script>
