@@ -51,6 +51,8 @@ productsRouter.get('/', async (req, res) => {
  */
 productsRouter.post('/', requireAuth as any, async (req: any, res) => {
   try {
+    console.log('[api] POST /products headers.content-type=', req.headers['content-type']);
+    console.log('[api] POST /products raw body=', req.body);
     const {
       title,
       slug,
