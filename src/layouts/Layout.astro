@@ -1,7 +1,8 @@
 ---
 import "../styles/global.css";
 import MobileTabBar from "../components/MobileTabBar.astro";
-const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro.props;
+const { title = "TuTienda", description = "E-commerce autogestionable" } =
+  Astro.props;
 ---
 
 <html lang="es">
@@ -12,163 +13,258 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
     <meta name="description" content={description} />
   </head>
 
-  <body class="min-h-screen flex flex-col bg-[var(--surface)] text-[var(--text)]">
+  <body
+    class="min-h-screen flex flex-col bg-[var(--surface)] text-[var(--text)]"
+  >
+    <!-- Header -->
+    <header
+      id="siteHeader"
+      class="w-full text-[var(--on-brand)] shadow transition-colors"
+    >
+      <!-- Fila superior -->
+      <div class="container flex items-center gap-3 py-2 md:py-3">
+        <!-- Logo -->
+        <a
+          href="/"
+          class="shrink-0 font-bold text-lg md:text-xl flex items-center gap-2"
+        >
+          <span>🛒</span>
+          <span id="brandNameHeader">TuTienda</span>
+        </a>
 
-  <!-- Header -->
-  <header id="siteHeader" class="w-full text-[var(--on-brand)] shadow transition-colors">
-    <!-- Fila superior -->
-    <div class="container flex items-center gap-3 py-2 md:py-3">
-      <!-- Logo -->
-      <a href="/" class="shrink-0 font-bold text-lg md:text-xl flex items-center gap-2">
-        <span>🛒</span> <span id="brandNameHeader">TuTienda</span>
-      </a>
-
-      <!-- Buscador (sólo md+) -->
-      <form
-        id="searchForm"
-        class="hidden md:flex flex-1"
-        onsubmit="window.location.href='/listado_box?q='+encodeURIComponent(this.q.value); return false;"
-      >
-        <div class="relative w-full">
-          <input
-            name="q"
-            type="search"
-            placeholder="Buscar productos, marcas y más…"
-            class="w-full rounded-full bg-[var(--surface)] text-[var(--text)]
+        <!-- Buscador (sólo md+) -->
+        <form
+          id="searchForm"
+          class="hidden md:flex flex-1"
+          onsubmit="window.location.href='/listado_box?q='+encodeURIComponent(this.q.value); return false;"
+        >
+          <div class="relative w-full">
+            <input
+              name="q"
+              type="search"
+              placeholder="Buscar productos, marcas y más…"
+              class="w-full rounded-full bg-[var(--surface)] text-[var(--text)]
                   px-4 md:px-5 py-2.5 md:py-3 pr-10 md:pr-12 text-xs md:text-sm placeholder-gray-400
                   border border-[var(--card-border)]
                   focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-          />
-          <button
-            type="submit"
-            class="absolute right-1 top-1/2 -translate-y-1/2 rounded-full w-9 h-9 md:w-10 md:h-10 grid place-items-center
-                  border border-[var(--card-border)] text-[var(--text)]"
-            aria-label="Buscar"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="block md:hidden">
-              <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="hidden md:block">
-              <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
-      </form>
-
-      <!-- Promo pill -->
-      <div class="hidden lg:block">
-        <span class="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] text-white text-xs px-3 py-1">
-          ENVÍO GRATIS
-        </span>
-      </div>
-
-      <!-- Links usuario -->
-      <nav class="hidden md:flex items-center gap-4 text-sm">
-        <a id="linkCreate" href="/cuenta/registrar" class="hover:underline">Creá tu cuenta</a>
-        <a id="linkLogin" href="/cuenta/ingresar" class="hover:underline">Iniciar Sesión</a>
-        <a id="linkAccount" href="/cuenta/perfil" class="hover:underline" style="display:none;">Mi cuenta</a>
-        <button id="linkLogout" class="hover:underline" style="display:none;"
-                onclick="window.tpUser?.logout(); location.reload();">Salir</button>
-        <a href="/comprar" class="hover:underline">Mis compras</a>
-      </nav>
-
-      <!-- Mini-carrito -->
-      <div class="relative hidden md:block">
-        <button
-          id="cartBtn"
-          aria-label="Abrir carrito"
-          class="relative inline-flex items-center justify-center rounded-lg px-3 py-2 bg-[var(--brand)] text-[var(--on-brand)]"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="text-white">
-            <path
-              d="M7 7h14l-1.5 8.5a2 2 0 0 1-2 1.5H9a2 2 0 0 1-2-1.5L5 4H2"
-              stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
             />
-            <circle cx="10" cy="20" r="1.6" fill="currentColor"/>
-            <circle cx="18" cy="20" r="1.6" fill="currentColor"/>
-          </svg>
-          <span
-            id="cartBadge"
-            class="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 rounded-full
-                  bg-[var(--accent)] text-white text-xs grid place-items-center px-1"
-            style="transform: translate(25%,-25%);"
-          >0</span>
-        </button>
+            <button
+              type="submit"
+              class="absolute right-1 top-1/2 -translate-y-1/2 rounded-full w-9 h-9 md:w-10 md:h-10 grid place-items-center
+                  border border-[var(--card-border)] text-[var(--text)]"
+              aria-label="Buscar"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                class="block md:hidden"
+              >
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="7"
+                  stroke="currentColor"
+                  stroke-width="1.6"></circle>
+                <path
+                  d="M20 20l-3.5-3.5"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"></path>
+              </svg>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                class="hidden md:block"
+              >
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="7"
+                  stroke="currentColor"
+                  stroke-width="1.6"></circle>
+                <path
+                  d="M20 20l-3.5-3.5"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"></path>
+              </svg>
+            </button>
+          </div>
+        </form>
 
-        <!-- Dropdown -->
-        <div
-          id="cartDropdown"
-          class="absolute right-0 mt-2 w-80
+        <!-- Promo pill -->
+        <div class="hidden lg:block">
+          <span
+            class="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] text-white text-xs px-3 py-1"
+          >
+            ENVÍO GRATIS
+          </span>
+        </div>
+
+        <!-- Links usuario -->
+        <nav class="hidden md:flex items-center gap-4 text-sm">
+          <a id="linkCreate" href="/cuenta/registrar" class="hover:underline"
+            >Creá tu cuenta</a
+          >
+          <a id="linkLogin" href="/cuenta/ingresar" class="hover:underline"
+            >Iniciar Sesión</a
+          >
+          <a
+            id="linkAccount"
+            href="/cuenta/perfil"
+            class="hover:underline"
+            style="display:none;">Mi cuenta</a
+          >
+          <button
+            id="linkLogout"
+            class="hover:underline"
+            style="display:none;"
+            onclick="window.tpUser?.logout(); location.reload();">Salir</button
+          >
+          <a href="/comprar" class="hover:underline">Mis compras</a>
+        </nav>
+
+        <!-- Mini-carrito -->
+        <div class="relative hidden md:block">
+          <button
+            id="cartBtn"
+            aria-label="Abrir carrito"
+            class="relative inline-flex items-center justify-center rounded-lg px-3 py-2 bg-[var(--brand)] text-[var(--on-brand)]"
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              class="text-white"
+            >
+              <path
+                d="M7 7h14l-1.5 8.5a2 2 0 0 1-2 1.5H9a2 2 0 0 1-2-1.5L5 4H2"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+              <circle cx="10" cy="20" r="1.6" fill="currentColor"></circle>
+              <circle cx="18" cy="20" r="1.6" fill="currentColor"></circle>
+            </svg>
+            <span
+              id="cartBadge"
+              class="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 rounded-full
+                  bg-[var(--accent)] text-white text-xs grid place-items-center px-1"
+              style="transform: translate(25%,-25%);">0</span
+            >
+          </button>
+
+          <!-- Dropdown -->
+          <div
+            id="cartDropdown"
+            class="absolute right-0 mt-2 w-80
                 bg-[var(--surface)] text-[var(--text)]
                 border border-[var(--card-border)]
                 rounded-xl shadow-xl p-4 hidden z-50"
-          role="dialog" aria-label="Resumen del carrito"
-        >
-          <h3 class="font-semibold mb-2">Carrito</h3>
-          <div id="miniCartEmpty" class="text-sm text-[var(--muted)]">Tu carrito está vacío.</div>
-          <div id="miniCartList" class="hidden max-h-64 overflow-auto space-y-2"></div>
-          <div class="mt-3 flex items-center justify-between">
-            <div class="font-bold" id="miniCartTotal">$ 0,00</div>
-            <div class="flex gap-2">
-              <a
-                href="/comprar"
-                class="inline-flex items-center rounded-lg 
-                bg-[var(--accent)] text-white px-3 py-2 
+            role="dialog"
+            aria-label="Resumen del carrito"
+          >
+            <h3 class="font-semibold mb-2">Carrito</h3>
+            <div id="miniCartEmpty" class="text-sm text-[var(--muted)]">
+              Tu carrito está vacío.
+            </div>
+            <div
+              id="miniCartList"
+              class="hidden max-h-64 overflow-auto space-y-2"
+            >
+            </div>
+            <div class="mt-3 flex items-center justify-between">
+              <div class="font-bold" id="miniCartTotal">$ 0,00</div>
+              <div class="flex gap-2">
+                <a
+                  href="/comprar"
+                  class="inline-flex items-center rounded-lg
+                bg-[var(--accent)] text-white px-3 py-2
                 hover:brightness-110"
-              >Comprar</a>
-              <button id="miniCartClear" class="text-xs text-[var(--muted)] hover:text-[var(--text)]">
-                Vaciar
-              </button>
+                  >Comprar</a
+                >
+                <button
+                  id="miniCartClear"
+                  class="text-xs text-[var(--muted)] hover:text-[var(--text)]"
+                >
+                  Vaciar
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Fila inferior -->
-    <div class="container items-center gap-4 pb-2 md:pb-3 text-xs md:text-sm hidden md:flex">
-      <div class="flex items-center gap-2">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" stroke="currentColor" stroke-width="1.6"/>
-          <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.6"/>
-        </svg>
-        <span class="truncate">Enviar a <strong>Posadas, Misiones</strong></span>
+      <!-- Fila inferior -->
+      <div
+        class="container items-center gap-4 pb-2 md:pb-3 text-xs md:text-sm hidden md:flex"
+      >
+        <div class="flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"
+              stroke="currentColor"
+              stroke-width="1.6"></path>
+            <circle
+              cx="12"
+              cy="10"
+              r="2.5"
+              stroke="currentColor"
+              stroke-width="1.6"></circle>
+          </svg>
+          <span class="truncate"
+            >Enviar a <strong>Posadas, Misiones</strong></span
+          >
+        </div>
+
+        <nav class="flex items-center gap-4 overflow-x-auto">
+          <a href="/listado_box" class="hover:underline">Categorías</a>
+          <a href="/ofertas" class="hover:underline">Ofertas</a>
+          <a href="#" class="hover:underline">Cupones</a>
+          <a href="/listado_tablas" class="hover:underline">Listado (tabla)</a>
+          <a href="/comprar" class="hover:underline">Comprar</a>
+        </nav>
+
+        <!-- Selector de tema (sólo md+) -->
+        <div class="ml-auto hidden md:flex items-center gap-2">
+          <span class="text-xs opacity-80">Tema:</span>
+          <button
+            class="px-2 py-1 rounded bg-[var(--surface)] border border-[var(--card-border)]"
+            onclick="setTheme('')">Default</button
+          >
+          <button
+            class="px-2 py-1 rounded bg-[#1e3a8a] text-white"
+            onclick="setTheme('theme-profesional')">Profesional</button
+          >
+          <button
+            class="px-2 py-1 rounded bg-[#f57c00] text-white"
+            onclick="setTheme('theme-naranja-profesional')">Naranja</button
+          >
+          <button
+            class="px-2 py-1 rounded bg-[#0ea5e9] text-white"
+            onclick="setTheme('theme-azul')">Azul</button
+          >
+        </div>
       </div>
+    </header>
 
-      <nav class="flex items-center gap-4 overflow-x-auto">
-        <a href="/listado_box" class="hover:underline">Categorías</a>
-        <a href="#" class="hover:underline">Ofertas</a>
-        <a href="#" class="hover:underline">Cupones</a>
-        <a href="/listado_tablas" class="hover:underline">Listado (tabla)</a>
-        <a href="/comprar" class="hover:underline">Comprar</a>
-      </nav>
+    <main
+      class="container flex-1 py-5 pb-24 md:pb-6"
+      style="padding-bottom: calc(5.25rem + env(safe-area-inset-bottom))"
+    >
+      <slot />
+    </main>
 
-      <!-- Selector de tema (sólo md+) -->
-      <div class="ml-auto hidden md:flex items-center gap-2">
-        <span class="text-xs opacity-80">Tema:</span>
-        <button class="px-2 py-1 rounded bg-[var(--surface)] border border-[var(--card-border)]" onclick="setTheme('')">Default</button>
-        <button class="px-2 py-1 rounded bg-[#1e3a8a] text-white" onclick="setTheme('theme-profesional')">Profesional</button>
-        <button class="px-2 py-1 rounded bg-[#f57c00] text-white" onclick="setTheme('theme-naranja-profesional')">Naranja</button>
-        <button class="px-2 py-1 rounded bg-[#0ea5e9] text-white" onclick="setTheme('theme-azul')">Azul</button>
-      </div>
-    </div>
-  </header>
-
-
-  <main
-    class="container flex-1 py-5 pb-24 md:pb-6"
-    style="padding-bottom: calc(5.25rem + env(safe-area-inset-bottom))"
-  >
-    <slot />
-  </main>
-
-    <!-- Footer --> 
+    <!-- Footer -->
     <footer class="bg-gray-900 text-gray-300 border-t border-gray-800">
       <div class="container py-4 text-center text-sm">
         © {new Date().getFullYear()} Proyecto académico, by
-      <a href="/admin/login">TuTienda</a>
+        <a href="/admin/login">TuTienda</a>
       </div>
     </footer>
 
@@ -179,19 +275,24 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
     <!-- Mini-carrito + Theming (chat gpt puro y duro) -->
     <script>
       // @ts-nocheck
-      document.addEventListener('DOMContentLoaded', () => {
-        const btn      = document.getElementById('cartBtn');
-        const dd       = document.getElementById('cartDropdown');
-        const badge    = document.getElementById('cartBadge');
-        const list     = document.getElementById('miniCartList');
-        const empty    = document.getElementById('miniCartEmpty');
-        const totalEl  = document.getElementById('miniCartTotal');
-        const clearBtn = document.getElementById('miniCartClear');
+      document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("cartBtn");
+        const dd = document.getElementById("cartDropdown");
+        const badge = document.getElementById("cartBadge");
+        const list = document.getElementById("miniCartList");
+        const empty = document.getElementById("miniCartEmpty");
+        const totalEl = document.getElementById("miniCartTotal");
+        const clearBtn = document.getElementById("miniCartClear");
 
-        const fmt = (n) => new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS' }).format(n);
-        const api = (window.tpCart && typeof window.tpCart.getCart === 'function')
-          ? window.tpCart
-          : { getCart: () => [], clearCart: () => {} };
+        const fmt = (n) =>
+          new Intl.NumberFormat("es-AR", {
+            style: "currency",
+            currency: "ARS",
+          }).format(n);
+        const api =
+          window.tpCart && typeof window.tpCart.getCart === "function"
+            ? window.tpCart
+            : { getCart: () => [], clearCart: () => {} };
 
         function renderMiniCart() {
           if (!badge || !list || !empty || !totalEl) return;
@@ -200,16 +301,18 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
           badge.textContent = String(count);
 
           if (!cart.length) {
-            empty.classList.remove('hidden');
-            list.classList.add('hidden');
+            empty.classList.remove("hidden");
+            list.classList.add("hidden");
             totalEl.textContent = fmt(0);
             return;
           }
 
-          empty.classList.add('hidden');
-          list.classList.remove('hidden');
+          empty.classList.add("hidden");
+          list.classList.remove("hidden");
 
-          list.innerHTML = cart.map(i => `
+          list.innerHTML = cart
+            .map(
+              (i) => `
             <div class="flex items-center justify-between gap-2">
               <div class="min-w-0">
                 <div class="font-medium truncate">${i.title}</div>
@@ -217,47 +320,55 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
               </div>
               <div class="text-right font-medium">${fmt(i.price * i.qty)}</div>
             </div>
-          `).join('');
+          `,
+            )
+            .join("");
 
-          totalEl.textContent = fmt(cart.reduce((a, i) => a + i.price * i.qty, 0));
+          totalEl.textContent = fmt(
+            cart.reduce((a, i) => a + i.price * i.qty, 0),
+          );
         }
 
         if (btn && dd) {
-          btn.addEventListener('click', (e) => {
+          btn.addEventListener("click", (e) => {
             e.stopPropagation();
-            dd.classList.toggle('hidden');
+            dd.classList.toggle("hidden");
             renderMiniCart();
           });
 
-          document.addEventListener('click', (e) => {
-            if (!dd.classList.contains('hidden')) {
-              if (!dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
-                dd.classList.add('hidden');
+          document.addEventListener("click", (e) => {
+            if (!dd.classList.contains("hidden")) {
+              if (
+                !dd.contains(e.target) &&
+                e.target !== btn &&
+                !btn.contains(e.target)
+              ) {
+                dd.classList.add("hidden");
               }
             }
           });
 
-          document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') dd.classList.add('hidden');
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") dd.classList.add("hidden");
           });
         }
 
         if (clearBtn) {
-          clearBtn.addEventListener('click', () => {
+          clearBtn.addEventListener("click", () => {
             api.clearCart();
             renderMiniCart();
           });
         }
 
-        window.addEventListener('storage', renderMiniCart);
-        window.addEventListener('focus', renderMiniCart);
+        window.addEventListener("storage", renderMiniCart);
+        window.addEventListener("focus", renderMiniCart);
         renderMiniCart();
       });
 
       // Theming simple (persistido)
       (function () {
         try {
-          const saved = localStorage.getItem('theme');
+          const saved = localStorage.getItem("theme");
           if (saved) document.documentElement.classList.add(saved);
         } catch {}
       })();
@@ -267,37 +378,50 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
           const html = document.documentElement;
           html.className = html.className
             .split(/\s+/)
-            .filter(c => !c.startsWith('theme-'))
-            .join(' ')
+            .filter((c) => !c.startsWith("theme-"))
+            .join(" ")
             .trim();
-        if (name) html.classList.add(name);
-          localStorage.setItem('theme', name || '');
+          if (name) html.classList.add(name);
+          localStorage.setItem("theme", name || "");
         } catch {}
       };
     </script>
     <script>
       // @ts-nocheck
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener("DOMContentLoaded", () => {
         // --- Search overlay
-        const S = document.getElementById('mbSearchSheet');
-        const SF = document.getElementById('mbSearchForm');
+        const S = document.getElementById("mbSearchSheet");
+        const SF = document.getElementById("mbSearchForm");
 
-        function openSearch() { S?.classList.remove('hidden'); setTimeout(()=> SF?.querySelector('input')?.focus(), 10); }
-        function closeSearch() { S?.classList.add('hidden'); }
+        function openSearch() {
+          S?.classList.remove("hidden");
+          setTimeout(() => SF?.querySelector("input")?.focus(), 10);
+        }
+        function closeSearch() {
+          S?.classList.add("hidden");
+        }
 
-        SF?.addEventListener('submit', (e) => {
+        SF?.addEventListener("submit", (e) => {
           e.preventDefault();
           const q = SF.q.value.trim();
           if (!q) return;
-          location.href = '/listado_box?q=' + encodeURIComponent(q);
+          location.href = "/listado_box?q=" + encodeURIComponent(q);
         });
-        document.querySelectorAll('[data-close="mbSearch"]').forEach(el => el.addEventListener('click', closeSearch));
+        document
+          .querySelectorAll('[data-close="mbSearch"]')
+          .forEach((el) => el.addEventListener("click", closeSearch));
 
         // --- Drawer
-        const D = document.getElementById('mbDrawer');
-        function openDrawer() { D?.classList.remove('hidden'); }
-        function closeDrawer() { D?.classList.add('hidden'); }
-        document.querySelectorAll('[data-close="mbDrawer"]').forEach(el => el.addEventListener('click', closeDrawer));
+        const D = document.getElementById("mbDrawer");
+        function openDrawer() {
+          D?.classList.remove("hidden");
+        }
+        function closeDrawer() {
+          D?.classList.add("hidden");
+        }
+        document
+          .querySelectorAll('[data-close="mbDrawer"]')
+          .forEach((el) => el.addEventListener("click", closeDrawer));
 
         // --- Hooks desde bottom bar
         window.__mb_open_search = openSearch;
@@ -308,43 +432,53 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
     <script src="/user.js" defer></script>
     <script>
       // @ts-nocheck
-      document.addEventListener('DOMContentLoaded', () => {
-        const linkCreate  = document.getElementById('linkCreate');
-        const linkLogin   = document.getElementById('linkLogin');
-        const linkAccount = document.getElementById('linkAccount');
-        const linkLogout  = document.getElementById('linkLogout');
-        const brandHeader = document.getElementById('brandNameHeader');
+      document.addEventListener("DOMContentLoaded", () => {
+        const linkCreate = document.getElementById("linkCreate");
+        const linkLogin = document.getElementById("linkLogin");
+        const linkAccount = document.getElementById("linkAccount");
+        const linkLogout = document.getElementById("linkLogout");
+        const brandHeader = document.getElementById("brandNameHeader");
 
         function refreshUserUI() {
           const u = window.tpUser?.get?.();
           const logged = !!u;
 
-          if (linkCreate)  linkCreate.style.display  = logged ? 'none' : '';
-          if (linkLogin)   linkLogin.style.display   = logged ? 'none' : '';
-          if (linkAccount) linkAccount.style.display = logged ? '' : 'none';
-          if (linkLogout)  linkLogout.style.display  = logged ? '' : 'none';
+          if (linkCreate) linkCreate.style.display = logged ? "none" : "";
+          if (linkLogin) linkLogin.style.display = logged ? "none" : "";
+          if (linkAccount) linkAccount.style.display = logged ? "" : "none";
+          if (linkLogout) linkLogout.style.display = logged ? "" : "none";
 
           // Si querés, mostrás el nombre en el header:
-          if (brandHeader && u?.name) brandHeader.textContent = u.name.split(' ')[0] + ' – TuTienda';
+          if (brandHeader && u?.name)
+            brandHeader.textContent = u.name.split(" ")[0] + " – TuTienda";
         }
 
         refreshUserUI();
-        window.addEventListener('tpuser', refreshUserUI);
+        window.addEventListener("tpuser", refreshUserUI);
       });
     </script>
 
-
     <!-- Bottom bar celular -->
     <MobileTabBar />
-                    
+
     <!-- ====== OVERLAY: Búsqueda móvil ====== -->
     <div id="mbSearchSheet" class="md:hidden fixed inset-0 z-50 hidden">
       <div class="absolute inset-0 bg-black/40" data-close="mbSearch"></div>
-      <form id="mbSearchForm" class="absolute top-0 inset-x-0 bg-[var(--card)] border-b border-[var(--card-border)] p-3 shadow">
+      <form
+        id="mbSearchForm"
+        class="absolute top-0 inset-x-0 bg-[var(--card)] border-b border-[var(--card-border)] p-3 shadow"
+      >
         <div class="flex gap-2">
-          <input name="q" type="search" placeholder="Buscar productos…" autofocus
-                class="flex-1 rounded-lg border border-[var(--card-border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
-          <button class="btn px-3 py-2 text-sm" aria-label="Buscar">Buscar</button>
+          <input
+            name="q"
+            type="search"
+            placeholder="Buscar productos…"
+            autofocus
+            class="flex-1 rounded-lg border border-[var(--card-border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          />
+          <button class="btn px-3 py-2 text-sm" aria-label="Buscar"
+            >Buscar</button
+          >
         </div>
       </form>
     </div>
@@ -352,10 +486,14 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
     <!-- ====== DRAWER: “Más” móvil ====== -->
     <div id="mbDrawer" class="md:hidden fixed inset-0 z-50 hidden">
       <div class="absolute inset-0 bg-black/40" data-close="mbDrawer"></div>
-      <aside class="absolute right-0 top-0 bottom-0 w-72 max-w-[85%] bg-[var(--card)] border-l border-[var(--card-border)] p-4 overflow-y-auto">
+      <aside
+        class="absolute right-0 top-0 bottom-0 w-72 max-w-[85%] bg-[var(--card)] border-l border-[var(--card-border)] p-4 overflow-y-auto"
+      >
         <div class="flex items-center justify-between mb-3">
           <h3 class="font-semibold">Menú</h3>
-          <button class="text-sm text-[var(--muted)]" data-close="mbDrawer">Cerrar</button>
+          <button class="text-sm text-[var(--muted)]" data-close="mbDrawer"
+            >Cerrar</button
+          >
         </div>
         <nav class="grid gap-2 text-sm">
           <a class="hover:underline" href="/listado_box">Categorías</a>
@@ -363,7 +501,9 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
           <a class="hover:underline" href="#">Cupones</a>
           <a class="hover:underline" href="/listado_tablas">Listado (tabla)</a>
           <a class="hover:underline" href="/comprar">Comprar</a>
-          <a class="hover:underline" href="/admin/login">Iniciar sesión (admin)</a>
+          <a class="hover:underline" href="/admin/login"
+            >Iniciar sesión (admin)</a
+          >
           <a class="hover:underline" href="#">Mis compras</a>
         </nav>
 
@@ -371,13 +511,24 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } = Astro
 
         <h4 class="text-xs uppercase text-[var(--muted)]">Tema</h4>
         <div class="flex gap-2 mt-2">
-          <button class="px-2 py-1 rounded border border-[var(--card-border)] text-xs" onclick="setTheme('')">Default</button>
-          <button class="px-2 py-1 rounded border border-[var(--card-border)] text-xs" onclick="setTheme('theme-profesional')">Pro</button>
-          <button class="px-2 py-1 rounded border border-[var(--card-border)] text-xs" onclick="setTheme('theme-naranja-profesional')">Naranja</button>
-          <button class="px-2 py-1 rounded border border-[var(--card-border)] text-xs" onclick="setTheme('theme-azul')">Azul</button>
+          <button
+            class="px-2 py-1 rounded border border-[var(--card-border)] text-xs"
+            onclick="setTheme('')">Default</button
+          >
+          <button
+            class="px-2 py-1 rounded border border-[var(--card-border)] text-xs"
+            onclick="setTheme('theme-profesional')">Pro</button
+          >
+          <button
+            class="px-2 py-1 rounded border border-[var(--card-border)] text-xs"
+            onclick="setTheme('theme-naranja-profesional')">Naranja</button
+          >
+          <button
+            class="px-2 py-1 rounded border border-[var(--card-border)] text-xs"
+            onclick="setTheme('theme-azul')">Azul</button
+          >
         </div>
       </aside>
     </div>
-
   </body>
 </html>

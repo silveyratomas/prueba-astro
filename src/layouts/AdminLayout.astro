@@ -11,58 +11,66 @@ const { title = "Admin – TuTienda" } = Astro.props;
   </head>
 
   <body class="min-h-screen bg-[var(--surface)] text-[var(--text)]">
-    <!-- Header admin (sticky + limpio) -->
+    <!-- Header admin (sticky, sobrio y profesional) -->
     <header
-      class="sticky top-0 z-40 border-b border-[var(--card-border)] bg-[var(--card)]/90 backdrop-blur"
+      class="sticky top-0 z-40 border-b border-[var(--card-border)] bg-[var(--card)]/95 backdrop-blur-sm"
     >
-      <div class="container flex items-center justify-between h-14">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-[var(--brand)]"></div>
-          <div class="leading-tight">
+      <div class="container flex items-center justify-between gap-4 py-3">
+        <div class="flex items-center gap-4">
+          <div
+            class="w-10 h-10 rounded-lg bg-[var(--brand)] flex items-center justify-center text-white font-bold"
+          >
+            TP
+          </div>
+          <div>
             <p class="text-xs text-[var(--muted)]">Panel de Administración</p>
-            <h1 class="text-sm font-semibold">{title}</h1>
+            <h1 class="text-base font-semibold">{title}</h1>
           </div>
         </div>
 
-        <nav class="flex items-center gap-2 text-sm">
-          <a
-            href="/"
-            class="rounded-lg border border-[var(--card-border)] px-3 py-1.5 hover:bg-[var(--surface)]"
+        <div class="flex items-center gap-3">
+          <a href="/" class="text-sm text-[var(--muted)] hover:underline"
             >Ver tienda</a
           >
+          <div class="h-6 border-l border-[var(--card-border)]"></div>
           <button
             id="btnLogout"
             type="button"
-            class="rounded-lg bg-[var(--brand)] text-[var(--on-brand)] px-3 py-1.5 hover:opacity-95"
-            aria-label="Cerrar sesión"
+            class="rounded-md bg-[var(--brand)] text-[var(--on-brand)] px-3 py-1 text-sm hover:brightness-95"
+            >Salir</button
           >
-            Salir
-          </button>
-        </nav>
+        </div>
       </div>
     </header>
 
-    <!-- Layout con sidebar -->
-    <div class="container grid md:grid-cols-[220px,1fr] gap-6 py-6">
-      <aside
-        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4 md:sticky md:top-20 h-max"
+    <!-- Subbarra: navegación horizontal (fija debajo del header) -->
+    <div class="sticky top-14 z-30">
+      <div
+        class="container bg-[var(--card)] border-b border-[var(--card-border)] rounded-b-2xl"
       >
-        <nav class="space-y-1 text-sm" id="adminNav">
+        <nav id="adminNav" class="flex gap-4 items-center px-4 py-3 text-sm">
           <a
             href="/admin"
-            class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]"
-            >General</a
+            class="rounded-md px-3 py-2 hover:bg-[var(--surface)] flex items-center gap-2"
           >
+            <span class="text-[var(--muted)]">🏠</span>
+            <span>General</span>
+          </a>
           <a
             href="/admin/productos"
-            class="block rounded-md px-2 py-1 hover:bg-[var(--surface)]"
-            >Productos</a
+            class="rounded-md px-3 py-2 hover:bg-[var(--surface)] flex items-center gap-2"
           >
-          <!-- futuro: /admin/apariencia /admin/envios /admin/pagos -->
+            <span class="text-[var(--muted)]">📦</span>
+            <span>Productos</span>
+          </a>
+          <!-- más items aquí -->
         </nav>
-      </aside>
+      </div>
+    </div>
 
-      <main class="min-h-[60vh]">
+    <!-- Contenido principal: una sola columna, el nav ya está arriba -->
+    <div class="container py-10">
+      <main class="min-h-[60vh] bg-transparent">
         <slot />
       </main>
     </div>
@@ -71,6 +79,8 @@ const { title = "Admin – TuTienda" } = Astro.props;
     <script src="/admin-auth.js?v=7" is:inline defer></script>
     <!-- opcional: tu lógica general de panel -->
     <script src="/admin.js?v=7" is:inline defer></script>
+    <!-- admin: categorías (gestión desde el panel) -->
+    <script src="/admin-categories.js" defer></script>
     <!-- ⚠️ SUGERENCIA: quitar admin-products.js para evitar conflictos con la vista nueva -->
     <!-- <script src="/admin-products.js?v=1" is:inline defer></script> -->
 

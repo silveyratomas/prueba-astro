@@ -1,0 +1,73 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Ofertas">
+    <h1 class="text-2xl font-bold mb-4">Ofertas</h1>
+
+    <section id="offersSection" class="space-y-4">
+        <div id="offersList" class="grid gap-4 md:grid-cols-3"></div>
+        <div id="noOffers" class="text-[var(--muted)]">Cargando…</div>
+    </section>
+
+    <script src="/admin-auth.js" defer></script>
+    <script>
+        // @ts-nocheck
+        // Página pública que muestra productos en oferta para la tienda por defecto
+        document.addEventListener("DOMContentLoaded", function () {
+            (async function () {
+                const store = "mi-tienda-demo";
+                try {
+                    // Si tpAdminAuth no está disponible por alguna razón, fallamos silenciosamente
+                    if (
+                        !window.tpAdminAuth ||
+                        typeof window.tpAdminAuth.api !== "function"
+                    ) {
+                        console.warn("tpAdminAuth no disponible");
+                        const no = document.getElementById("noOffers");
+                        if (no)
+                            no.textContent =
+                                "No existen ofertas en este momento.";
+                        return;
+                    }
+
+                    const res = await window.tpAdminAuth.api(
+                        `/products?store=${encodeURIComponent(store)}&offer=true`,
+                    );
+                    const list = Array.isArray(res?.products)
+                        ? res.products
+                        : [];
+                    const container = document.getElementById("offersList");
+                    const no = document.getElementById("noOffers");
+                    if (!list.length) {
+                        if (container) container.innerHTML = "";
+                        if (no)
+                            no.textContent =
+                                "No existen ofertas en este momento.";
+                        return;
+                    }
+                    if (no && no.parentNode) no.remove();
+                    if (!container) return;
+                    container.innerHTML = list
+                        .map((p) => {
+                            const it = p || {};
+                            return `
+          <article class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-3">
+            <img src="${it.imageUrl || "/imgs/fotoSitio.png"}" alt="${it.title || ""}" class="w-full h-40 object-cover rounded-md mb-2" />
+            <h3 class="font-semibold">${it.title || ""}</h3>
+            <p class="text-sm text-[var(--muted)]">${it.slug || ""}</p>
+            <div class="mt-2 font-bold">${new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(it.price || 0)}</div>
+          </article>
+        `;
+                        })
+                        .join("");
+                } catch (e) {
+                    console.error(e);
+                    const no = document.getElementById("noOffers");
+                    if (no)
+                        no.textContent = "No existen ofertas en este momento.";
+                }
+            })();
+        });
+    </script>
+</Layout>

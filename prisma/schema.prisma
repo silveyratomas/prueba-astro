@@ -150,6 +150,7 @@ model Category {
   slug         String
   parentId     String?
   isFeaturedIn Boolean  @default(false)
+  isOffer      Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -173,6 +174,7 @@ model Product {
   price       Decimal  @db.Decimal(12, 2)
   imageUrl    String?
   isFeatured  Boolean  @default(false)
+  isOffer     Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

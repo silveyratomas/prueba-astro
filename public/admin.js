@@ -52,7 +52,7 @@
       try {
         const r = await window.tpAdminAuth.api('/products', {
           method: 'POST',
-          body: JSON.stringify(payload),
+          body: payload,
         });
         toast('Producto creado ✔');
         // limpiá o actualizá UI

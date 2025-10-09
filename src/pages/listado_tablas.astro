@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { products as localProducts } from "../data/products";
+// dependemos de la API para productos
 import { API_BASE, DEFAULT_STORE_SLUG } from "../config";
 
 const fmt = (n: number) =>
@@ -24,26 +24,9 @@ try {
   if (res.ok) {
     const data = await res.json();
     products = Array.isArray(data?.products) ? data.products : [];
-  } else {
-    // fallback a mock
-    products = localProducts.map(p => ({
-      slug: p.slug,
-      title: p.title,
-      price: p.price,
-      imageUrl: p.img,
-      description: p.description,
-      isFeatured: !!p.featured,
-    }));
   }
 } catch {
-  products = localProducts.map(p => ({
-    slug: p.slug,
-    title: p.title,
-    price: p.price,
-    imageUrl: p.img,
-    description: p.description,
-    isFeatured: !!p.featured,
-  }));
+  products = [];
 }
 ---
 

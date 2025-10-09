@@ -1,46 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { products as localProducts } from "../data/products";
 import { API_BASE, DEFAULT_STORE_SLUG } from "../config";
 
-// moneda
-const fmt = (n: number) =>
-  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(
-    Number(n || 0),
-  );
-
-// Elegimos la tienda desde ?store=... o usamos la default
+// Seleccionamos la tienda desde la query ?store=... o usamos la default
 const storeSlug = Astro.url.searchParams.get("store") || DEFAULT_STORE_SLUG;
-
-// Intentamos traer desde la API. Si falla, usamos los products locales.
-let products: Array<any> = [];
-try {
-  const res = await fetch(
-    `${API_BASE}/products?store=${encodeURIComponent(storeSlug)}`,
-  );
-  if (res.ok) {
-    const data = await res.json();
-    products = Array.isArray(data?.products) ? data.products : [];
-  } else {
-    products = localProducts.map((p) => ({
-      slug: p.slug,
-      title: p.title,
-      price: p.price,
-      imageUrl: p.img,
-      description: p.description,
-      isFeatured: !!p.featured,
-    }));
-  }
-} catch {
-  products = localProducts.map((p) => ({
-    slug: p.slug,
-    title: p.title,
-    price: p.price,
-    imageUrl: p.img,
-    description: p.description,
-    isFeatured: !!p.featured,
-  }));
-}
 ---
 
 <Layout title="Listado (box)">
@@ -51,167 +14,60 @@ try {
       <li>
         <a
           href={`/listado_box?store=${encodeURIComponent(storeSlug)}`}
-          class="text-[var(--text)] font-medium line-clamp-1"
+          class="text-[var(--text)] font-medium line-clamp-1">Productos</a
         >
-          Productos
-        </a>
       </li>
     </ol>
   </nav>
 
-  <!-- Toolbar: filtro + orden + solo destacados -->
-  <div class="mb-4 grid gap-2 sm:grid-cols-3 items-center">
-    <div class="flex items-center gap-2">
-      <label for="filter" class="text-sm text-[var(--muted)]">Buscar</label>
-      <input
-        id="filter"
-        type="search"
-        placeholder="Nombre o descripción…"
-        class="w-full rounded-lg border border-[var(--card-border)] bg-white px-3 py-2 text-sm"
-      />
-    </div>
-
-    <div class="flex items-center gap-2">
-      <label for="sort" class="text-sm text-[var(--muted)]">Ordenar por</label>
-      <select
-        id="sort"
-        class="w-full rounded-lg border border-[var(--card-border)] bg-white px-3 py-2 text-sm"
-      >
-        <option value="title-asc">Título (A→Z)</option>
-        <option value="title-desc">Título (Z→A)</option>
-        <option value="price-asc">Precio (menor→mayor)</option>
-        <option value="price-desc">Precio (mayor→menor)</option>
-      </select>
-    </div>
-
-    <label
-      class="inline-flex items-center gap-2 justify-self-start sm:justify-self-end text-sm"
-    >
-      <input
-        id="onlyFeatured"
-        type="checkbox"
-        class="rounded border-[var(--card-border)]"
-      />
-      <span class="text-[var(--muted)]">Solo destacados</span>
-    </label>
-  </div>
-
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="cards">
-    {
-      products.length === 0 ? (
-        <p class="text-[var(--muted)]">No hay productos en esta tienda.</p>
-      ) : (
-        products.map((p) => (
-          <article
-            class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl shadow-sm p-4 flex flex-col hover:shadow-md transition"
-            data-title={(p.title || "").toLowerCase()}
-            data-desc={(p.description || "").toLowerCase()}
-            data-price={Number(p.price || 0)}
-            data-slug={p.slug}
-            data-featured={p.isFeatured ? "1" : "0"}
+  <div
+    class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4"
+  >
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+      <aside class="lg:col-span-1 pr-2">
+        <h3 class="font-semibold mb-2 text-sm">Categorías</h3>
+        <div class="text-[var(--muted)] mb-2 text-xs">
+          Seleccioná una categoría para ver sus productos.
+        </div>
+        <div class="overflow-auto max-h-[60vh] text-sm" id="catTree">
+          <p class="text-[var(--muted)]">Cargando categorías…</p>
+        </div>
+        <div class="mt-3">
+          <button id="catAllBtn" class="btn-outline w-full text-sm"
+            >Ver todos los productos</button
           >
-            <div
-              class="relative w-full overflow-hidden rounded-lg bg-[var(--surface)]"
-              style="padding-top:56.25%;"
-            >
-              <img
-                src={p.imageUrl || "/imgs/placeholder.png"}
-                alt={p.title}
-                class="absolute inset-0 w-full h-full object-contain"
-                loading="lazy"
-              />
-            </div>
+        </div>
+      </aside>
 
-            <h3 class="mt-3 text-lg font-semibold text-[var(--text)]">
-              {p.title}
-            </h3>
-            <p class="text-[var(--muted)]">{fmt(p.price)}</p>
-            <p class="text-sm text-[var(--muted)] mb-3 line-clamp-2">
-              {p.description || "—"}
-            </p>
+      <section class="lg:col-span-3">
+        <div class="mb-3 flex items-center justify-between">
+          <h4 id="catTitle" class="text-lg font-semibold">
+            Todos los productos
+          </h4>
+          <span id="catCount" class="text-sm text-[var(--muted)]">&nbsp;</span>
+        </div>
 
-            <div class="mt-auto flex gap-2">
-              <a
-                class="inline-flex items-center rounded-lg bg-[var(--accent)] text-white px-4 py-2 hover:bg-[var(--accent)]/80 transition"
-                href={`/producto/${p.slug}?store=${encodeURIComponent(storeSlug)}`}
-                aria-label={`Ver ${p.title}`}
-              >
-                Ver
-              </a>
-              <button
-                class="inline-flex items-center rounded-lg border border-[var(--card-border)] px-4 py-2 hover:bg-[var(--surface)] transition"
-                onclick={`tpCart.addToCart(${JSON.stringify({
-                  slug: p.slug,
-                  title: p.title,
-                  price: Number(p.price || 0),
-                  qty: 1,
-                  img: p.imageUrl || "",
-                })})`}
-                aria-label={`Agregar ${p.title} al carrito`}
-              >
-                Agregar
-              </button>
-            </div>
-          </article>
-        ))
-      )
-    }
+        <div
+          id="cards"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
+          <!-- Productos renderizados por src/scripts/listado.ts -->
+        </div>
+
+        <p id="noResults" class="hidden mt-6 text-center text-[var(--muted)]">
+          No encontramos productos que coincidan con tu búsqueda.
+        </p>
+      </section>
+    </div>
   </div>
 
-  <p id="noResults" class="hidden mt-6 text-center text-[var(--muted)]">
-    No encontramos productos que coincidan con tu búsqueda.
-  </p>
-
-  <!-- Filtro/ordenamiento progresivo -->
-  <script>
-    // @ts-nocheck
-    document.addEventListener("DOMContentLoaded", () => {
-      const cardsWrap = document.getElementById("cards");
-      const noRes = document.getElementById("noResults");
-      const filter = document.getElementById("filter");
-      const sort = document.getElementById("sort");
-      const onlyFeatured = document.getElementById("onlyFeatured");
-      const cards = Array.from(cardsWrap?.children || []);
-
-      const params = new URLSearchParams(location.search);
-      const qParam = params.get("q");
-      if (qParam) filter.value = qParam;
-      if (params.get("only") === "featured") onlyFeatured.checked = true;
-
-      const comparators = {
-        "title-asc": (a, b) =>
-          a.dataset.title.localeCompare(b.dataset.title, "es"),
-        "title-desc": (a, b) =>
-          b.dataset.title.localeCompare(a.dataset.title, "es"),
-        "price-asc": (a, b) =>
-          Number(a.dataset.price) - Number(b.dataset.price),
-        "price-desc": (a, b) =>
-          Number(b.dataset.price) - Number(a.dataset.price),
-      };
-
-      function apply() {
-        const q = (filter.value || "").trim().toLowerCase();
-        const comp = comparators[sort.value] || comparators["title-asc"];
-        const only = onlyFeatured.checked;
-
-        cards.sort(comp).forEach((c) => cardsWrap.appendChild(c));
-
-        let vis = 0;
-        cards.forEach((c) => {
-          const text = c.dataset.title + " " + c.dataset.desc;
-          const isFeatured = c.dataset.featured === "1";
-          const matches = (!q || text.includes(q)) && (!only || isFeatured);
-          c.style.display = matches ? "" : "none";
-          if (matches) vis++;
-        });
-
-        noRes.classList.toggle("hidden", vis > 0);
-      }
-
-      filter.addEventListener("input", apply);
-      sort.addEventListener("change", apply);
-      onlyFeatured.addEventListener("change", apply);
-      apply();
-    });
-  </script>
+  <!-- Configuración para el script cliente -->
+  <div
+    id="list-config"
+    data-api={API_BASE}
+    data-store={storeSlug}
+    style="display:none"
+  >
+  </div>
+  <script type="module" src="/src/scripts/listado.ts"></script>
 </Layout>

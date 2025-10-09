@@ -3,7 +3,7 @@
 export const prerender = false;
 
 import Layout from "../../layouts/Layout.astro";
-import { products as localProducts } from "../../data/products";
+// Dependemos de la API para los productos; no usamos mocks locales
 import { API_BASE, DEFAULT_STORE_SLUG } from "../../config";
 
 /* =====================
@@ -56,19 +56,8 @@ try {
 }
 
 if (!product) {
-  const p = localProducts.find(p => p.slug === slug);
-  if (p) {
-    product = {
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      price: p.price,
-      imageUrl: p.img,
-      description: p.description,
-      isFeatured: !!p.featured,
-    };
-    source = "mock";
-  }
+  // No se encontró en API; devolvemos 404
+  throw new Error("Producto no encontrado");
 }
 
 // 404 suave si no existe
@@ -91,18 +80,7 @@ if (source === "api") {
     }
   } catch {}
 } else {
-  recomendados = localProducts
-    .filter(p => p.slug !== product!.slug)
-    .slice(0, 3)
-    .map(p => ({
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      price: p.price,
-      imageUrl: p.img,
-      description: p.description,
-      isFeatured: !!p.featured,
-    }));
+  recomendados = [];
 }
 
 /* =====================

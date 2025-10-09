@@ -45,6 +45,13 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                     class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
                 />
             </div>
+            <div>
+                <label class="text-sm">En oferta</label>
+                <label class="inline-flex items-center gap-2 mt-1">
+                    <input type="checkbox" name="isOffer" />
+                    <span class="text-sm">Marcar como oferta</span>
+                </label>
+            </div>
         </div>
 
         <div class="flex gap-3">
@@ -73,53 +80,5 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     </div>
 
     <script src="/admin-auth.js" defer></script>
-    <script>
-        // @ts-nocheck
-        async function __saveCat(ev) {
-            ev.preventDefault();
-            await tpAdminAuth.requireAuth();
-
-            const f = ev.target;
-            const body = {
-                storeSlug: f.storeSlug.value.trim(),
-                name: f.name.value.trim(),
-                slug: f.slug.value.trim(),
-                parentSlug: f.parentSlug.value.trim() || undefined,
-            };
-            if (!body.storeSlug || !body.name || !body.slug)
-                return alert("Completá los campos obligatorios.");
-
-            await tpAdminAuth.api("/categories", { method: "POST", body });
-            alert("Categoría creada");
-            f.reset();
-            document.getElementById("storeFilter").value = body.storeSlug;
-            __loadList();
-        }
-
-        async function __loadList() {
-            await tpAdminAuth.requireAuth();
-            const store = document.getElementById("storeFilter").value.trim();
-            if (!store) return;
-
-            const res = await tpAdminAuth.api(
-                `/categories?store=${encodeURIComponent(store)}`,
-            );
-            const list = Array.isArray(res?.categories) ? res.categories : [];
-
-            const ul = document.getElementById("catList");
-            if (!list.length) {
-                ul.innerHTML =
-                    '<li class="text-[var(--muted)]">No hay categorías.</li>';
-                return;
-            }
-            ul.innerHTML = list
-                .map(
-                    (c) =>
-                        `<li>• <strong>${c.name}</strong> <span class="text-[var(--muted)]">(${c.slug})</span>${c.parentId ? " — hijo" : ""}</li>`,
-                )
-                .join("");
-        }
-
-        document.addEventListener("DOMContentLoaded", __loadList);
-    </script>
+    <script src="/admin-categories.js" defer></script>
 </AdminLayout>

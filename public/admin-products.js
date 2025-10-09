@@ -3,8 +3,7 @@
 // Debe cargarse después de /admin-auth.js (ambos con defer) para que tpAdminAuth esté disponible.
 
 (function () {
-  // debug: imprimir versión para confirmar carga del script (quitá esto luego)
-  try { console.info('[admin-products] loaded at', new Date().toISOString()); } catch (e) { }
+  // (admin-products) script cargado
   // utilidades DOM
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -52,6 +51,25 @@
     return 'mi-tienda-demo';
   }
 
+  // helper para escapar HTML y construir árbol (reutilizable)
+  function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;" }[ch])); }
+
+  function buildTree(flat) {
+    const byId = new Map();
+    flat.forEach(c => byId.set(c.id, Object.assign({}, c, { children: [] })));
+    const roots = [];
+    for (const c of byId.values()) {
+      if (c.parentId) {
+        const p = byId.get(c.parentId);
+        if (p) p.children.push(c);
+        else roots.push(c);
+      } else roots.push(c);
+    }
+    function sortRec(nodes) { nodes.sort((a, b) => (a.name || '').localeCompare(b.name || '')); nodes.forEach(n => sortRec(n.children)); }
+    sortRec(roots);
+    return roots;
+  }
+
   async function __guard() {
     const m = await tpAdminAuth.me();
     if (!m?.user) location.href = '/admin/login';
@@ -63,9 +81,16 @@
   let pendingNewCatNames = [];
   let editingId = null;
 
+  // cache ligero de selectores para mejorar rendimiento
+  const cacheEl = {};
+  function getEl(sel) {
+    if (!cacheEl[sel]) cacheEl[sel] = document.querySelector(sel);
+    return cacheEl[sel];
+  }
+
   // Categorías (chips)
   function renderCatChips() {
-    const wrap = $('#catChips');
+    const wrap = getEl('#catChips') || $('#catChips');
     if (!wrap) return;
     wrap.innerHTML = selectedCatSlugs
       .map(
@@ -100,26 +125,65 @@
   }
 
   async function __pickExistingCats() {
+    // Abrir modal selector de categorías
     try {
       await __guard();
       const store = detectStoreSlug();
       const res = await tpAdminAuth.api(`/categories?store=${encodeURIComponent(store)}`);
       const list = Array.isArray(res?.categories) ? res.categories : [];
-      if (!list.length) {
-        toast('No hay categorías existentes');
-        return;
+      if (!list.length) { toast('No hay categorías existentes'); return; }
+
+      // construir árbol en el modal
+      const tree = buildTree(list);
+      const modal = document.getElementById('catModal');
+      const treeEl = document.getElementById('catModalTree');
+      const selEl = document.getElementById('catModalSelected');
+      if (!modal || !treeEl || !selEl) { toast('Error abriendo modal', 'err'); return; }
+
+      function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;" }[ch])); }
+      function renderNodeModal(cat) {
+        const hasChildren = Array.isArray(cat.children) && cat.children.length > 0;
+        const cb = `<label class=\"flex items-center gap-2\"><input type=\"checkbox\" data-cat-slug=\"${escapeHtml(cat.slug)}\"/> <span class=\"text-sm\">${escapeHtml(cat.name)}</span> <span class=\"text-xs text-[var(--muted)]\">(${escapeHtml(cat.slug)})</span></label>`;
+        if (!hasChildren) return `<li class=\"pl-2\">${cb}</li>`;
+        return `<li><details class=\"p-1\"><summary>${cb}</summary><ul class=\"ml-4 mt-1 space-y-1\">${cat.children.map(renderNodeModal).join('')}</ul></details></li>`;
       }
 
-      const names = list.map((c) => `${c.name} (${c.slug})`);
-      const choice = prompt(`Elegí una categoría existente (pegá el slug):\n\n${names.join('\n')}\n\nSlug:`);
-      const slug = (choice || '').trim();
-      if (!slug) return;
-      if (!selectedCatSlugs.includes(slug)) selectedCatSlugs.push(slug);
-      renderCatChips();
-    } catch (e) {
-      console.error(e);
-      toast('No se pudieron traer categorías', 'err');
-    }
+      treeEl.innerHTML = `<ul class="space-y-1">${tree.map(renderNodeModal).join('')}</ul>`;
+
+      function refreshSelected() {
+        const checks = Array.from(treeEl.querySelectorAll('input[type=checkbox][data-cat-slug]'));
+        const chosen = checks.filter(c => c.checked).map(c => c.getAttribute('data-cat-slug'));
+        selEl.innerHTML = chosen.map(s => `<span class="inline-flex items-center gap-2 px-2 py-1 rounded-lg bg-[var(--card-border)]/30"><span class="text-xs">${escapeHtml(s)}</span></span>`).join('');
+      }
+
+      treeEl.addEventListener('change', refreshSelected);
+
+      // mostrar modal
+      modal.classList.remove('hidden');
+
+      // hooks botones (resetear listeners clonando nodos para evitar duplicados)
+      let close = document.getElementById('catModalClose');
+      let cancel = document.getElementById('catModalCancel');
+      let confirm = document.getElementById('catModalConfirm');
+      let overlay = document.getElementById('catModalOverlay');
+
+      function closeModal() { modal.classList.add('hidden'); treeEl.innerHTML = ''; selEl.innerHTML = ''; }
+      function resetNode(el) { if (!el) return el; const n = el.cloneNode(true); el.parentNode.replaceChild(n, el); return n; }
+      close = resetNode(close); cancel = resetNode(cancel); confirm = resetNode(confirm); overlay = resetNode(overlay);
+
+      close?.addEventListener('click', closeModal);
+      cancel?.addEventListener('click', closeModal);
+      overlay?.addEventListener('click', closeModal);
+
+      confirm?.addEventListener('click', () => {
+        const checks = Array.from(treeEl.querySelectorAll('input[type=checkbox][data-cat-slug]'));
+        const chosen = checks.filter(c => c.checked).map(c => c.getAttribute('data-cat-slug'));
+        for (const s of chosen) { if (s && !selectedCatSlugs.includes(s)) selectedCatSlugs.push(s); }
+        renderCatChips();
+        closeModal();
+      });
+
+    } catch (e) { console.error(e); toast('No se pudieron traer categorías', 'err'); }
   }
 
   async function ensureCategoriesExist(storeSlug) {
@@ -138,22 +202,23 @@
 
   // Form crear/editar
   function fillForm(p) {
-  editingId = p?.id || null;
-  safeSet('#prodId', 'value', p?.id || '');
-  safeSet('[name="title"]', 'value', p?.title || '');
-  safeSet('[name="slug"]', 'value', p?.slug || '');
-  safeSet('[name="price"]', 'value', p?.price ?? '');
-  safeSet('[name="imageUrl"]', 'value', p?.imageUrl || '');
-  safeSet('[name="description"]', 'value', p?.description || '');
-  safeSet('[name="storeSlug"]', 'value', p?.store?.slug || detectStoreSlug() || 'mi-tienda-demo');
-  safeSet('[name="isFeatured"]', 'checked', !!p?.isFeatured);
+    editingId = p?.id || null;
+    safeSet('#prodId', 'value', p?.id || '');
+    safeSet('[name="title"]', 'value', p?.title || '');
+    safeSet('[name="slug"]', 'value', p?.slug || '');
+    safeSet('[name="price"]', 'value', p?.price ?? '');
+    safeSet('[name="imageUrl"]', 'value', p?.imageUrl || '');
+    safeSet('[name="description"]', 'value', p?.description || '');
+    safeSet('[name="storeSlug"]', 'value', p?.store?.slug || detectStoreSlug() || 'mi-tienda-demo');
+    safeSet('[name="isFeatured"]', 'checked', !!p?.isFeatured);
+    safeSet('[name="isOffer"]', 'checked', !!p?.isOffer);
 
     selectedCatSlugs = (p?.categories || []).map((c) => c.slug) || [];
     renderCatChips();
 
-  safeSet('#formTitle', 'textContent', editingId ? 'Editar producto' : 'Añadir producto');
-  safeSet('#formSubtitle', 'textContent', editingId ? 'Modificá y guardá los cambios.' : 'Completá los campos y guardá.');
-  safeSet('#submitBtn', 'textContent', editingId ? 'Actualizar' : 'Guardar');
+    safeSet('#formTitle', 'textContent', editingId ? 'Editar producto' : 'Añadir producto');
+    safeSet('#formSubtitle', 'textContent', editingId ? 'Modificá y guardá los cambios.' : 'Completá los campos y guardá.');
+    safeSet('#submitBtn', 'textContent', editingId ? 'Actualizar' : 'Guardar');
   }
 
   function __resetForm() {
@@ -182,7 +247,7 @@
     await __guard();
 
     const storeSlug = detectStoreSlug();
-    const hidden = document.getElementById('storeSlugHidden');
+    const hidden = getEl('#storeSlugHidden') || document.getElementById('storeSlugHidden');
     if (hidden) hidden.value = storeSlug;
 
     const form = ev.target;
@@ -195,6 +260,7 @@
     const description = (fd.get('description') || '').toString().trim() || null;
     const imageUrl = (fd.get('imageUrl') || '').toString().trim() || null;
     const isFeatured = fd.get('isFeatured') === 'on' || fd.get('isFeatured') === 'true';
+    const isOffer = fd.get('isOffer') === 'on' || fd.get('isOffer') === 'true';
     const categorySlugs = (typeof window.getSelectedCatSlugs === 'function') ? window.getSelectedCatSlugs() : (Array.isArray(window.selectedCatSlugs) ? window.selectedCatSlugs.slice() : selectedCatSlugs.slice());
 
     if (!title) {
@@ -214,7 +280,7 @@
       return false;
     }
 
-    const body = { title, slug, price, description, imageUrl, storeSlug, isFeatured, categorySlugs };
+    const body = { title, slug, price, description, imageUrl, storeSlug, isFeatured, isOffer, categorySlugs };
     console.log('[admin] payload /products', body);
 
     try {
@@ -247,18 +313,19 @@
   // Listado + acciones
   async function __loadList() {
     await __guard();
-    const store = ($('#storeFilter')?.value || detectStoreSlug() || '').trim();
-    const rows = $('#prodRows');
+    const store = ((getEl('#storeFilter')?.value) || detectStoreSlug() || '').trim();
+    const rows = getEl('#prodRows') || $('#prodRows');
     if (!store) {
-      rows.innerHTML = `<tr><td colspan="7" class="py-4 text-[var(--muted)]">Definí el <b>slug</b> de la tienda.</td></tr>`;
+      rows.innerHTML = `<tr><td colspan="8" class="py-4 text-[var(--muted)]">Definí el <b>slug</b> de la tienda.</td></tr>`;
       return;
     }
     try {
       rows.innerHTML = `<tr><td colspan="7" class="py-4 text-[var(--muted)]">Cargando…</td></tr>`;
+      rows.innerHTML = `<tr><td colspan="8" class="py-4 text-[var(--muted)]">Cargando…</td></tr>`;
       const res = await tpAdminAuth.api(`/products?store=${encodeURIComponent(store)}`);
       const list = Array.isArray(res?.products) ? res.products : [];
       if (!list.length) {
-        rows.innerHTML = `<tr><td colspan="7" class="py-4 text-[var(--muted)]">No hay productos.</td></tr>`;
+        rows.innerHTML = `<tr><td colspan="8" class="py-4 text-[var(--muted)]">No hay productos.</td></tr>`;
         return;
       }
 
@@ -266,6 +333,7 @@
         .map((p) => {
           const created = p.createdAt ? new Date(p.createdAt).toLocaleString('es-AR') : '-';
           const feat = !!p.isFeatured;
+          const off = !!p.isOffer;
           return `
             <tr class="border-b border-[var(--card-border)] hover:bg-[var(--card-border)]/10">
               <td class="py-2 pr-3">${p.imageUrl ? `<img src="${p.imageUrl}" class="w-8 h-8 object-cover rounded-md"/>` : ''}</td>
@@ -275,6 +343,9 @@
               <td class="py-2 pr-3 text-[var(--muted)]">${created}</td>
               <td class="py-2 pr-3 text-center">
                 <button class="text-xs px-2 py-1 rounded-md ${feat ? 'bg-emerald-600 text-white' : 'bg-[var(--card-border)]/50'}" onclick="__toggleFeatured('${p.id}', ${feat})">${feat ? 'Sí' : 'No'}</button>
+              </td>
+              <td class="py-2 pr-3 text-center">
+                <button class="text-xs px-2 py-1 rounded-md ${off ? 'bg-amber-500 text-white' : 'bg-[var(--card-border)]/50'}" onclick="__toggleOffer('${p.id}', ${off})">${off ? 'Oferta' : '—'}</button>
               </td>
               <td class="py-2 pr-1">
                 <div class="flex items-center gap-2 justify-end">
@@ -327,11 +398,23 @@
     }
   }
 
+  async function __toggleOffer(id, current) {
+    await __guard();
+    try {
+      await tpAdminAuth.api(`/products/${id}`, { method: 'PATCH', body: { isOffer: !current } });
+      await __loadList();
+    } catch (e) {
+      console.error(e);
+      toast('No se pudo cambiar oferta', 'err');
+    }
+  }
+
   // Exponer funciones globales usadas por el HTML
   window.__loadList = __loadList;
   window.__edit = __edit;
   window.__remove = __remove;
   window.__toggleFeatured = __toggleFeatured;
+  window.__toggleOffer = __toggleOffer;
   window.__resetForm = __resetForm;
   window.__catKeydown = __catKeydown;
   window.__pickExistingCats = __pickExistingCats;

@@ -3,18 +3,32 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
 
 <AdminLayout title="Productos – Admin">
-  <h1 class="text-3xl font-bold mb-6">Panel Admin — Productos</h1>
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">Panel Admin — Productos</h1>
+      <p class="text-sm text-[var(--muted)] mt-1">
+        Gestioná los productos de tu tienda de forma rápida y elegante.
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn-outline" onclick="__resetForm()">Nuevo producto</button
+      >
+      <button class="btn" onclick="__loadList()">Actualizar listado</button>
+    </div>
+  </div>
 
-  <div class="grid gap-6 lg:grid-cols-[520px_1fr] items-start">
+  <div class="space-y-10">
     <!-- Formulario (columna izquierda) -->
     <form
       id="prodForm"
-      class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 shadow-sm lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-auto"
+      class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 shadow-lg"
     >
-      <div class="mb-4">
-        <h2 id="formTitle" class="text-xl font-semibold">Añadir producto</h2>
-        <p id="formSubtitle" class="text-sm text-[var(--muted)]">
-          Completá los campos y guardá.
+      <div class="mb-5">
+        <h2 id="formTitle" class="text-xl font-semibold">
+          Añadir / editar producto
+        </h2>
+        <p id="formSubtitle" class="text-sm text-[var(--muted)] mt-1">
+          Rellená los datos principales. Los campos obligatorios están marcados.
         </p>
       </div>
 
@@ -28,79 +42,83 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
       <div class="space-y-4">
         <div>
-          <label class="text-sm block mb-1">Título</label>
+          <label class="text-sm block mb-2 font-medium"
+            >Título <span class="text-[var(--muted)] text-sm"
+              >(obligatorio)</span
+            ></label
+          >
           <input
             name="title"
             required
-            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+            class="w-full rounded-lg border border-[var(--card-border)] px-4 py-3 bg-white text-sm"
           />
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="text-sm block mb-1">Slug</label>
+            <label class="text-sm block mb-2 font-medium">Slug</label>
             <input
               name="slug"
               required
               placeholder="moto-g15"
-              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+              class="w-full rounded-lg border border-[var(--card-border)] px-4 py-3 bg-white text-sm"
             />
           </div>
           <div>
-            <label class="text-sm block mb-1">Precio (ARS)</label>
+            <label class="text-sm block mb-2 font-medium">Precio (ARS)</label>
             <input
               name="price"
               type="text"
               required
-              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+              class="w-full rounded-lg border border-[var(--card-border)] px-4 py-3 bg-white text-sm"
             />
           </div>
         </div>
 
         <div>
-          <label class="text-sm block mb-1">Imagen (URL)</label>
+          <label class="text-sm block mb-2 font-medium">Imagen (URL)</label>
           <input
             name="imageUrl"
-            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+            class="w-full rounded-lg border border-[var(--card-border)] px-4 py-3 bg-white text-sm"
           />
         </div>
 
         <div>
-          <label class="text-sm block mb-1">Descripción</label>
+          <label class="text-sm block mb-2 font-medium">Descripción</label>
           <textarea
             name="description"
-            rows="4"
-            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+            rows="5"
+            class="w-full rounded-lg border border-[var(--card-border)] px-4 py-3 bg-white text-sm"
           ></textarea>
         </div>
 
         <div>
-          <label class="text-sm block mb-1">Tienda (slug)</label>
+          <label class="text-sm block mb-2 font-medium">Tienda (slug)</label>
           <input
             name="storeSlug"
             required
             value="mi-tienda-demo"
-            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+            class="w-full rounded-lg border border-[var(--card-border)] px-4 py-3 bg-white text-sm"
           />
         </div>
 
         <div>
-          <label class="text-sm block mb-1">Categorías</label>
+          <label class="text-sm block mb-2 font-medium">Categorías</label>
           <div
             class="rounded-lg border border-[var(--card-border)] bg-white p-3"
           >
-            <div id="catChips" class="flex flex-wrap gap-2 mb-2"></div>
+            <div id="catChips" class="flex flex-wrap gap-2 mb-3"></div>
             <input
               id="catInput"
               type="text"
               placeholder="Escribí una categoría y presioná Enter"
-              class="w-full outline-none px-2 py-2"
+              class="w-full outline-none px-3 py-2 text-sm"
               onkeydown="__catKeydown(event)"
             />
-            <div class="mt-2 flex gap-2">
+            <div class="mt-3 flex gap-2">
               <button
                 type="button"
-                class="btn-outline text-xs"
+                class="btn-outline text-sm"
                 onclick="__pickExistingCats()">Elegir existentes</button
               >
             </div>
@@ -110,22 +128,74 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           </div>
         </div>
 
+        <!-- Modal selector de categorías -->
+        <div
+          id="catModal"
+          class="fixed inset-0 z-50 hidden items-center justify-center"
+        >
+          <div class="absolute inset-0 bg-black/50" id="catModalOverlay"></div>
+          <div
+            class="relative w-[min(900px,95%)] max-h-[80vh] overflow-auto bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 z-10"
+          >
+            <header class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold">Elegir categorías</h3>
+              <button type="button" class="btn-white btn-sm" id="catModalClose"
+                >Cerrar</button
+              >
+            </header>
+            <div class="grid gap-4 lg:grid-cols-[360px,1fr]">
+              <aside class="border-r pr-4">
+                <p class="text-xs text-[var(--muted)] mb-2">
+                  Seleccioná una o varias categorías
+                </p>
+                <div
+                  id="catModalTree"
+                  class="space-y-1 overflow-auto max-h-[60vh]"
+                >
+                </div>
+              </aside>
+              <section>
+                <p class="text-sm text-[var(--muted)] mb-3">
+                  Categorías seleccionadas:
+                </p>
+                <div id="catModalSelected" class="flex flex-wrap gap-2 mb-4">
+                </div>
+                <div class="flex gap-2">
+                  <button id="catModalConfirm" class="btn"
+                    >Confirmar selección</button
+                  >
+                  <button id="catModalCancel" class="btn-white">Cancelar</button
+                  >
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+
         <div class="flex items-center gap-4">
           <label class="inline-flex items-center gap-2">
             <input type="checkbox" name="isFeatured" />
             <span class="text-sm">Destacado</span>
           </label>
+          <label class="inline-flex items-center gap-2">
+            <input type="checkbox" name="isOffer" />
+            <span class="text-sm">En oferta</span>
+          </label>
           <div class="ml-auto flex gap-2">
-            <button type="button" class="btn-outline" onclick="__resetForm()"
-              >Limpiar</button
+            <button
+              type="button"
+              class="btn-outline px-4 py-2 text-sm"
+              onclick="__resetForm()">Limpiar</button
             >
-            <button id="submitBtn" type="submit" class="btn">Guardar</button>
+            <button id="submitBtn" type="submit" class="btn px-4 py-2 text-sm"
+              >Guardar producto</button
+            >
           </div>
         </div>
       </div>
     </form>
 
-    <!-- Listado (columna derecha) -->
+    <!-- Listado (debajo) -->
     <section class="space-y-4">
       <div class="flex items-center justify-between">
         <div>
@@ -134,36 +204,35 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             Editá, destacá o eliminá desde acá.
           </p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
           <input
             id="storeFilter"
             value="mi-tienda-demo"
-            class="rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
+            class="rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-sm"
           />
-          <button class="btn-outline text-sm" onclick="__loadList()"
-            >Actualizar</button
-          >
+          <button class="btn-outline" onclick="__loadList()">Actualizar</button>
         </div>
       </div>
 
       <div
         class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-4 shadow-sm overflow-x-auto"
       >
-        <table class="w-full text-sm min-w-[720px]">
+        <table class="w-full text-sm min-w-0 table-auto">
           <thead>
             <tr class="text-left border-b border-[var(--card-border)]">
-              <th class="py-2 pr-3 w-[48px]"></th>
-              <th class="py-2 pr-3">Título</th>
-              <th class="py-2 pr-3">Slug</th>
-              <th class="py-2 pr-3 text-right">Precio</th>
-              <th class="py-2 pr-3">Creado</th>
-              <th class="py-2 pr-3 text-center">Destacado</th>
-              <th class="py-2 pr-3 text-right">Acciones</th>
+              <th class="py-3 pr-4 w-[56px]"></th>
+              <th class="py-3 pr-4">Título</th>
+              <th class="py-3 pr-4">Slug</th>
+              <th class="py-3 pr-4 text-right">Precio</th>
+              <th class="py-3 pr-4">Creado</th>
+              <th class="py-3 pr-4 text-center">Destacado</th>
+              <th class="py-3 pr-4 text-center">Oferta</th>
+              <th class="py-3 pr-4 text-right">Acciones</th>
             </tr>
           </thead>
           <tbody id="prodRows">
             <tr
-              ><td colspan="7" class="py-6 text-[var(--muted)]">Cargando…</td
+              ><td colspan="8" class="py-8 text-[var(--muted)]">Cargando…</td
               ></tr
             >
           </tbody>

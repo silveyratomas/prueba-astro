@@ -13,6 +13,8 @@ productsRouter.get('/', async (req, res) => {
   try {
     const storeSlug = String(req.query.store || '').trim();
     const catSlug = req.query.cat ? String(req.query.cat).trim() : null;
+    const offerOnly = String(req.query.offer || '') === 'true';
+    const offerCat = req.query.offerCat ? String(req.query.offerCat).trim() : null;
 
     if (!storeSlug) return res.status(400).json({ error: 'store (slug) requerido' });
 
@@ -26,6 +28,13 @@ productsRouter.get('/', async (req, res) => {
     if (catSlug) {
       // filtra por categoría vinculada
       where.categoryLinks = { some: { category: { slug: catSlug } } };
+    }
+    if (offerOnly) {
+      where.isOffer = true;
+    }
+    if (offerCat) {
+      // productos vinculados a categorías marcadas como oferta
+      where.categoryLinks = { some: { category: { slug: offerCat, isOffer: true } } };
     }
 
     const products = await prisma.product.findMany({
@@ -51,8 +60,6 @@ productsRouter.get('/', async (req, res) => {
  */
 productsRouter.post('/', requireAuth as any, async (req: any, res) => {
   try {
-    console.log('[api] POST /products headers.content-type=', req.headers['content-type']);
-    console.log('[api] POST /products raw body=', req.body);
     const {
       title,
       slug,
@@ -61,6 +68,7 @@ productsRouter.post('/', requireAuth as any, async (req: any, res) => {
       imageUrl,
       storeSlug,
       isFeatured,
+      isOffer,
       categorySlugs = [],
     } = req.body ?? {};
 
@@ -83,7 +91,8 @@ productsRouter.post('/', requireAuth as any, async (req: any, res) => {
 
     // Crear producto (Decimal como string para seguridad regional)
     const created = await prisma.product.create({
-      data: {
+      // cast a any porque el cliente Prisma puede requerir regeneración tras migración
+      data: ({
         storeId: store.id,
         title: String(title).trim(),
         slug: String(slug).trim(),
@@ -91,7 +100,8 @@ productsRouter.post('/', requireAuth as any, async (req: any, res) => {
         description: description ? String(description) : null,
         imageUrl: imageUrl ? String(imageUrl) : null,
         isFeatured: Boolean(isFeatured),
-      },
+        isOffer: Boolean(isOffer),
+      } as any),
     });
 
     // Vincular categorías si se enviaron
@@ -142,6 +152,7 @@ productsRouter.patch('/:id', requireAuth as any, async (req, res) => {
     if (req.body.description != null) data.description = req.body.description ? String(req.body.description) : null;
     if (req.body.imageUrl != null) data.imageUrl = req.body.imageUrl ? String(req.body.imageUrl) : null;
     if (req.body.isFeatured != null) data.isFeatured = Boolean(req.body.isFeatured);
+    if (req.body.isOffer != null) data.isOffer = Boolean(req.body.isOffer);
 
     const updated = await prisma.product.update({
       where: { id },

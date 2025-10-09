@@ -1,16 +1,20 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
-import { products } from "../../data/products"; // para selector de destacados
 ---
 
 <AdminLayout title="Panel de Administración">
-  <div class="grid lg:grid-cols-[520px,1fr] gap-6 items-start">
-    <!-- Columna izquierda: Formulario -->
+  <div class="grid lg:grid-cols-[1fr,420px] gap-6 items-start">
+    <!-- Izquierda: Ajustes claros y lenguaje simple -->
     <section
-      class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4"
+      class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-6"
     >
-      <header class="flex items-center justify-between gap-3 mb-3">
-        <h1 class="text-xl font-bold">Ajustes de la tienda</h1>
+      <header class="flex items-center justify-between">
+        <div>
+          <h1 class="text-xl font-bold">Ajustes de la tienda</h1>
+          <p class="text-sm text-[var(--muted)]">
+            Configurá la información que verán tus clientes en la tienda.
+          </p>
+        </div>
         <span
           id="statusBadge"
           class="text-xs rounded-full px-2 py-1 border border-[var(--card-border)] text-[var(--muted)]"
@@ -20,203 +24,174 @@ import { products } from "../../data/products"; // para selector de destacados
 
       <form
         id="cfgForm"
-        class="grid gap-6"
+        class="grid gap-4"
         onsubmit="event.preventDefault(); window.__adm.saveDraft();"
       >
-        <!-- Identidad -->
         <div>
-          <h2 class="font-semibold mb-2">Identidad</h2>
-          <label class="text-sm">Nombre de la tienda</label>
+          <label class="text-sm font-medium">Nombre de la tienda</label>
           <input
             id="storeName"
-            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+            placeholder="Ej: La Tienda de Juan"
+            class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white"
           />
           <p class="text-xs text-[var(--muted)] mt-1">
-            Se muestra en el header.
+            Nombre visible para todas las personas.
           </p>
         </div>
 
-        <!-- Tema -->
         <div>
-          <h2 class="font-semibold mb-2">Tema</h2>
+          <label class="text-sm font-medium">Color del tema</label>
           <select
             id="themeClass"
-            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+            class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white"
           >
-            <option value="">Default</option>
+            <option value="">Predeterminado</option>
             <option value="theme-profesional">Profesional (azul/verde)</option>
             <option value="theme-azul">Azul</option>
             <option value="theme-naranja-profesional">Naranja</option>
           </select>
           <p class="text-xs text-[var(--muted)] mt-1">
-            Colores de header, botones y fondos.
+            Cambia la paleta de colores del sitio.
           </p>
         </div>
 
-        <!-- Home / Banner -->
         <div>
-          <h2 class="font-semibold mb-2">Home / Banner</h2>
-          <label class="text-sm">URL de imagen (fondo del hero)</label>
+          <label class="text-sm font-medium">Imagen principal (URL)</label>
           <input
             id="heroImage"
             placeholder="/imgs/tu-banner.jpg"
-            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+            class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white"
           />
-          <label class="text-sm mt-3 block">Tagline (subtítulo)</label>
-          <input
-            id="tagline"
-            placeholder="Texto corto debajo del título"
-            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-          />
-        </div>
-
-        <!-- Home / CTA -->
-        <div>
-          <h2 class="font-semibold mb-2">Botones del Home (CTA)</h2>
-          <div class="grid md:grid-cols-3 gap-4">
-            <div>
-              <label class="text-xs">CTA 1 – texto</label>
-              <input
-                id="cta1_text"
-                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-              />
-              <label class="text-xs mt-2 block">CTA 1 – link</label>
-              <input
-                id="cta1_href"
-                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-              />
-            </div>
-            <div>
-              <label class="text-xs">CTA 2 – texto</label>
-              <input
-                id="cta2_text"
-                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-              />
-              <label class="text-xs mt-2 block">CTA 2 – link</label>
-              <input
-                id="cta2_href"
-                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-              />
-            </div>
-            <div>
-              <label class="text-xs">CTA 3 – texto</label>
-              <input
-                id="cta3_text"
-                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-              />
-              <label class="text-xs mt-2 block">CTA 3 – link</label>
-              <input
-                id="cta3_href"
-                class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-              />
-            </div>
-          </div>
           <p class="text-xs text-[var(--muted)] mt-1">
-            Editá textos y destinos de los botones principales.
+            Imagen grande que se ve en la parte superior de la página.
           </p>
         </div>
 
-        <!-- Destacados -->
         <div>
-          <h2 class="font-semibold mb-2">Productos destacados</h2>
+          <label class="text-sm font-medium">Frase corta</label>
+          <input
+            id="tagline"
+            placeholder="Ej: Envío gratis a todo el país"
+            class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white"
+          />
+        </div>
+
+        <div>
+          <label class="text-sm font-medium">Productos en la portada</label>
           <select
             id="featured"
             multiple
-            class="w-full h-40 rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+            class="mt-2 w-full h-40 rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
           >
-            {products.map((p) => <option value={p.slug}>{p.title}</option>)}
+            <!-- se carga dinámicamente desde la API -->
           </select>
           <p class="text-xs text-[var(--muted)] mt-1">
-            Tip: Ctrl/Cmd + click para seleccionar varios.
+            Seleccioná los productos que querés mostrar primero en la tienda.
           </p>
         </div>
 
-        <!-- Footer -->
         <div>
-          <h2 class="font-semibold mb-2">Footer</h2>
-          <label class="text-sm">Texto de pie</label>
+          <label class="text-sm font-medium">Texto del pie de página</label>
           <input
             id="footerText"
             placeholder="© 2025 MiTienda — Todos los derechos reservados"
-            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+            class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white"
           />
         </div>
 
-        <!-- Acciones -->
-        <div class="flex flex-wrap gap-2 pt-2">
-          <button type="submit" class="btn">Guardar borrador</button>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="btn">Guardar cambios</button>
           <button
             type="button"
             class="btn-white"
-            onclick="window.__adm.publish()">Publicar</button
+            onclick="window.__adm.publish()">Publicar ahora</button
           >
           <button
             type="button"
             class="btn-white"
-            onclick="window.__adm.revertToPublished()"
-            >Revertir a publicado</button
+            onclick="window.__adm.revertToPublished()">Revertir</button
           >
-
-          <span class="flex-1"></span>
-
-          <button
-            type="button"
-            class="btn-white"
-            onclick="window.__adm.undo()"
-            title="Ctrl+Z">Deshacer</button
-          >
-          <button
-            type="button"
-            class="btn-white"
-            onclick="window.__adm.redo()"
-            title="Ctrl+Shift+Z">Rehacer</button
-          >
-          <button
-            type="button"
-            class="btn-white"
-            onclick="window.__adm.exportJSON()">Exportar</button
-          >
-
-          <label class="btn-white cursor-pointer">
-            Importar
-            <input
-              id="importFile"
-              type="file"
-              accept="application/json"
-              class="hidden"
-            />
-          </label>
         </div>
       </form>
     </section>
 
-    <!-- Columna derecha: Vista previa -->
-    <section
-      class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl overflow-hidden"
-    >
-      <div
-        class="flex items-center justify-between gap-3 px-4 py-3 border-b border-[var(--card-border)]"
+    <!-- Derecha: Vista previa y gestión de categorías -->
+    <aside class="space-y-6">
+      <section
+        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4"
       >
-        <div class="flex items-center gap-2">
-          <strong>Vista previa</strong>
-          <span class="text-xs text-[var(--muted)]"
-            >Borrador (no afecta público)</span
-          >
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <strong>Vista previa</strong>
+            <div class="text-xs text-[var(--muted)]">
+              Borrador (no afecta al público)
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn-white" onclick="window.__adm.refreshPreview()"
+              >Actualizar</button
+            >
+            <a class="btn-white" href="/?preview=1" target="_blank">Abrir</a>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          <button class="btn-white" onclick="window.__adm.refreshPreview()"
-            >Actualizar</button
-          >
-          <a class="btn-white" href="/?preview=1" target="_blank"
-            >Abrir en nueva pestaña ↗</a
-          >
-        </div>
-      </div>
-      <iframe
-        id="previewFrame"
-        src="/?preview=1"
-        class="w-full h-[70vh] bg-white"></iframe>
-    </section>
+        <iframe
+          id="previewFrame"
+          src="/?preview=1"
+          class="w-full h-[48vh] bg-white"></iframe>
+      </section>
+
+      <section
+        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4"
+      >
+        <h3 class="font-semibold mb-2">Categorías</h3>
+        <p class="text-xs text-[var(--muted)] mb-3">
+          Creá, editá y borrá categorías para organizar tus productos.
+        </p>
+
+        <form id="catForm" class="space-y-2">
+          <input
+            id="storeFilter"
+            name="storeSlug"
+            placeholder="Slug de la tienda"
+            value="mi-tienda-demo"
+            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
+          />
+          <input
+            name="name"
+            placeholder="Nombre de la categoría"
+            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
+          />
+          <input
+            name="slug"
+            placeholder="slug-de-la-categoria"
+            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
+          />
+          <div class="flex gap-2">
+            <input
+              name="parentSlug"
+              placeholder="slug de categoría padre (opcional)"
+              class="flex-1 rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
+            />
+            <label class="inline-flex items-center gap-2">
+              <input type="checkbox" name="isOffer" />
+              <span class="text-sm">En oferta</span>
+            </label>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn" type="submit">Crear categoría</button>
+            <button
+              class="btn-outline"
+              type="button"
+              onclick="window.__loadList()">Listar</button
+            >
+          </div>
+        </form>
+
+        <ul id="catList" class="mt-3 space-y-2 text-sm text-[var(--muted)]">
+          <li>Cargando categorías…</li>
+        </ul>
+      </section>
+    </aside>
   </div>
 
   <!-- Script de administración profesional (borrador/publicado/preview/history) -->
@@ -319,18 +294,18 @@ import { products } from "../../data/products"; // para selector de destacados
           tagline: $("tagline").value.trim(),
           cta: {
             one: {
-              text: $("cta1_text").value.trim(),
-              href: $("cta1_href").value.trim(),
+              text: $("cta1_text")?.value?.trim() || "",
+              href: $("cta1_href")?.value?.trim() || "",
               show: true,
             },
             two: {
-              text: $("cta2_text").value.trim(),
-              href: $("cta2_href").value.trim(),
+              text: $("cta2_text")?.value?.trim() || "",
+              href: $("cta2_href")?.value?.trim() || "",
               show: true,
             },
             three: {
-              text: $("cta3_text").value.trim(),
-              href: $("cta3_href").value.trim(),
+              text: $("cta3_text")?.value?.trim() || "",
+              href: $("cta3_href")?.value?.trim() || "",
               show: true,
             },
           },
@@ -465,5 +440,48 @@ import { products } from "../../data/products"; // para selector de destacados
         setStatus("Borrador cargado " + stamp());
       })();
     })();
+  </script>
+
+  <script>
+    // Poblar select #featured con productos desde la API
+    //@ts-nocheck
+    (async function () {
+      try {
+        const sel = document.getElementById("featured");
+        if (!sel) return;
+        const res = await fetch(`/api/products?store=mi-tienda-demo`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const list = Array.isArray(data?.products) ? data.products : [];
+        sel.innerHTML = list
+          .map((p) => `<option value="${p.slug}">${p.title}</option>`)
+          .join("");
+      } catch (e) {
+        console.warn(e);
+      }
+    })();
+  </script>
+
+  <script>
+    // Asegurar que admin-categories.js esté cargado y disponible.
+    //@ts-nocheck
+    // Esto evita que botones inline fallen si por algún motivo el script no se registró.
+    document.addEventListener("DOMContentLoaded", function () {
+      if (typeof window.__loadList === "function") return;
+      const s = document.createElement("script");
+      s.src = "/admin-categories.js";
+      s.defer = true;
+      s.onload = function () {
+        try {
+          if (typeof window.__loadList === "function") window.__loadList();
+        } catch (e) {
+          console.warn("Error ejecutando __loadList tras cargar script", e);
+        }
+      };
+      s.onerror = function () {
+        console.error("No se pudo cargar /admin-categories.js");
+      };
+      document.head.appendChild(s);
+    });
   </script>
 </AdminLayout>
