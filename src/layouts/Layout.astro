@@ -105,8 +105,11 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
           </span>
         </div>
 
-        <!-- Links usuario -->
-        <nav class="hidden md:flex items-center gap-4 text-sm">
+        <!-- Links usuario (admin) - hidden for shop customers to avoid duplication -->
+        <nav
+          class="hidden md:flex items-center gap-4 text-sm"
+          style="display:none !important;"
+        >
           <a id="linkCreate" href="/cuenta/registrar" class="hover:underline"
             >Creá tu cuenta</a
           >
@@ -126,6 +129,25 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
             onclick="window.tpUser?.logout(); location.reload();">Salir</button
           >
           <a href="/comprar" class="hover:underline">Mis compras</a>
+        </nav>
+
+        <!-- Links cliente (shop) -->
+        <nav class="hidden md:flex items-center gap-4 text-sm">
+          <a id="shopCreate" href="/cuenta/registro" class="hover:underline"
+            >Registrarse</a
+          >
+          <a id="shopLogin" href="/cuenta/login" class="hover:underline"
+            >Entrar</a
+          >
+          <a
+            id="shopAccount"
+            href="/cuenta"
+            class="hover:underline"
+            style="display:none;">Mi cuenta</a
+          >
+          <button id="shopLogout" class="hover:underline" style="display:none;"
+            >Salir</button
+          >
         </nav>
 
         <!-- Mini-carrito -->
@@ -225,7 +247,6 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
         <nav class="flex items-center gap-4 overflow-x-auto">
           <a href="/listado_box" class="hover:underline">Categorías</a>
           <a href="/ofertas" class="hover:underline">Ofertas</a>
-          <a href="#" class="hover:underline">Cupones</a>
           <a href="/listado_tablas" class="hover:underline">Listado (tabla)</a>
           <a href="/comprar" class="hover:underline">Comprar</a>
         </nav>
@@ -362,6 +383,8 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
 
         window.addEventListener("storage", renderMiniCart);
         window.addEventListener("focus", renderMiniCart);
+        // listen to same-window cart changes dispatched by cart.js
+        window.addEventListener("tp:cart:changed", renderMiniCart);
         renderMiniCart();
       });
 
@@ -429,15 +452,76 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
       });
     </script>
     <!-- JS de usuarios (DEMO) -->
-    <script src="/user.js" defer></script>
+    <script src="/shop-auth.js" defer></script>
     <script>
       // @ts-nocheck
       document.addEventListener("DOMContentLoaded", () => {
+        // admin user links
         const linkCreate = document.getElementById("linkCreate");
         const linkLogin = document.getElementById("linkLogin");
         const linkAccount = document.getElementById("linkAccount");
         const linkLogout = document.getElementById("linkLogout");
+        // shop (customer) links
+        const shopCreate = document.getElementById("shopCreate");
+        const shopLogin = document.getElementById("shopLogin");
+        const shopAccount = document.getElementById("shopAccount");
+        const shopLogout = document.getElementById("shopLogout");
+
         const brandHeader = document.getElementById("brandNameHeader");
+        // create avatar placeholder
+        const shopAvatarId = "shopAvatarBtn";
+
+        function refreshShopUI() {
+          const token = window.shopAuth?.getToken?.();
+          if (!token) {
+            // not logged as shop customer
+            if (shopCreate) shopCreate.style.display = "";
+            if (shopLogin) shopLogin.style.display = "";
+            if (shopAccount) shopAccount.style.display = "none";
+            if (shopLogout) shopLogout.style.display = "none";
+            const existing = document.getElementById(shopAvatarId);
+            if (existing) existing.remove();
+            return;
+          }
+          // logged: hide create/login
+          if (shopCreate) shopCreate.style.display = "none";
+          if (shopLogin) shopLogin.style.display = "none";
+          if (shopAccount) shopAccount.style.display = "";
+          if (shopLogout) shopLogout.style.display = "";
+          // try to add avatar button if not exists
+          if (!document.getElementById(shopAvatarId)) {
+            const btn = document.createElement("button");
+            btn.id = shopAvatarId;
+            btn.className =
+              "ml-2 rounded-full w-8 h-8 grid place-items-center bg-[var(--muted)] text-white";
+            btn.textContent = "?";
+            btn.onclick = () => {
+              window.location.href = "/cuenta";
+            };
+            document.querySelector("header .container")?.appendChild(btn);
+          }
+          // asynchronously try to get customer name
+          (async () => {
+            try {
+              const c = await shopAuth.me();
+              if (c && c.name) {
+                if (brandHeader)
+                  brandHeader.textContent =
+                    c.name.split(" ")[0] + " – TuTienda";
+                const btn = document.getElementById(shopAvatarId);
+                if (btn && c.avatarUrl) {
+                  btn.textContent = "";
+                  const img = document.createElement("img");
+                  img.src = c.avatarUrl;
+                  img.alt = c.name || "avatar";
+                  img.className = "w-8 h-8 rounded-full object-cover";
+                  btn.innerHTML = "";
+                  btn.appendChild(img);
+                }
+              }
+            } catch {}
+          })();
+        }
 
         function refreshUserUI() {
           const u = window.tpUser?.get?.();
@@ -454,7 +538,20 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
         }
 
         refreshUserUI();
+        refreshShopUI();
         window.addEventListener("tpuser", refreshUserUI);
+        window.addEventListener("shop:user", refreshShopUI);
+        // hook shop logout button
+        const shopLogoutBtn = document.getElementById("shopLogout");
+        if (shopLogoutBtn) {
+          shopLogoutBtn.addEventListener("click", async () => {
+            try {
+              await shopAuth.logout();
+            } catch {}
+            refreshShopUI();
+            location.reload();
+          });
+        }
       });
     </script>
 
@@ -498,7 +595,6 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
         <nav class="grid gap-2 text-sm">
           <a class="hover:underline" href="/listado_box">Categorías</a>
           <a class="hover:underline" href="#">Ofertas</a>
-          <a class="hover:underline" href="#">Cupones</a>
           <a class="hover:underline" href="/listado_tablas">Listado (tabla)</a>
           <a class="hover:underline" href="/comprar">Comprar</a>
           <a class="hover:underline" href="/admin/login"

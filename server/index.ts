@@ -5,6 +5,8 @@ import { PrismaClient } from '@prisma/client';
 import { authRouter } from './routes/auth';
 import { productsRouter } from './routes/products';
 import { categoriesRouter } from './routes/categories';
+import debugRouter from './routes/debug';
+import shopRouter from './routes/shop-auth';
 
 const app = express();
 const prisma = new PrismaClient(); // <- ok dejarlo aunque no se use acá
@@ -39,6 +41,11 @@ app.get('/api/health', (_req, res) =>
 app.use('/api/auth', authRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/categories', categoriesRouter);
+app.use('/api/shop', shopRouter);
+
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api/debug', debugRouter);
+}
 
 // (opcional, seguro en Express 5) 404 dentro de /api SIN comodines
 // app.use('/api', (_req, res) => res.status(404).json({ error: 'not_found' }));

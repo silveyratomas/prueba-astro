@@ -1,0 +1,192 @@
+---
+import "../../styles/global.css";
+---
+
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <title>Mi cuenta – Tienda</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body class="min-h-screen bg-[var(--surface)] text-[var(--text)] py-12">
+        <main class="container mx-auto px-4 max-w-4xl">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-1">
+                    <div
+                        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6"
+                    >
+                        <div class="flex items-center gap-3 mb-4">
+                            <div
+                                id="avatar"
+                                class="w-12 h-12 rounded-full bg-[var(--muted)] grid place-items-center text-white"
+                            >
+                                ?
+                            </div>
+                            <div>
+                                <div id="accName" class="font-semibold">
+                                    Usuario
+                                </div>
+                                <div
+                                    id="accEmail"
+                                    class="text-sm text-[var(--muted)]"
+                                >
+                                    email@ejemplo.com
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <a href="/cuenta" class="block">Perfil</a>
+                            <a href="/comprar" class="block">Mis compras</a>
+                            <button
+                                id="logoutBtn"
+                                class="btn-outline w-full mt-3"
+                                >Cerrar sesión</button
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <div
+                        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 mb-6"
+                    >
+                        <h2 class="text-lg font-bold mb-3">Perfil</h2>
+                        <form
+                            id="profileForm"
+                            onsubmit="saveProfile(event)"
+                            class="space-y-4"
+                        >
+                            <label class="block text-sm"
+                                >Email
+                                <input
+                                    name="email"
+                                    id="email"
+                                    readonly
+                                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-gray-100"
+                                />
+                            </label>
+                            <label class="block text-sm"
+                                >Nombre
+                                <input
+                                    name="name"
+                                    id="name"
+                                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                />
+                            </label>
+                            <label class="block text-sm"
+                                >Teléfono
+                                <input
+                                    name="phone"
+                                    id="phone"
+                                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                />
+                            </label>
+                            <label class="block text-sm"
+                                >Dirección
+                                <input
+                                    name="address"
+                                    id="address"
+                                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                />
+                            </label>
+                            <div class="flex gap-3">
+                                <button class="btn">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div
+                        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6"
+                    >
+                        <h2 class="text-lg font-bold mb-3">
+                            Historial de compras
+                        </h2>
+                        <div id="ordersWrap">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="/shop-auth.js" defer></script>
+        <script>
+            // @ts-nocheck
+            async function loadAccount() {
+                const c = await shopAuth.me();
+                if (!c) return (location.href = "/cuenta/login");
+                document.getElementById("accName").textContent =
+                    c.name || "Cliente";
+                document.getElementById("accEmail").textContent = c.email || "";
+                document.getElementById("name").value = c.name || "";
+                document.getElementById("email").value = c.email || "";
+                // try to fetch orders
+                try {
+                    const qs =
+                        new URLSearchParams(location.search).get("store") ||
+                        new URL(location).pathname.split("/")[2] ||
+                        "";
+                    const res = await fetch(
+                        "/api/shop/orders?store=" + encodeURIComponent(qs),
+                        {
+                            headers: {
+                                Authorization: "Bearer " + shopAuth.getToken(),
+                            },
+                        },
+                    );
+                    const j = await res.json();
+                    const wrap = document.getElementById("ordersWrap");
+                    const orders = j.orders || [];
+                    if (!orders.length) {
+                        wrap.innerHTML =
+                            '<div class="text-sm text-[var(--muted)]">Sin compras aún.</div>';
+                    } else {
+                        wrap.innerHTML =
+                            '<table class="w-full text-sm"><thead><tr><th>Fecha</th><th>Total</th><th>Estado</th></tr></thead><tbody>' +
+                            orders
+                                .map(
+                                    (o) =>
+                                        `<tr><td>${new Date(o.createdAt).toLocaleString()}</td><td>${o.total}</td><td>${o.status}</td></tr>`,
+                                )
+                                .join("") +
+                            "</tbody></table>";
+                    }
+                } catch (e) {
+                    document.getElementById("ordersWrap").textContent =
+                        "No se pudieron cargar las compras.";
+                }
+            }
+
+            async function saveProfile(e) {
+                e.preventDefault();
+                const body = {
+                    name: document.getElementById("name").value.trim(),
+                    phone: document.getElementById("phone").value.trim(),
+                    address: document.getElementById("address").value.trim(),
+                };
+                try {
+                    const res = await fetch("/api/shop/account", {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: "Bearer " + shopAuth.getToken(),
+                        },
+                        body: JSON.stringify(body),
+                    });
+                    const j = await res.json();
+                    alert("Guardado");
+                } catch (e) {
+                    alert("Error al guardar");
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                loadAccount();
+                document
+                    .getElementById("logoutBtn")
+                    .addEventListener("click", async () => {
+                        await shopAuth.logout();
+                        location.href = "/";
+                    });
+            });
+        </script>
+    </body>
+</html>

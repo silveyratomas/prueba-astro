@@ -1,0 +1,89 @@
+---
+import "../../styles/global.css";
+---
+
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <title>Registrarse – Tienda</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body
+        class="min-h-screen bg-[var(--surface)] text-[var(--text)] flex items-center justify-center py-12"
+    >
+        <main class="w-full max-w-md">
+            <div
+                class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-8 shadow-lg"
+            >
+                <h1 class="text-2xl font-bold mb-4">Crear cuenta</h1>
+                <div id="formError" class="hidden text-sm text-red-600 mb-3">
+                </div>
+                <form
+                    id="regForm"
+                    onsubmit="handleRegister(event)"
+                    class="space-y-4"
+                >
+                    <label class="block text-sm"
+                        >Nombre completo
+                        <input
+                            name="name"
+                            type="text"
+                            required
+                            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                        />
+                    </label>
+                    <label class="block text-sm"
+                        >Email
+                        <input
+                            name="email"
+                            type="email"
+                            required
+                            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                        />
+                    </label>
+                    <label class="block text-sm"
+                        >Contraseña
+                        <input
+                            name="pass"
+                            type="password"
+                            minlength="6"
+                            required
+                            class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                        />
+                    </label>
+                    <!-- store slug removed for simplified UX -->
+                    <button id="regBtn" class="btn w-full">Crear cuenta</button>
+                </form>
+                <div class="mt-4 text-sm text-[var(--muted)]">
+                    ¿Ya tenés cuenta? <a href="/cuenta/login" class="underline"
+                        >Entrar</a
+                    >
+                </div>
+            </div>
+        </main>
+
+        <script src="/shop-auth.js" defer></script>
+        <script>
+            // @ts-nocheck
+            async function handleRegister(e) {
+                e.preventDefault();
+                const f = e.target;
+                const name = f.name.value.trim();
+                const email = f.email.value.trim();
+                const pass = f.pass.value.trim();
+                try {
+                    await shopAuth.register({
+                        email,
+                        password: pass,
+                        name,
+                    });
+                    location.href = "/cuenta";
+                } catch (err) {
+                    const el = document.getElementById("formError");
+                    el.textContent = err.message || "Error al registrar";
+                    el.classList.remove("hidden");
+                }
+            }
+        </script>
+    </body>
+</html>

@@ -1,6 +1,6 @@
---- 
-import "../../styles/global.css"; 
---- 
+---
+import "../../styles/global.css";
+---
 
 <html lang="es">
   <head>
@@ -11,42 +11,75 @@ import "../../styles/global.css";
   <body class="min-h-screen bg-[var(--surface)] text-[var(--text)]">
     <!-- Formulario de perfil -->
     <div class="flex justify-center items-center py-12">
-      <form class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-8 space-y-6 w-full max-w-lg shadow-lg"
-            onsubmit="event.preventDefault(); __saveProfile(this);">
-        <h1 class="text-2xl font-bold text-center text-[var(--text)]">Mi Cuenta</h1>
+      <form
+        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-8 space-y-6 w-full max-w-lg shadow-lg"
+        onsubmit="event.preventDefault(); __saveProfile(this);"
+      >
+        <h1 class="text-2xl font-bold text-center text-[var(--text)]">
+          Mi Cuenta
+        </h1>
 
         <!-- Nombre y Apellido -->
         <div>
-          <label class="text-sm font-medium text-[var(--text)]" for="name">Nombre y Apellido</label>
-          <input name="name" id="name" type="text" required
-                 class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-[var(--text)]" />
+          <label class="text-sm font-medium text-[var(--text)]" for="name"
+            >Nombre y Apellido</label
+          >
+          <input
+            name="name"
+            id="name"
+            type="text"
+            required
+            class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-[var(--text)]"
+          />
         </div>
 
         <!-- E-mail -->
         <div>
-          <label class="text-sm font-medium text-[var(--text)]" for="email">E-mail</label>
-          <input name="email" id="email" type="email" required
-                 class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-[var(--text)]" />
+          <label class="text-sm font-medium text-[var(--text)]" for="email"
+            >E-mail</label
+          >
+          <input
+            name="email"
+            id="email"
+            type="email"
+            required
+            class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-[var(--text)]"
+          />
         </div>
 
         <!-- Teléfono -->
         <div>
-          <label class="text-sm font-medium text-[var(--text)]" for="phone">Teléfono</label>
-          <input name="phone" id="phone" type="tel" inputmode="tel"
-                 class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-[var(--text)]" />
+          <label class="text-sm font-medium text-[var(--text)]" for="phone"
+            >Teléfono</label
+          >
+          <input
+            name="phone"
+            id="phone"
+            type="tel"
+            inputmode="tel"
+            class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-[var(--text)]"
+          />
         </div>
 
         <!-- Dirección -->
         <div>
-          <label class="text-sm font-medium text-[var(--text)]" for="address">Dirección</label>
-          <input name="address" id="address" type="text"
-                 class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-[var(--text)]" />
+          <label class="text-sm font-medium text-[var(--text)]" for="address"
+            >Dirección</label
+          >
+          <input
+            name="address"
+            id="address"
+            type="text"
+            class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-[var(--text)]"
+          />
         </div>
 
         <!-- Botón guardar -->
         <div class="flex justify-between gap-3">
           <button type="submit" class="btn w-full">Guardar cambios</button>
-          <button type="button" onclick="window.location.href='/';" class="btn-outline w-full">Salir</button>
+          <button type="button" id="logoutBtn" class="btn-outline w-full"
+            >Cerrar sesión</button
+          >
         </div>
 
         <p class="text-center text-xs text-[var(--muted)] mt-4">
@@ -58,11 +91,47 @@ import "../../styles/global.css";
     <script>
       // @ts-nocheck
       // Verifica si el usuario está logueado
-      document.addEventListener('DOMContentLoaded', () => {
-        if (!tpUser.isLogged()) {
-          alert('Por favor, inicia sesión para acceder a esta página.');
-          window.location.href = '/cuenta/ingresar'; // Redirige si no está logueado
-        }
+      document.addEventListener("DOMContentLoaded", () => {
+        (async () => {
+          // quick prefill from sessionStorage so page isn't empty after redirect
+          try {
+            const s = sessionStorage.getItem("tp_user");
+            if (s) {
+              const su = JSON.parse(s);
+              document.getElementById("name").value = su.name || "";
+              document.getElementById("email").value = su.email || "";
+              document.getElementById("phone").value = su.phone || "";
+              document.getElementById("address").value = su.address || "";
+            }
+          } catch (e) {}
+
+          // then refresh from server to ensure we have up-to-date data
+          const u = await tpUser.me();
+          if (!u) {
+            alert("Por favor, inicia sesión para acceder a esta página.");
+            window.location.href = "/cuenta/ingresar";
+            return;
+          }
+          // rellenar con datos del servidor (overrides cached)
+          document.getElementById("name").value = u.name || "";
+          document.getElementById("email").value = u.email || "";
+          // optionally fill phone/address if API returns them
+          try {
+            document.getElementById("phone").value =
+              u.phone || document.getElementById("phone").value || "";
+          } catch {}
+          try {
+            document.getElementById("address").value =
+              u.address || document.getElementById("address").value || "";
+          } catch {}
+        })();
+
+        document
+          .getElementById("logoutBtn")
+          ?.addEventListener("click", async () => {
+            await tpUser.logout();
+            window.location.href = "/";
+          });
       });
     </script>
   </body>

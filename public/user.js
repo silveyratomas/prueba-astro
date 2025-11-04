@@ -1,52 +1,55 @@
 (() => {
-  const KEY = 'tp_user';
-
-  const get = () => {
-    try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { return null; }
-  };
-
-  const save = (u) => {
-    localStorage.setItem(KEY, JSON.stringify(u));
-    window.dispatchEvent(new Event('tpuser'));
-  };
-
-  const isLogged = () => !!get();
-
-  const register = ({ name, email, phone, address, password }) => {
-    if (!name || !email || !password) throw new Error('Completá nombre, email y contraseña.');
-    const user = {
-      id: (crypto?.randomUUID?.() || String(Date.now())),
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: (phone || '').trim(),
-      address: (address || '').trim(),
-      password: password, // Asegúrate de no guardar contraseñas en texto plano en producción
-      createdAt: new Date().toISOString(),
-    };
-    save(user);
-    return user;
-  };
-
-  const login = (email, pass) => {
-    const u = get();
-    if (!u) throw new Error('No hay usuario registrado en este dispositivo.');
-    if (u.email !== email.trim().toLowerCase() || u.password !== pass) {
-      throw new Error('Email o contraseña inválidos.');
+  async function jsonFetch(path, opts = {}) {
+    const res = await fetch(path, { credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, ...opts });
+    if (!res.ok) {
+      let err = 'error';
+      try { const j = await res.json(); err = j.error || JSON.stringify(j); } catch { }
+      const e = new Error(err);
+      e.status = res.status;
+      throw e;
     }
-    return u;
-  };
+    return res.json().catch(() => ({}));
+  }
 
-  const update = (partial) => {
-    const u = get() || {};
-    const next = { ...u, ...partial };
-    save(next);
-    return next;
-  };
-
-  const logout = () => {
-    localStorage.removeItem(KEY);
+  async function register(data) {
+    const res = await jsonFetch('/api/auth/register', { method: 'POST', body: JSON.stringify(data) });
+    try {
+      // save a short-lived cached copy so pages can show immediate UI
+      sessionStorage.setItem('tp_user', JSON.stringify(res.user || {}));
+    } catch { }
     window.dispatchEvent(new Event('tpuser'));
-  };
+    return res.user;
+  }
 
-  window.tpUser = { get, save, isLogged, register, login, update, logout };
+  async function login(email, password) {
+    const res = await jsonFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+    try {
+      sessionStorage.setItem('tp_user', JSON.stringify(res.user || {}));
+    } catch { }
+    window.dispatchEvent(new Event('tpuser'));
+    return res.user;
+  }
+
+  async function me() {
+    try {
+      const res = await jsonFetch('/api/auth/me');
+      try { sessionStorage.setItem('tp_user', JSON.stringify(res.user || {})); } catch { }
+      return res.user || null;
+    } catch {
+      try { sessionStorage.removeItem('tp_user'); } catch { }
+      return null;
+    }
+  }
+
+  async function logout() {
+    try {
+      await jsonFetch('/api/auth/logout', { method: 'POST' });
+    } catch { }
+    try { sessionStorage.removeItem('tp_user'); } catch { }
+    window.dispatchEvent(new Event('tpuser'));
+  }
+
+  async function isLogged() { return !!(await me()); }
+
+  window.tpUser = { register, login, me, logout, isLogged };
 })();

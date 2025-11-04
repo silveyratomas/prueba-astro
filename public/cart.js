@@ -23,17 +23,23 @@ function getCart() {
 /** Persiste */
 function setCart(items) {
   localStorage.setItem(CART_KEY, JSON.stringify(items));
+  // Dispatch a custom event so the same-window listeners can react immediately.
+  try {
+    window.dispatchEvent(new CustomEvent("tp:cart:changed", { detail: { items } }));
+  } catch (e) {
+    // ignore in non-browser contexts
+  }
 }
 
 /** Normaliza un ítem (tolerante a formas distintas) */
 function normalizeItem(i) {
   if (!i) return null;
   const productId = i.productId ?? i.id ?? null;
-  const slug      = (i.slug ?? i.sku ?? '').toString();
-  const title     = (i.title ?? i.name ?? slug ?? 'Producto').toString() || 'Producto';
-  const img       = i.img ?? i.image ?? i.image_url ?? null;
-  const qtyRaw    = i.qty ?? i.quantity ?? 1;
-  let qty         = parseInt(qtyRaw, 10);
+  const slug = (i.slug ?? i.sku ?? '').toString();
+  const title = (i.title ?? i.name ?? slug ?? 'Producto').toString() || 'Producto';
+  const img = i.img ?? i.image ?? i.image_url ?? null;
+  const qtyRaw = i.qty ?? i.quantity ?? 1;
+  let qty = parseInt(qtyRaw, 10);
   if (!Number.isFinite(qty) || qty < 1) qty = 1;
 
   let price = i.price ?? i.unit_price ?? i.amount ?? 0;
@@ -54,8 +60,8 @@ function addToCart(item) {
   if (!next) return;
 
   const cart = getCart();
-  const key  = itemKey(next);
-  const idx  = cart.findIndex(x => itemKey(x) === key);
+  const key = itemKey(next);
+  const idx = cart.findIndex(x => itemKey(x) === key);
 
   if (idx >= 0) {
     cart[idx].qty = Math.max(1, (cart[idx].qty || 1) + next.qty);

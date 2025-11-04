@@ -35,14 +35,12 @@
     // Manejo de 401/403: limpiamos sesión y avisamos
     if (res.status === 401 || res.status === 403) {
       clearToken();
-      // opcional: redirigir automáticamente si no estamos ya en /admin/login
+      let msg = 'unauthorized';
       try {
-        if (!location.pathname.startsWith('/admin/login')) {
-          // comentá esta línea si preferís manejar el redirect afuera
-          // location.href = '/admin/login';
-        }
-      } catch { }
-      throw new Error('unauthorized');
+        const j = await res.json();
+        if (j?.error) msg = j.error;
+      } catch (e) { /* ignore */ }
+      throw new Error(msg);
     }
 
     if (!res.ok) {

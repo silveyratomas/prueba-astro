@@ -1,34 +1,61 @@
 ---
 import "../../styles/global.css";
 ---
+
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <title>Iniciar sesión – Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
-  <body class="min-h-screen grid place-items-center bg-[var(--surface)] text-[var(--text)]">
-    <form id="loginForm"
-          action="#"
-          method="post"
-          class="w-full max-w-sm bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-4"
-          onsubmit="return __login(event)">
+  <body
+    class="min-h-screen grid place-items-center bg-[var(--surface)] text-[var(--text)]"
+  >
+    <form
+      id="loginForm"
+      action="#"
+      method="post"
+      class="w-full max-w-sm bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-4"
+      onsubmit="return __login(event)"
+    >
       <h1 class="text-xl font-bold">Iniciar sesión</h1>
 
       <div>
         <label class="text-sm">Email</label>
-        <input name="email" type="email" required
-               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+        <input
+          name="email"
+          type="email"
+          required
+          class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+        />
       </div>
 
       <div>
         <label class="text-sm">Contraseña</label>
-        <input name="pass" type="password" required
-               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+        <div class="relative mt-1">
+          <input
+            id="passInput"
+            name="pass"
+            type="password"
+            required
+            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white pr-10"
+          />
+          <button
+            type="button"
+            id="togglePass"
+            class="absolute right-1 top-1/2 -translate-y-1/2 text-sm text-[var(--muted)]"
+            >Mostrar</button
+          >
+        </div>
       </div>
 
-      <button type="submit" class="btn w-full">Entrar</button>
-      <p class="text-xs text-[var(--muted)]">Demo: buleria.games@gmail.com / owner123</p>
+      <div id="adminLoginError" class="hidden text-sm text-red-600"></div>
+
+      <button id="adminLoginBtn" type="submit" class="btn w-full">Entrar</button
+      >
+      <p class="text-xs text-[var(--muted)]">
+        Demo: buleria.games@gmail.com / owner123
+      </p>
     </form>
 
     <!-- Cargar helper primero -->
@@ -36,28 +63,74 @@ import "../../styles/global.css";
 
     <script>
       // @ts-nocheck
+      function setAdminError(msg) {
+        const el = document.getElementById("adminLoginError");
+        if (!el) return;
+        if (!msg) {
+          el.classList.add("hidden");
+          el.textContent = "";
+        } else {
+          el.classList.remove("hidden");
+          el.textContent = msg;
+        }
+      }
+
       window.__login = async function (ev) {
-        ev.preventDefault(); // <-- evita el GET con ?email=...&pass=...
+        ev.preventDefault();
+        setAdminError("");
+        const form = document.getElementById("loginForm");
+        const email = form.email.value.trim();
+        const pass = document.getElementById("passInput").value.trim();
+        const btn = document.getElementById("adminLoginBtn");
         try {
-          const form  = document.getElementById('loginForm');
-          const email = form.email.value.trim();
-          const pass  = form.pass.value.trim();
-          await tpAdminAuth.login(email, pass); // guarda token
-          location.href = '/admin';
+          btn.disabled = true;
+          if (
+            !window.tpAdminAuth ||
+            typeof window.tpAdminAuth.login !== "function"
+          ) {
+            throw new Error("client_auth_not_loaded");
+          }
+          await tpAdminAuth.login(email, pass);
+          location.href = "/admin";
           return false;
         } catch (e) {
-          alert(e?.message || 'No se pudo iniciar sesión');
+          console.error("[admin.login] error", e);
+          const msg = e?.message || "No se pudo iniciar sesión";
+          if (msg === "client_auth_not_loaded") {
+            setAdminError(
+              "Error interno: helper de auth no cargado. Refrescá la página.",
+            );
+          } else if (msg.includes("401") || msg.includes("credenciales")) {
+            setAdminError("Email o contraseña incorrectos");
+          } else {
+            setAdminError(msg);
+          }
           return false;
+        } finally {
+          btn.disabled = false;
         }
       };
 
-      document.addEventListener('DOMContentLoaded', async () => {
+      document.addEventListener("DOMContentLoaded", async () => {
+        // toggle password visibility
+        document.getElementById("togglePass")?.addEventListener("click", () => {
+          const inp = document.getElementById("passInput");
+          if (!inp) return;
+          const isPwd = inp.type === "password";
+          inp.type = isPwd ? "text" : "password";
+          document.getElementById("togglePass").textContent = isPwd
+            ? "Ocultar"
+            : "Mostrar";
+        });
+
         // si ya hay token válido, pasá directo
         try {
           if (window.tpAdminAuth?.isLogged() && (await tpAdminAuth.me())) {
-            location.href = '/admin';
+            location.href = "/admin";
           }
-        } catch {}
+        } catch (e) {
+          // no hacemos nada, mostramos el formulario
+        }
       });
     </script>
   </body>

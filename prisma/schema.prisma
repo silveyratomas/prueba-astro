@@ -123,16 +123,20 @@ model StoreAdmin {
 }
 
 model StoreCustomer {
-  id                 String   @id @default(cuid())
+  id                 String    @id @default(cuid())
   storeId            String
   userId             String
-  subscribedToNotifs Boolean  @default(true)
+  subscribedToNotifs Boolean   @default(true)
   name               String?
   email              String?
   address            String?
   sex                String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  phone              String?
+  birthDate          DateTime?
+  preferredContact   String? // 'email' | 'phone' | 'none'
+  notes              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   store Store @relation(fields: [storeId], references: [id])
   user  User  @relation(fields: [userId], references: [id])

@@ -1,122 +1,248 @@
---- 
-import "../../styles/global.css"; 
---- 
+---
+import "../../styles/global.css";
+---
+
 <html lang="es">
   <head>
     <meta charset="utf-8" />
     <title>Iniciar sesión – Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
-  <body class="min-h-screen grid place-items-center bg-[var(--surface)] text-[var(--text)]">
-    <!-- Formulario de inicio de sesión -->
-    <form id="loginForm"
-          class="w-full max-w-sm bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-4"
-          onsubmit="handleLogin(this)">
-      <h1 class="text-xl font-bold">Iniciar sesión</h1>
+  <body class="min-h-screen bg-[var(--surface)] text-[var(--text)] py-12">
+    <main class="container mx-auto px-4">
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto"
+      >
+        <!-- Left: Info / estado -->
+        <section
+          class="bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-xl p-8 shadow-lg"
+        >
+          <h2 class="text-2xl font-extrabold mb-2">No has iniciado sesión</h2>
+          <p class="opacity-90 mb-4">
+            Para gestionar tu cuenta y ver tus compras, por favor iniciá sesión
+            o creá una cuenta. Tu información se guarda de forma segura en esta
+            tienda.
+          </p>
+          <ul class="text-sm opacity-90 space-y-2 mb-4">
+            <li>✔ Inicio de sesión seguro con contraseña encriptada</li>
+            <li>✔ Perfiles vinculados a la tienda</li>
+            <li>✔ Experiencia optimizada para móviles y escritorio</li>
+          </ul>
+          <div class="flex gap-3">
+            <button id="showLoginBtn" class="inline-flex items-center gap-2 btn"
+              >Iniciar sesión</button
+            >
+            <button id="showRegisterBtn" class="btn-outline"
+              >Crear cuenta</button
+            >
+          </div>
+          <div class="mt-6 text-sm opacity-80">
+            <strong>Consejo:</strong> usá un email real para recibir notificaciones
+            y estado de pedidos.
+          </div>
+        </section>
 
-      <!-- Email -->
-      <div>
-        <label class="text-sm">Email</label>
-        <input name="email" type="email" required
-               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
+        <!-- Right: Forms -->
+        <section>
+          <div
+            id="formWrap"
+            class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm"
+          >
+            <div id="loginPane">
+              <h1 class="text-xl font-bold mb-3">Iniciar sesión</h1>
+              <div id="loginError" class="hidden text-sm text-red-600 mb-3">
+              </div>
+              <form
+                id="loginForm"
+                class="space-y-4"
+                onsubmit="handleLogin(this)"
+              >
+                <label class="block text-sm"
+                  >Email
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                  />
+                </label>
+                <label class="block text-sm"
+                  >Contraseña
+                  <input
+                    name="pass"
+                    type="password"
+                    required
+                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                  />
+                </label>
+                <button
+                  id="loginBtn"
+                  type="submit"
+                  class="btn w-full flex items-center justify-center gap-2"
+                  >Entrar <span id="loginSpinner" class="hidden">⏳</span
+                  ></button
+                >
+                <div class="mt-2 text-xs text-[var(--muted)]">
+                  ¿No tenés cuenta? <a
+                    href="#"
+                    onclick="toggleForms()"
+                    class="underline">Crear una</a
+                  >
+                </div>
+              </form>
+            </div>
+
+            <div id="registerPane" class="hidden mt-2">
+              <h1 class="text-xl font-bold mb-3">Crear cuenta</h1>
+              <div id="registerError" class="hidden text-sm text-red-600 mb-3">
+              </div>
+              <form
+                id="registerForm"
+                class="space-y-4"
+                onsubmit="handleRegister(this)"
+              >
+                <label class="block text-sm"
+                  >Nombre completo
+                  <input
+                    name="name"
+                    type="text"
+                    required
+                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                  />
+                </label>
+                <label class="block text-sm"
+                  >Email
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                  />
+                </label>
+                <label class="block text-sm"
+                  >Contraseña
+                  <input
+                    name="pass"
+                    type="password"
+                    minlength="6"
+                    required
+                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                  />
+                </label>
+                <button id="registerBtn" type="submit" class="btn w-full"
+                  >Crear cuenta</button
+                >
+                <div class="mt-2 text-xs text-[var(--muted)]">
+                  ¿Ya tenés cuenta? <a
+                    href="#"
+                    onclick="toggleForms()"
+                    class="underline">Iniciá sesión</a
+                  >
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
       </div>
-
-      <!-- Contraseña -->
-      <div>
-        <label class="text-sm">Contraseña</label>
-        <input name="pass" type="password" required
-               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-      </div>
-
-      <button type="submit" class="btn w-full">Entrar</button>
-      <p class="text-xs text-[var(--muted)]">Demo: cualquier email/contraseña.</p>
-    </form>
-
-    <!-- Formulario de registro -->
-    <form id="registerForm" 
-          class="w-full max-w-sm bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-4 mt-8 hidden"
-          onsubmit="handleRegister(this)">
-      <h1 class="text-xl font-bold">Crear cuenta</h1>
-
-      <!-- Nombre -->
-      <div>
-        <label class="text-sm">Nombre</label>
-        <input name="name" type="text" required
-               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-      </div>
-
-      <!-- Email -->
-      <div>
-        <label class="text-sm">Email</label>
-        <input name="email" type="email" required
-               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-      </div>
-
-      <!-- Contraseña -->
-      <div>
-        <label class="text-sm">Contraseña</label>
-        <input name="pass" type="password" required
-               class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white" />
-      </div>
-
-      <button type="submit" class="btn w-full">Crear cuenta</button>
-      <p class="text-xs text-[var(--muted)]">Ya tienes cuenta? <a href="#" onclick="toggleForms()">Inicia sesión</a></p>
-    </form>
+    </main>
 
     <script src="/user.js" defer></script>
 
-    <!-- Funciones de inicio de sesión y registro -->
     <script>
-        // @ts-nocheck
-      window.handleLogin = function (form) {
-        event.preventDefault();
-        try {
-          const email = form.email.value.trim();
-          const pass  = form.pass.value.trim();
-
-          // Llamar a la función login de user.js
-          const user = tpUser.login(email, pass); // Llama a login desde user.js
-
-          alert("¡Bienvenido! Has iniciado sesión correctamente.");
-          location.href = '/admin'; // Redirige al panel de administración
-
-        } catch (e) {
-          alert((e && e.message) || 'Error al iniciar sesión');
+      // @ts-nocheck
+      const setError = (id, msg) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (!msg) {
+          el.classList.add("hidden");
+          el.textContent = "";
+        } else {
+          el.classList.remove("hidden");
+          el.textContent = msg;
         }
       };
 
-      // Función para registrar un nuevo usuario
-      window.handleRegister = function (form) {
+      const setLoading = (btnId, spinnerId, loading) => {
+        const btn = document.getElementById(btnId);
+        const sp = document.getElementById(spinnerId);
+        if (btn) btn.disabled = loading;
+        if (sp) sp.classList.toggle("hidden", !loading);
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("showLoginBtn")
+          ?.addEventListener("click", () => {
+            document
+              .getElementById("loginPane")
+              .scrollIntoView({ behavior: "smooth" });
+          });
+        document
+          .getElementById("showRegisterBtn")
+          ?.addEventListener("click", () => {
+            toggleForms(true);
+            document
+              .getElementById("registerPane")
+              .scrollIntoView({ behavior: "smooth" });
+          });
+      });
+
+      window.handleLogin = async function (form) {
         event.preventDefault();
+        setError("loginError", "");
+        setLoading("loginBtn", "loginSpinner", true);
+        try {
+          const email = form.email.value.trim();
+          const pass = form.pass.value.trim();
+          await window.tpUser.login(email, pass);
+          // success -> go to home so the site can show user-dependent UI
+          location.href = "/";
+        } catch (e) {
+          setError("loginError", e.message || "Error al iniciar sesión");
+        } finally {
+          setLoading("loginBtn", "loginSpinner", false);
+        }
+      };
+
+      window.handleRegister = async function (form) {
+        event.preventDefault();
+        setError("registerError", "");
+        setLoading("registerBtn", "registerBtn", true);
         try {
           const name = form.name.value.trim();
           const email = form.email.value.trim();
-          const pass  = form.pass.value.trim();
-
-          // Llamar a la función register de user.js
-          const user = tpUser.register({ name, email, password: pass }); // Llama a register desde user.js
-
-          alert("¡Cuenta creada! Ahora puedes iniciar sesión.");
-          toggleForms(); // Oculta el formulario de registro y muestra el de login
-
+          const pass = form.pass.value.trim();
+          await window.tpUser.register({ name, email, password: pass });
+          // success -> go to home so the site updates with session info
+          location.href = "/";
         } catch (e) {
-          alert((e && e.message) || 'Error al registrar');
+          setError("registerError", e.message || "Error al registrar");
+        } finally {
+          setLoading("registerBtn", "registerBtn", false);
         }
       };
 
-      // Función para cambiar entre el formulario de login y registro
-      window.toggleForms = function () {
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        loginForm.classList.toggle('hidden');
-        registerForm.classList.toggle('hidden');
+      // convenience logout from this page (if needed)
+      window.doLogout = async function () {
+        await tpUser.logout();
+        location.href = "/";
       };
 
-      // Verifica si el usuario ya está logueado
-      document.addEventListener('DOMContentLoaded', () => {
-        if (tpUser.isLogged()) {
-          location.href = '/admin'; // Si ya está logueado, redirige al panel de administración
+      window.toggleForms = function (toRegister) {
+        const loginPane = document.getElementById("loginPane");
+        const registerPane = document.getElementById("registerPane");
+        if (typeof toRegister === "boolean") {
+          loginPane.classList.toggle("hidden", toRegister);
+          registerPane.classList.toggle("hidden", !toRegister);
+        } else {
+          loginPane.classList.toggle("hidden");
+          registerPane.classList.toggle("hidden");
         }
+      };
+
+      // redirect if already logged
+      document.addEventListener("DOMContentLoaded", async () => {
+        if (await tpUser.isLogged()) location.href = "/cuenta/perfil";
       });
     </script>
   </body>
