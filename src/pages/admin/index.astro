@@ -10,9 +10,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     >
       <header class="flex items-center justify-between">
         <div>
-          <h1 class="text-xl font-bold">Ajustes de la tienda</h1>
+          <h1 class="text-xl font-bold">Ajustes Generales</h1>
           <p class="text-sm text-[var(--muted)]">
-            Configurá la información que verán tus clientes en la tienda.
+            Configura la identidad y apariencia básica de tu tienda.
           </p>
         </div>
         <span
@@ -35,23 +35,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white"
           />
           <p class="text-xs text-[var(--muted)] mt-1">
-            Nombre visible para todas las personas.
-          </p>
-        </div>
-
-        <div>
-          <label class="text-sm font-medium">Color del tema</label>
-          <select
-            id="themeClass"
-            class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white"
-          >
-            <option value="">Predeterminado</option>
-            <option value="theme-profesional">Profesional (azul/verde)</option>
-            <option value="theme-azul">Azul</option>
-            <option value="theme-naranja-profesional">Naranja</option>
-          </select>
-          <p class="text-xs text-[var(--muted)] mt-1">
-            Cambia la paleta de colores del sitio.
+            Este nombre aparecerá en el encabezado y en la página de inicio.
           </p>
         </div>
 
@@ -63,12 +47,12 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             class="mt-2 w-full rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white"
           />
           <p class="text-xs text-[var(--muted)] mt-1">
-            Imagen grande que se ve en la parte superior de la página.
+            Imagen grande que se ve en la parte superior de la página de inicio.
           </p>
         </div>
 
         <div>
-          <label class="text-sm font-medium">Frase corta</label>
+          <label class="text-sm font-medium">Frase corta (Slogan)</label>
           <input
             id="tagline"
             placeholder="Ej: Envío gratis a todo el país"
@@ -77,7 +61,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         </div>
 
         <div>
-          <label class="text-sm font-medium">Productos en la portada</label>
+          <label class="text-sm font-medium"
+            >Productos Destacados (Inicio)</label
+          >
           <select
             id="featured"
             multiple
@@ -87,6 +73,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           </select>
           <p class="text-xs text-[var(--muted)] mt-1">
             Seleccioná los productos que querés mostrar primero en la tienda.
+            (Ctrl+Click para seleccionar varios)
           </p>
         </div>
 
@@ -99,17 +86,17 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           />
         </div>
 
-        <div class="flex gap-2 pt-2">
-          <button type="submit" class="btn">Guardar cambios</button>
+        <div class="flex gap-2 pt-4 border-t border-[var(--card-border)]">
+          <button type="submit" class="btn">Guardar Borrador</button>
           <button
             type="button"
             class="btn-white"
-            onclick="window.__adm.publish()">Publicar ahora</button
+            onclick="window.__adm.publish()">Publicar Cambios</button
           >
           <button
             type="button"
-            class="btn-white"
-            onclick="window.__adm.revertToPublished()">Revertir</button
+            class="btn-white ml-auto"
+            onclick="window.__adm.revertToPublished()">Descartar</button
           >
         </div>
       </form>
@@ -124,72 +111,90 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           <div>
             <strong>Vista previa</strong>
             <div class="text-xs text-[var(--muted)]">
-              Borrador (no afecta al público)
+              Previsualiza tus cambios antes de publicar.
             </div>
           </div>
           <div class="flex gap-2">
-            <button class="btn-white" onclick="window.__adm.refreshPreview()"
-              >Actualizar</button
+            <button
+              class="btn-white text-xs"
+              onclick="window.__adm.refreshPreview()">Recargar</button
             >
-            <a class="btn-white" href="/?preview=1" target="_blank">Abrir</a>
+            <a class="btn-white text-xs" href="/?preview=1" target="_blank"
+              >Abrir</a
+            >
           </div>
         </div>
         <iframe
           id="previewFrame"
           src="/?preview=1"
-          class="w-full h-[48vh] bg-white"></iframe>
+          class="w-full h-[300px] bg-white border border-[var(--card-border)] rounded-lg"
+        ></iframe>
       </section>
 
       <section
         class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-4"
       >
-        <h3 class="font-semibold mb-2">Categorías</h3>
+        <h3 class="font-semibold mb-2">Gestión Rápida de Categorías</h3>
         <p class="text-xs text-[var(--muted)] mb-3">
-          Creá, editá y borrá categorías para organizar tus productos.
+          Añade nuevas categorías para organizar tu catálogo.
         </p>
 
-        <form id="catForm" class="space-y-2">
+        <form id="catForm" class="space-y-3">
           <input
+            type="hidden"
             id="storeFilter"
             name="storeSlug"
-            placeholder="Slug de la tienda"
             value="mi-tienda-demo"
-            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
           />
-          <input
-            name="name"
-            placeholder="Nombre de la categoría"
-            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
-          />
-          <input
-            name="slug"
-            placeholder="slug-de-la-categoria"
-            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
-          />
+          <div>
+            <input
+              name="name"
+              placeholder="Nombre de la categoría"
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
+              required
+            />
+          </div>
+          <div>
+            <input
+              name="slug"
+              placeholder="Identificador (para la dirección web)"
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
+              required
+            />
+          </div>
           <div class="flex gap-2">
             <input
               name="parentSlug"
-              placeholder="slug de categoría padre (opcional)"
+              placeholder="Categoría superior (opcional)"
               class="flex-1 rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white text-sm"
             />
-            <label class="inline-flex items-center gap-2">
+            <label
+              class="inline-flex items-center gap-2 bg-white px-2 rounded border border-[var(--card-border)]"
+            >
               <input type="checkbox" name="isOffer" />
-              <span class="text-sm">En oferta</span>
+              <span class="text-xs">Oferta</span>
             </label>
           </div>
-          <div class="flex gap-2">
-            <button class="btn" type="submit">Crear categoría</button>
-            <button
-              class="btn-outline"
-              type="button"
-              onclick="window.__loadList()">Listar</button
+          <div class="flex gap-2 pt-2">
+            <button class="btn w-full text-sm" type="submit"
+              >Crear Categoría</button
             >
           </div>
         </form>
 
-        <ul id="catList" class="mt-3 space-y-2 text-sm text-[var(--muted)]">
-          <li>Cargando categorías…</li>
-        </ul>
+        <div class="mt-4 pt-4 border-t border-[var(--card-border)]">
+          <button
+            class="text-xs text-[var(--accent)] hover:underline w-full text-center"
+            type="button"
+            onclick="window.__loadList()"
+            >Ver lista de categorías existentes</button
+          >
+          <ul
+            id="catList"
+            class="mt-3 space-y-2 text-sm text-[var(--muted)] max-h-40 overflow-y-auto"
+          >
+          </ul>
+        </div>
       </section>
     </aside>
   </div>
@@ -289,7 +294,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         const featured = Array.from(sel.selectedOptions).map((o) => o.value);
         return {
           storeName: $("storeName").value.trim(),
-          themeClass: $("themeClass").value,
+          // themeClass: $("themeClass").value,
           heroImage: $("heroImage").value.trim(),
           tagline: $("tagline").value.trim(),
           cta: {
@@ -315,7 +320,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       }
       function fillForm(cfg) {
         $("storeName").value = cfg.storeName || "";
-        $("themeClass").value = cfg.themeClass || "";
+        // $("themeClass").value = cfg.themeClass || "";
         $("heroImage").value = cfg.heroImage || "";
         $("tagline").value = cfg.tagline || "";
         $("cta1_text").value = cfg.cta?.one?.text || "";
@@ -396,18 +401,20 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       form.addEventListener("input", () => setStatus("Cambios sin guardar…"));
 
       // Importar
-      importInput.addEventListener("change", async () => {
-        const f = importInput.files?.[0];
-        if (!f) return;
-        const txt = await f.text();
-        try {
-          window.__adm.importJSON(JSON.parse(txt));
-        } catch {
-          alert("JSON inválido");
-        } finally {
-          importInput.value = "";
-        }
-      });
+      if (importInput) {
+        importInput.addEventListener("change", async () => {
+          const f = importInput.files?.[0];
+          if (!f) return;
+          const txt = await f.text();
+          try {
+            window.__adm.importJSON(JSON.parse(txt));
+          } catch {
+            alert("JSON inválido");
+          } finally {
+            importInput.value = "";
+          }
+        });
+      }
 
       // Atajos teclado: Ctrl+S / Ctrl+Z / Ctrl+Shift+Z
       document.addEventListener("keydown", (e) => {

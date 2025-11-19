@@ -132,6 +132,7 @@ model StoreCustomer {
   address            String?
   sex                String?
   phone              String?
+  avatarUrl          String?
   birthDate          DateTime?
   preferredContact   String? // 'email' | 'phone' | 'none'
   notes              String?

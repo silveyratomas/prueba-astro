@@ -1,0 +1,110 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { prisma } from "../../../server/db/prisma";
+
+const storeSlug = "mi-tienda-demo";
+const store = await prisma.store.findUnique({ where: { slug: storeSlug } });
+
+let customers: any[] = [];
+if (store) {
+    customers = await prisma.storeCustomer.findMany({
+        where: { storeId: store.id },
+        include: { user: true },
+        orderBy: { createdAt: "desc" },
+    });
+}
+
+const fmtDate = (d: Date) =>
+    d ? new Date(d).toLocaleDateString("es-AR") : "-";
+---
+
+<AdminLayout title="Gestión de Clientes">
+    <div
+        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm"
+    >
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-xl font-bold">Base de Clientes</h2>
+                <p class="text-sm text-[var(--muted)]">
+                    Visualiza y gestiona tus usuarios registrados.
+                </p>
+            </div>
+            <div class="relative">
+                <input
+                    type="search"
+                    placeholder="Buscar cliente..."
+                    class="pl-8 pr-4 py-2 rounded-lg border border-[var(--card-border)] text-sm focus:ring-2 focus:ring-[var(--accent)] outline-none"
+                />
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 absolute left-2.5 top-3 text-[var(--muted)]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead
+                    class="text-xs text-[var(--muted)] uppercase bg-gray-50 border-b border-[var(--card-border)]"
+                >
+                    <tr>
+                        <th class="px-4 py-3">Cliente</th>
+                        <th class="px-4 py-3">Email</th>
+                        <th class="px-4 py-3">Registrado</th>
+                        <th class="px-4 py-3">Teléfono</th>
+                        <th class="px-4 py-3 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--card-border)]">
+                    {
+                        customers.length === 0 && (
+                            <tr>
+                                <td
+                                    colspan="5"
+                                    class="p-4 text-center text-[var(--muted)]"
+                                >
+                                    No hay clientes registrados.
+                                </td>
+                            </tr>
+                        )
+                    }
+                    {
+                        customers.map((c) => (
+                            <tr class="hover:bg-[var(--surface)] transition-colors">
+                                <td class="px-4 py-3 font-medium flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 uppercase">
+                                        {(c.name || c.user?.name || "?").charAt(
+                                            0,
+                                        )}
+                                    </div>
+                                    {c.name || c.user?.name || "Sin nombre"}
+                                </td>
+                                <td class="px-4 py-3 text-[var(--muted)]">
+                                    {c.email || c.user?.email}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {fmtDate(c.createdAt)}
+                                </td>
+                                <td class="px-4 py-3">{c.phone || "-"}</td>
+                                <td class="px-4 py-3 text-right">
+                                    <button class="text-[var(--accent)] hover:underline">
+                                        Ver
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</AdminLayout>

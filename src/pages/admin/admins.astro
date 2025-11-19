@@ -1,0 +1,92 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { prisma } from "../../../server/db/prisma";
+
+const storeSlug = "mi-tienda-demo";
+const store = await prisma.store.findUnique({ where: { slug: storeSlug } });
+
+let admins: any[] = [];
+if (store) {
+    admins = await prisma.storeAdmin.findMany({
+        where: { storeId: store.id },
+        include: { user: true },
+        orderBy: { createdAt: "desc" },
+    });
+}
+---
+
+<AdminLayout title="Gestión de Administradores">
+    <div class="grid md:grid-cols-[1fr,350px] gap-6">
+        <!-- Lista de Admins -->
+        <div
+            class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm"
+        >
+            <h2 class="text-xl font-bold mb-4">Administradores del Sistema</h2>
+            <div id="adminsList" class="space-y-4">
+                {
+                    admins.length === 0 && (
+                        <p class="text-[var(--muted)]">
+                            No hay administradores asignados.
+                        </p>
+                    )
+                }
+                {
+                    admins.map((admin) => (
+                        <div class="flex items-center justify-between p-4 border border-[var(--card-border)] rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-[var(--brand)] text-white flex items-center justify-center font-bold uppercase">
+                                    {admin.user?.email?.charAt(0) || "A"}
+                                </div>
+                                <div>
+                                    <div class="font-bold">
+                                        {admin.user?.name || "Usuario"}
+                                    </div>
+                                    <div class="text-sm text-[var(--muted)]">
+                                        {admin.user?.email}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full uppercase">
+                                {admin.role}
+                            </span>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+
+        <!-- Formulario Nuevo Admin -->
+        <div
+            class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm h-fit"
+        >
+            <h3 class="font-bold mb-4">Invitar Nuevo Admin</h3>
+            <form
+                class="space-y-4"
+                onsubmit="event.preventDefault(); alert('Funcionalidad en desarrollo');"
+            >
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email</label>
+                    <input
+                        type="email"
+                        class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                        placeholder="correo@ejemplo.com"
+                        required
+                    />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Rol</label>
+                    <select
+                        class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                    >
+                        <option>Editor</option>
+                        <option>Soporte</option>
+                        <option>Super Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn w-full"
+                    >Enviar Invitación</button
+                >
+            </form>
+        </div>
+    </div>
+</AdminLayout>

@@ -69,6 +69,12 @@
         }
     }
 
+    async function updateProfile(data) {
+        const res = await jsonFetch('/api/shop/account', { method: 'PATCH', body: JSON.stringify(data) });
+        window.dispatchEvent(new Event('shop:user'));
+        return res.customer;
+    }
+
     async function logout() {
         try { localStorage.removeItem(KEY); } catch { }
         window.dispatchEvent(new Event('shop:user'));
@@ -76,5 +82,5 @@
 
     function getToken() { return localStorage.getItem(KEY); }
 
-    window.shopAuth = { register, login, me, logout, getToken };
+    window.shopAuth = { register, login, me, updateProfile, logout, getToken };
 })();

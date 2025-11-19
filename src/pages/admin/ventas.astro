@@ -1,0 +1,134 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { prisma } from "../../../server/db/prisma";
+
+const storeSlug = "mi-tienda-demo";
+const store = await prisma.store.findUnique({ where: { slug: storeSlug } });
+
+let orders: any[] = [];
+if (store) {
+    orders = await prisma.order.findMany({
+        where: { storeId: store.id },
+        include: {
+            user: {
+                include: {
+                    customerOf: {
+                        where: { storeId: store.id },
+                    },
+                },
+            },
+            items: true,
+        },
+        orderBy: { createdAt: "desc" },
+    });
+}
+
+const fmt = (n: any) =>
+    new Intl.NumberFormat("es-AR", {
+        style: "currency",
+        currency: "ARS",
+    }).format(Number(n));
+const fmtDate = (d: Date) => new Date(d).toLocaleDateString("es-AR");
+
+const statusClass = (s: string) => {
+    switch (s) {
+        case "PAID":
+            return "bg-green-100 text-green-800";
+        case "PENDING":
+            return "bg-yellow-100 text-yellow-800";
+        case "FULFILLED":
+            return "bg-blue-100 text-blue-800";
+        case "CANCELLED":
+            return "bg-red-100 text-red-800";
+        default:
+            return "bg-gray-100 text-gray-800";
+    }
+};
+---
+
+<AdminLayout title="Gestión de Ventas">
+    <div
+        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm"
+    >
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-xl font-bold">Órdenes Recientes</h2>
+                <p class="text-sm text-[var(--muted)]">
+                    Administra los pedidos de tu tienda.
+                </p>
+            </div>
+            <div class="flex gap-2">
+                <button class="btn-white text-sm">Exportar CSV</button>
+                <button class="btn text-sm" onclick="location.reload()"
+                    >Actualizar</button
+                >
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead
+                    class="text-xs text-[var(--muted)] uppercase bg-gray-50 border-b border-[var(--card-border)]"
+                >
+                    <tr>
+                        <th class="px-4 py-3">ID Orden</th>
+                        <th class="px-4 py-3">Cliente</th>
+                        <th class="px-4 py-3">Fecha</th>
+                        <th class="px-4 py-3">Items</th>
+                        <th class="px-4 py-3">Total</th>
+                        <th class="px-4 py-3">Estado</th>
+                        <th class="px-4 py-3 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--card-border)]">
+                    {
+                        orders.length === 0 && (
+                            <tr>
+                                <td
+                                    colspan="7"
+                                    class="p-4 text-center text-[var(--muted)]"
+                                >
+                                    No hay órdenes registradas.
+                                </td>
+                            </tr>
+                        )
+                    }
+                    {
+                        orders.map((o) => (
+                            <tr class="hover:bg-[var(--surface)] transition-colors">
+                                <td class="px-4 py-3 font-medium text-xs font-mono">
+                                    {o.id.slice(-8)}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {o.user?.customerOf?.[0]?.name ||
+                                        o.user?.name ||
+                                        o.user?.email ||
+                                        "Invitado"}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {fmtDate(o.createdAt)}
+                                </td>
+                                <td class="px-4 py-3">{o.items.length}</td>
+                                <td class="px-4 py-3 font-bold">
+                                    {fmt(o.total)}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class={`px-2 py-1 rounded-full text-xs font-medium ${statusClass(o.status)}`}
+                                    >
+                                        {o.status}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-right">
+                                    <button class="text-[var(--accent)] hover:underline">
+                                        Ver
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</AdminLayout>

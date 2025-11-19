@@ -37,10 +37,28 @@ shopRouter.post('/auth/register', async (req, res) => {
         if (existing) return res.status(409).json({ error: 'email ya registrado en esta tienda' });
 
         const hash = await bcrypt.hash(String(password), 10);
-        // create a User and a StoreCustomer linked to the store
-        const user = await prisma.user.create({ data: { name: name || null, email: String(email).toLowerCase(), passwordHash: hash, role: 'CUSTOMER' } });
 
-        const customer = await prisma.storeCustomer.create({ data: { storeId: store.id, userId: user.id, name: name || null, email: String(email).toLowerCase() } as any });
+        // Create a scoped user for this store to allow same email in different stores with different passwords
+        // We use a composite email: storeId::email
+        const compositeEmail = `${store.id}::${String(email).toLowerCase()}`;
+
+        const user = await prisma.user.create({
+            data: {
+                name: name || null,
+                email: compositeEmail, // Scoped email for uniqueness per store
+                passwordHash: hash,
+                role: 'CUSTOMER'
+            }
+        });
+
+        const customer = await prisma.storeCustomer.create({
+            data: {
+                storeId: store.id,
+                userId: user.id,
+                name: name || null,
+                email: String(email).toLowerCase() // Real email for communication
+            } as any
+        });
 
         const token = signShopToken({ cid: customer.id });
         res.json({ token, customer: { id: customer.id, email: customer.email, name: customer.name } });
@@ -105,7 +123,17 @@ shopRouter.get('/auth/me', requireShopAuth, async (req, res) => {
         if (!cid) return res.status(401).json({ error: 'no autorizado' });
         const customer = await prisma.storeCustomer.findUnique({ where: { id: cid } as any });
         if (!customer) return res.status(401).json({ error: 'no encontrado' });
-        res.json({ customer: { id: customer.id, email: customer.email, name: customer.name, address: (customer as any).address || null } });
+        res.json({
+            customer: {
+                id: customer.id,
+                email: customer.email,
+                name: customer.name,
+                address: (customer as any).address || null,
+                phone: (customer as any).phone || null,
+                avatarUrl: (customer as any).avatarUrl || null,
+                notes: (customer as any).notes || null
+            }
+        });
     } catch (e) {
         console.error('[shop.me] error', e);
         res.status(500).json({ error: 'internal' });
@@ -125,9 +153,20 @@ shopRouter.patch('/account', requireShopAuth, async (req, res) => {
         if (typeof body.address === 'string') allowed.address = body.address;
         if (typeof body.phone === 'string') allowed.phone = body.phone;
         if (typeof body.notes === 'string') allowed.notes = body.notes;
+        if (typeof body.avatarUrl === 'string') allowed.avatarUrl = body.avatarUrl;
 
         const customer = await prisma.storeCustomer.update({ where: { id: cid } as any, data: allowed });
-        res.json({ customer: { id: customer.id, email: customer.email, name: customer.name, address: (customer as any).address || null } });
+        res.json({
+            customer: {
+                id: customer.id,
+                email: customer.email,
+                name: customer.name,
+                address: (customer as any).address || null,
+                phone: (customer as any).phone || null,
+                avatarUrl: (customer as any).avatarUrl || null,
+                notes: (customer as any).notes || null
+            }
+        });
     } catch (e) {
         console.error('[shop.patch] error', e);
         res.status(500).json({ error: 'no se pudo actualizar' });
@@ -144,14 +183,109 @@ shopRouter.get('/orders', requireShopAuth, async (req, res) => {
         try {
             // this will throw if orders relation not available, but prisma client includes it normally
             const sc = await prisma.storeCustomer.findUnique({ where: { id: cid } as any });
-            const orders = await prisma.order.findMany({ where: { userId: sc?.userId } });
+            if (!sc) return res.status(404).json({ error: 'cliente no encontrado' });
+
+            const orders = await prisma.order.findMany({
+                where: {
+                    userId: sc.userId,
+                    storeId: sc.storeId
+                },
+                include: {
+                    shippingInfo: true
+                },
+                orderBy: { createdAt: 'desc' }
+            });
             return res.json({ orders: orders || [] });
         } catch (e) {
+            console.error('[shop.orders] db error', e);
             return res.json({ orders: [] });
         }
     } catch (e) {
         console.error('[shop.orders] error', e);
         res.status(500).json({ error: 'internal' });
+    }
+});
+
+// POST /api/shop/auth/change-email
+shopRouter.post('/auth/change-email', requireShopAuth, async (req, res) => {
+    try {
+        const cid = (req as any).shop?.cid;
+        const { newEmail, password } = req.body;
+        if (!cid) return res.status(401).json({ error: 'no autorizado' });
+        if (!newEmail || !password) return res.status(400).json({ error: 'faltan datos' });
+
+        const customer = await prisma.storeCustomer.findUnique({ where: { id: cid } as any });
+        if (!customer) return res.status(404).json({ error: 'cliente no encontrado' });
+
+        const user = await prisma.user.findUnique({ where: { id: customer.userId } });
+        if (!user) return res.status(404).json({ error: 'usuario no encontrado' });
+
+        // Verify password
+        const ok = await bcrypt.compare(String(password), user.passwordHash);
+        if (!ok) return res.status(401).json({ error: 'contraseña incorrecta' });
+
+        // Check if new email is taken in this store
+        const existing = await prisma.storeCustomer.findFirst({
+            where: {
+                storeId: customer.storeId,
+                email: String(newEmail).toLowerCase(),
+                NOT: { id: cid } // exclude self
+            }
+        });
+        if (existing) return res.status(409).json({ error: 'email ya registrado en esta tienda' });
+
+        // Update User (composite email) and StoreCustomer (real email)
+        const compositeEmail = `${customer.storeId}::${String(newEmail).toLowerCase()}`;
+
+        // Transaction to ensure consistency
+        await prisma.$transaction([
+            prisma.user.update({
+                where: { id: user.id },
+                data: { email: compositeEmail }
+            }),
+            prisma.storeCustomer.update({
+                where: { id: cid } as any,
+                data: { email: String(newEmail).toLowerCase() }
+            })
+        ]);
+
+        res.json({ success: true });
+    } catch (e) {
+        console.error('[shop.change-email] error', e);
+        res.status(500).json({ error: 'error al cambiar email' });
+    }
+});
+
+// POST /api/shop/auth/change-password
+shopRouter.post('/auth/change-password', requireShopAuth, async (req, res) => {
+    try {
+        const cid = (req as any).shop?.cid;
+        const { currentPassword, newPassword } = req.body;
+        if (!cid) return res.status(401).json({ error: 'no autorizado' });
+        if (!currentPassword || !newPassword) return res.status(400).json({ error: 'faltan datos' });
+
+        const customer = await prisma.storeCustomer.findUnique({ where: { id: cid } as any });
+        if (!customer) return res.status(404).json({ error: 'cliente no encontrado' });
+
+        const user = await prisma.user.findUnique({ where: { id: customer.userId } });
+        if (!user) return res.status(404).json({ error: 'usuario no encontrado' });
+
+        // Verify current password
+        const ok = await bcrypt.compare(String(currentPassword), user.passwordHash);
+        if (!ok) return res.status(401).json({ error: 'contraseña actual incorrecta' });
+
+        // Hash new password
+        const hash = await bcrypt.hash(String(newPassword), 10);
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { passwordHash: hash }
+        });
+
+        res.json({ success: true });
+    } catch (e) {
+        console.error('[shop.change-password] error', e);
+        res.status(500).json({ error: 'error al cambiar contraseña' });
     }
 });
 

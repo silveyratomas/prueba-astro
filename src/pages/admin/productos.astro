@@ -131,7 +131,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         <!-- Modal selector de categorías -->
         <div
           id="catModal"
-          class="fixed inset-0 z-50 hidden items-center justify-center"
+          class="fixed inset-0 z-50 hidden flex items-center justify-center"
         >
           <div class="absolute inset-0 bg-black/50" id="catModalOverlay"></div>
           <div
@@ -144,7 +144,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
               >
             </header>
             <div class="grid gap-4 lg:grid-cols-[360px,1fr]">
-              <aside class="border-r pr-4">
+              <aside
+                class="border-b pb-4 lg:border-b-0 lg:pb-0 lg:border-r lg:pr-4"
+              >
                 <p class="text-xs text-[var(--muted)] mb-2">
                   Seleccioná una o varias categorías
                 </p>

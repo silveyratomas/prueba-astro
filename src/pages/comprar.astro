@@ -1,8 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { DEFAULT_STORE_SLUG, API_BASE } from "../config";
+
+const storeSlug = Astro.url.searchParams.get("store") || DEFAULT_STORE_SLUG;
 const fmt = (n: number) =>
-  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(n);
+  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(
+    n,
+  );
 ---
+
 <Layout title="Comprar – TuTienda">
   <h1 class="text-3xl font-bold mb-6 text-[var(--text)]">Finalizar compra</h1>
 
@@ -13,25 +19,58 @@ const fmt = (n: number) =>
       class="bg-[var(--surface)] border border-[var(--card-border)] rounded-xl shadow-sm p-6 space-y-6"
       onsubmit="event.preventDefault(); window.__checkout_submit && __checkout_submit();"
     >
+      <input type="hidden" name="storeSlug" value={storeSlug} />
       <!-- Datos del cliente -->
       <fieldset class="space-y-4">
-        <legend class="font-semibold text-[var(--text)]">Datos del cliente</legend>
+        <legend class="font-semibold text-[var(--text)]"
+          >Datos del cliente</legend
+        >
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label for="nombre" class="block text-sm font-medium mb-1 text-[var(--text)]">Nombre del cliente</label>
-            <input id="nombre" name="nombre" autocomplete="name" required
-              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+            <label
+              for="nombre"
+              class="block text-sm font-medium mb-1 text-[var(--text)]"
+              >Nombre del cliente</label
+            >
+            <input
+              id="nombre"
+              name="nombre"
+              autocomplete="name"
+              required
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            />
           </div>
           <div>
-            <label for="telefono" class="block text-sm font-medium mb-1 text-[var(--text)]">Teléfono</label>
-            <input id="telefono" name="telefono" type="tel" inputmode="tel" autocomplete="tel" required
-              pattern="^[0-9+()\s-]{6,}$"
-              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+            <label
+              for="telefono"
+              class="block text-sm font-medium mb-1 text-[var(--text)]"
+              >Teléfono</label
+            >
+            <input
+              id="telefono"
+              name="telefono"
+              type="tel"
+              inputmode="tel"
+              autocomplete="tel"
+              required
+              pattern="^[0-9+\(\)\s\-]{6,}$"
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            />
           </div>
           <div class="sm:col-span-2">
-            <label for="email" class="block text-sm font-medium mb-1 text-[var(--text)]">E-mail</label>
-            <input id="email" name="email" type="email" autocomplete="email" required
-              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+            <label
+              for="email"
+              class="block text-sm font-medium mb-1 text-[var(--text)]"
+              >E-mail</label
+            >
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            />
           </div>
         </div>
       </fieldset>
@@ -41,21 +80,43 @@ const fmt = (n: number) =>
         <legend class="font-semibold text-[var(--text)]">Entrega</legend>
         <div class="flex flex-wrap gap-6">
           <label class="inline-flex items-center gap-2 text-sm">
-            <input type="radio" name="shipping" value="retiro" class="rounded border-[var(--card-border)]" checked>
+            <input
+              type="radio"
+              name="shipping"
+              value="retiro"
+              class="rounded border-[var(--card-border)]"
+              checked
+            />
             Retiro en tienda
           </label>
           <label class="inline-flex items-center gap-2 text-sm">
-            <input type="radio" name="shipping" value="envio" class="rounded border-[var(--card-border)]">
+            <input
+              type="radio"
+              name="shipping"
+              value="envio"
+              class="rounded border-[var(--card-border)]"
+            />
             Envío a domicilio
           </label>
         </div>
 
-        <div id="direccionWrap" class="grid grid-cols-1 sm:grid-cols-2 gap-4" hidden>
+        <div
+          id="direccionWrap"
+          class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          hidden
+        >
           <div class="sm:col-span-2">
-            <label for="direccion" class="block text-sm font-medium mb-1 text-[var(--text)]">Dirección completa</label>
-            <input id="direccion" name="direccion"
+            <label
+              for="direccion"
+              class="block text-sm font-medium mb-1 text-[var(--text)]"
+              >Dirección completa</label
+            >
+            <input
+              id="direccion"
+              name="direccion"
               class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-              placeholder="Calle, número, localidad, provincia" />
+              placeholder="Calle, número, localidad, provincia"
+            />
           </div>
         </div>
       </fieldset>
@@ -65,9 +126,17 @@ const fmt = (n: number) =>
         <legend class="font-semibold text-[var(--text)]">Pago y cupón</legend>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label for="pago" class="block text-sm font-medium mb-1 text-[var(--text)]">Medio de pago</label>
-            <select id="pago" name="pago" required
-              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]">
+            <label
+              for="pago"
+              class="block text-sm font-medium mb-1 text-[var(--text)]"
+              >Medio de pago</label
+            >
+            <select
+              id="pago"
+              name="pago"
+              required
+              class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            >
               <option value="">Seleccionar…</option>
               <option>Tarjeta</option>
               <option>Transferencia</option>
@@ -76,13 +145,27 @@ const fmt = (n: number) =>
           </div>
 
           <div>
-            <label for="cupon" class="block text-sm font-medium mb-1 text-[var(--text)]">Cupón (demo)</label>
+            <label
+              for="cupon"
+              class="block text-sm font-medium mb-1 text-[var(--text)]"
+              >Cupón (demo)</label
+            >
             <div class="grid grid-cols-[1fr_auto] gap-2">
-              <input id="cupon" name="cupon" placeholder="Ej: PROMO10"
-                class="min-w-0 rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
-              <button type="button" id="aplicarCupon" class="btn shrink-0 px-3 py-2">Aplicar</button>
+              <input
+                id="cupon"
+                name="cupon"
+                placeholder="Ej: PROMO10"
+                class="min-w-0 rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              />
+              <button
+                type="button"
+                id="aplicarCupon"
+                class="btn shrink-0 px-3 py-2">Aplicar</button
+              >
             </div>
-            <p class="text-xs text-[var(--muted)] mt-1">Cupón de prueba: <strong>PROMO10</strong> (10% off)</p>
+            <p class="text-xs text-[var(--muted)] mt-1">
+              Cupón de prueba: <strong>PROMO10</strong> (10% off)
+            </p>
           </div>
         </div>
       </fieldset>
@@ -90,20 +173,33 @@ const fmt = (n: number) =>
       <!-- Notas -->
       <fieldset class="space-y-3">
         <legend class="font-semibold text-[var(--text)]">Notas</legend>
-        <input id="notas" name="notas" placeholder="Observaciones del pedido (opcional)"
-          class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]" />
+        <input
+          id="notas"
+          name="notas"
+          placeholder="Observaciones del pedido (opcional)"
+          class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+        />
       </fieldset>
 
       <!-- Términos + acciones -->
       <div class="flex items-center justify-between gap-3 pt-2">
         <label class="inline-flex items-center gap-2 text-sm">
-          <input id="terms" type="checkbox" class="rounded border-[var(--card-border)]" required>
+          <input
+            id="terms"
+            type="checkbox"
+            class="rounded border-[var(--card-border)]"
+            required
+          />
           Acepto términos y condiciones
         </label>
 
         <div class="flex gap-2">
           <button type="reset" class="btn-outline">Limpiar</button>
-          <button id="submitBtn" type="submit" class="btn disabled:opacity-50 disabled:cursor-not-allowed">
+          <button
+            id="submitBtn"
+            type="submit"
+            class="btn disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             Confirmar compra
           </button>
         </div>
@@ -116,10 +212,16 @@ const fmt = (n: number) =>
 
     <!-- =================== RIGHT: SUMMARY =================== -->
     <aside class="">
-      <div class="bg-[var(--surface)] border border-[var(--card-border)] rounded-xl shadow-sm p-6 md:sticky md:top-6">
-        <h2 class="text-xl font-semibold mb-4 text-[var(--text)]">Tu carrito</h2>
+      <div
+        class="bg-[var(--surface)] border border-[var(--card-border)] rounded-xl shadow-sm p-6 md:sticky md:top-6"
+      >
+        <h2 class="text-xl font-semibold mb-4 text-[var(--text)]">
+          Tu carrito
+        </h2>
 
-        <div id="emptyCart" class="text-[var(--muted)]">No hay productos en el carrito todavía.</div>
+        <div id="emptyCart" class="text-[var(--muted)]">
+          No hay productos en el carrito todavía.
+        </div>
 
         <div id="cartBox" class="hidden space-y-3">
           <table class="w-full text-sm">
@@ -132,10 +234,14 @@ const fmt = (n: number) =>
                 <th class="pb-2"></th>
               </tr>
             </thead>
-            <tbody id="cartRows" class="align-top divide-y divide-[var(--card-border)]"></tbody>
+            <tbody
+              id="cartRows"
+              class="align-top divide-y divide-[var(--card-border)]"></tbody>
           </table>
 
-          <div class="border-t border-[var(--card-border)] pt-3 space-y-1 text-sm">
+          <div
+            class="border-t border-[var(--card-border)] pt-3 space-y-1 text-sm"
+          >
             <div class="flex justify-between">
               <span class="text-[var(--muted)]">Subtotal</span>
               <span id="sumSubtotal">$ 0,00</span>
@@ -155,8 +261,15 @@ const fmt = (n: number) =>
           </div>
 
           <div class="mt-3 flex items-center justify-between">
-            <button type="button" id="clearBtn" class="text-xs text-[var(--muted)] hover:text-red-600">Vaciar carrito</button>
-            <span class="text-xs text-[var(--muted)]">Envío gratis desde $100.000</span>
+            <button
+              type="button"
+              id="clearBtn"
+              class="text-xs text-[var(--muted)] hover:text-red-600"
+              >Vaciar carrito</button
+            >
+            <span class="text-xs text-[var(--muted)]"
+              >Envío gratis desde $100.000</span
+            >
           </div>
         </div>
       </div>
@@ -166,57 +279,66 @@ const fmt = (n: number) =>
   <!-- =================== SCRIPT =================== -->
   <script>
     // @ts-nocheck
-    document.addEventListener('DOMContentLoaded', () => {
-      const form         = document.getElementById('checkoutForm');
-      const submitBtn    = document.getElementById('submitBtn');
-      const terms        = document.getElementById('terms');
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("checkoutForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const terms = document.getElementById("terms");
 
       // Entrega
-      const dirWrap = document.getElementById('direccionWrap');
+      const dirWrap = document.getElementById("direccionWrap");
 
       // Cupón
-      const cuponInput = document.getElementById('cupon');
-      const aplicarCuponBtn = document.getElementById('aplicarCupon');
+      const cuponInput = document.getElementById("cupon");
+      const aplicarCuponBtn = document.getElementById("aplicarCupon");
 
       // Totales / resumen
-      const rowsEl     = document.getElementById('cartRows');
-      const totalEl    = document.getElementById('cartTotal');
-      const emptyEl    = document.getElementById('emptyCart');
-      const boxEl      = document.getElementById('cartBox');
-      const inputJson  = document.getElementById('cart_json');
-      const inputTotal = document.getElementById('total_final');
-      const clearBtn   = document.getElementById('clearBtn');
-      const sumSubtotal = document.getElementById('sumSubtotal');
-      const sumDescuento = document.getElementById('sumDescuento');
-      const sumEnvio = document.getElementById('sumEnvio');
+      const rowsEl = document.getElementById("cartRows");
+      const totalEl = document.getElementById("cartTotal");
+      const emptyEl = document.getElementById("emptyCart");
+      const boxEl = document.getElementById("cartBox");
+      const inputJson = document.getElementById("cart_json");
+      const inputTotal = document.getElementById("total_final");
+      const clearBtn = document.getElementById("clearBtn");
+      const sumSubtotal = document.getElementById("sumSubtotal");
+      const sumDescuento = document.getElementById("sumDescuento");
+      const sumEnvio = document.getElementById("sumEnvio");
 
-      const fmt = (c) => new Intl.NumberFormat('es-AR',{ style:'currency', currency:'ARS' }).format(c);
+      const fmt = (c) =>
+        new Intl.NumberFormat("es-AR", {
+          style: "currency",
+          currency: "ARS",
+        }).format(c);
 
       // API carrito
-      const cartApi = (window.tpCart && typeof window.tpCart.getCart === 'function')
-        ? window.tpCart : { getCart: () => [], setCart: ()=>{}, clearCart: () => {} };
+      const cartApi =
+        window.tpCart && typeof window.tpCart.getCart === "function"
+          ? window.tpCart
+          : { getCart: () => [], setCart: () => {}, clearCart: () => {} };
 
       let cupon = null; // { code, pct }
 
       // Mostrar/ocultar dirección
       function toggleAddress() {
-        const ship = (form.elements['shipping'].value || 'retiro');
-        dirWrap.hidden = ship !== 'envio';
-        if (ship === 'envio') form.direccion?.setAttribute('required', 'required');
-        else form.direccion?.removeAttribute('required');
+        const ship = form.elements["shipping"].value || "retiro";
+        dirWrap.hidden = ship !== "envio";
+        if (ship === "envio")
+          form.direccion?.setAttribute("required", "required");
+        else form.direccion?.removeAttribute("required");
       }
-      form.addEventListener('change', (e) => { if (e.target.name === 'shipping') toggleAddress(); });
+      form.addEventListener("change", (e) => {
+        if (e.target.name === "shipping") toggleAddress();
+      });
 
       // Prefill desde tpUser (si existe)
       try {
         const u = window.tpUser?.get?.();
         if (u) {
-          const f = document.getElementById('checkoutForm');
+          const f = document.getElementById("checkoutForm");
           if (f) {
-            if (f.nombre)    f.nombre.value    = u.name     || '';
-            if (f.telefono)  f.telefono.value  = u.phone    || '';
-            if (f.email)     f.email.value     = u.email    || '';
-            if (f.direccion) f.direccion.value = u.address  || '';
+            if (f.nombre) f.nombre.value = u.name || "";
+            if (f.telefono) f.telefono.value = u.phone || "";
+            if (f.email) f.email.value = u.email || "";
+            if (f.direccion) f.direccion.value = u.address || "";
           }
         }
       } catch {}
@@ -225,26 +347,28 @@ const fmt = (n: number) =>
       function render() {
         const cart = cartApi.getCart() || [];
         const has = cart.length > 0;
-        emptyEl.classList.toggle('hidden', has);
-        boxEl.classList.toggle('hidden', !has);
+        emptyEl.classList.toggle("hidden", has);
+        boxEl.classList.toggle("hidden", !has);
 
         // submit habilitado sólo si hay carrito + términos aceptados + form válido (se re-checkea en submit)
         submitBtn.disabled = !has || !terms.checked;
 
         if (!has) {
-          rowsEl.innerHTML = '';
-          inputJson.value = '[]';
-          inputTotal.value = '0';
+          rowsEl.innerHTML = "";
+          inputJson.value = "[]";
+          inputTotal.value = "0";
           totalEl.textContent = fmt(0);
           sumSubtotal.textContent = fmt(0);
-          sumDescuento.textContent = '—';
-          sumEnvio.textContent = '—';
+          sumDescuento.textContent = "—";
+          sumEnvio.textContent = "—";
           return;
         }
 
         inputJson.value = JSON.stringify(cart);
 
-        rowsEl.innerHTML = cart.map((i, idx) => `
+        rowsEl.innerHTML = cart
+          .map(
+            (i, idx) => `
           <tr class="h-12">
             <td class="py-2 pr-3"><div class="font-medium">${i.title}</div></td>
             <td class="py-2 text-right text-[color:var(--muted)]">${fmt(i.price)}</td>
@@ -262,66 +386,77 @@ const fmt = (n: number) =>
               <button type="button" data-act="del" data-idx="${idx}" class="text-xs text-[color:var(--muted)] hover:text-red-600">✕</button>
             </td>
           </tr>
-        `).join('');
+        `,
+          )
+          .join("");
 
-        rowsEl.querySelectorAll('button[data-act]').forEach(btn => {
-          btn.addEventListener('click', () => {
+        rowsEl.querySelectorAll("button[data-act]").forEach((btn) => {
+          btn.addEventListener("click", () => {
             const idx = Number(btn.dataset.idx);
             const act = btn.dataset.act;
             const items = cartApi.getCart() || [];
             if (!items[idx]) return;
-            if (act === 'inc') items[idx].qty = (items[idx].qty || 1) + 1;
-            if (act === 'dec') items[idx].qty = Math.max(1, (items[idx].qty || 1) - 1);
-            if (act === 'del') items.splice(idx, 1);
-            cartApi.setCart ? cartApi.setCart(items) : localStorage.setItem('tp_cart', JSON.stringify(items));
+            if (act === "inc") items[idx].qty = (items[idx].qty || 1) + 1;
+            if (act === "dec")
+              items[idx].qty = Math.max(1, (items[idx].qty || 1) - 1);
+            if (act === "del") items.splice(idx, 1);
+            cartApi.setCart
+              ? cartApi.setCart(items)
+              : localStorage.setItem("tp_cart", JSON.stringify(items));
             render();
           });
         });
 
         const subtotal = cart.reduce((a, i) => a + i.price * i.qty, 0);
         const descuento = cupon ? Math.round(subtotal * cupon.pct) : 0;
-        const envio = (subtotal - descuento) >= 100000 ? 0 : (subtotal ? 1500 : 0);
+        const envio = subtotal - descuento >= 100000 ? 0 : subtotal ? 1500 : 0;
         const total = subtotal - descuento + envio;
 
         sumSubtotal.textContent = fmt(subtotal);
-        sumDescuento.textContent = descuento ? `− ${fmt(descuento)} (cupón ${cupon.code})` : '—';
-        sumEnvio.textContent = envio ? fmt(envio) : 'Gratis';
+        sumDescuento.textContent = descuento
+          ? `− ${fmt(descuento)} (cupón ${cupon.code})`
+          : "—";
+        sumEnvio.textContent = envio ? fmt(envio) : "Gratis";
         totalEl.textContent = fmt(total);
 
         inputTotal.value = String(total);
       }
 
       // Cupón
-      aplicarCuponBtn.addEventListener('click', () => {
-        const code = (cuponInput.value || '').trim().toUpperCase();
-        if (!code) { cupon = null; render(); return; }
-        if (code === 'PROMO10') {
-          cupon = { code, pct: 0.10 };
-          alert('Cupón aplicado: 10% de descuento.');
+      aplicarCuponBtn.addEventListener("click", () => {
+        const code = (cuponInput.value || "").trim().toUpperCase();
+        if (!code) {
+          cupon = null;
+          render();
+          return;
+        }
+        if (code === "PROMO10") {
+          cupon = { code, pct: 0.1 };
+          alert("Cupón aplicado: 10% de descuento.");
         } else {
           cupon = null;
-          alert('Cupón inválido (demo).');
+          alert("Cupón inválido (demo).");
         }
         render();
       });
 
       // Vaciar
-      clearBtn.addEventListener('click', () => {
-        if (!confirm('¿Vaciar el carrito?')) return;
+      clearBtn.addEventListener("click", () => {
+        if (!confirm("¿Vaciar el carrito?")) return;
         cartApi.clearCart();
         render();
       });
 
       // Guardar/recuperar formulario
-      const FORM_KEY = 'tp_checkout';
+      const FORM_KEY = "tp_checkout";
       function loadForm() {
         try {
-          const data = JSON.parse(localStorage.getItem(FORM_KEY) || '{}');
-          for (const [k,v] of Object.entries(data)) {
+          const data = JSON.parse(localStorage.getItem(FORM_KEY) || "{}");
+          for (const [k, v] of Object.entries(data)) {
             const el = form.elements[k];
             if (!el) continue;
             if (el instanceof RadioNodeList) {
-              [...el].forEach(r => r.checked = (r.value === v));
+              [...el].forEach((r) => (r.checked = r.value === v));
             } else el.value = v;
           }
           toggleAddress();
@@ -331,31 +466,69 @@ const fmt = (n: number) =>
         const data = {};
         for (const el of form.elements) {
           if (!el.name) continue;
-          if (el.type === 'radio') { if (el.checked) data[el.name] = el.value; }
-          else data[el.name] = el.value;
+          if (el.type === "radio") {
+            if (el.checked) data[el.name] = el.value;
+          } else data[el.name] = el.value;
         }
         localStorage.setItem(FORM_KEY, JSON.stringify(data));
       }
-      form.addEventListener('input', saveForm);
+      form.addEventListener("input", saveForm);
 
-      // Submit demo
-      window.__checkout_submit = function () {
+      // Submit real
+      window.__checkout_submit = async function () {
         if (submitBtn.disabled) return;
         if (!form.reportValidity()) return;
+
         const cart = cartApi.getCart() || [];
-        if (!cart.length) { alert('El carrito está vacío.'); return; }
-        const payload = Object.fromEntries(new FormData(form).entries());
-        console.log('[checkout] payload', payload);
-        alert('Formulario enviado (demo). Mirá la consola para ver el payload.');
+        if (!cart.length) {
+          alert("El carrito está vacío.");
+          return;
+        }
+
+        // Preparar payload
+        const formData = new FormData(form);
+        const payload = Object.fromEntries(formData.entries());
+
+        // Asegurar que cart_json y total_final estén actualizados
+        payload.cart_json = JSON.stringify(cart);
+        payload.total_final = inputTotal.value;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Procesando...";
+
+        try {
+          const res = await fetch("/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "Error al procesar la orden");
+          }
+
+          // Éxito
+          cartApi.clearCart();
+          localStorage.removeItem(FORM_KEY); // limpiar form guardado
+          alert("¡Compra realizada con éxito! ID: " + data.orderId);
+          window.location.href = "/"; // o a una página de "gracias"
+        } catch (e) {
+          console.error(e);
+          alert("Hubo un error: " + e.message);
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Confirmar compra";
+        }
       };
 
       // init
       loadForm();
       toggleAddress();
       render();
-      terms.addEventListener('change', () => render());
-      window.addEventListener('storage', render);
-      window.addEventListener('focus', render);
+      terms.addEventListener("change", () => render());
+      window.addEventListener("storage", render);
+      window.addEventListener("focus", render);
     });
   </script>
 </Layout>

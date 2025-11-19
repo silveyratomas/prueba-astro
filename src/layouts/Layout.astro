@@ -252,30 +252,15 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
         </nav>
 
         <!-- Selector de tema (sólo md+) -->
-        <div class="ml-auto hidden md:flex items-center gap-2">
+        <!-- <div class="ml-auto hidden md:flex items-center gap-2">
           <span class="text-xs opacity-80">Tema:</span>
-          <button
-            class="px-2 py-1 rounded bg-[var(--surface)] border border-[var(--card-border)]"
-            onclick="setTheme('')">Default</button
-          >
-          <button
-            class="px-2 py-1 rounded bg-[#1e3a8a] text-white"
-            onclick="setTheme('theme-profesional')">Profesional</button
-          >
-          <button
-            class="px-2 py-1 rounded bg-[#f57c00] text-white"
-            onclick="setTheme('theme-naranja-profesional')">Naranja</button
-          >
-          <button
-            class="px-2 py-1 rounded bg-[#0ea5e9] text-white"
-            onclick="setTheme('theme-azul')">Azul</button
-          >
-        </div>
+          ...
+        </div> -->
       </div>
     </header>
 
     <main
-      class="container flex-1 py-5 pb-24 md:pb-6"
+      class="container flex-1 py-5 pb-24 md:pb-6 animate-fade-in"
       style="padding-bottom: calc(5.25rem + env(safe-area-inset-bottom))"
     >
       <slot />
@@ -292,6 +277,23 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
     <!-- Scripts base -->
     <script src="/cart.js" defer></script>
     <script src="/hook-admin.js" defer></script>
+
+    <!-- Config Loader -->
+    <script is:inline>
+      (function () {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const isPreview = urlParams.get("preview") === "1";
+          const key = isPreview ? "tp_cfg_preview" : "tp_cfg";
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            window.__storeConfig = JSON.parse(raw);
+          }
+        } catch (e) {
+          console.error("Error loading store config", e);
+        }
+      })();
+    </script>
 
     <!-- Mini-carrito + Theming (chat gpt puro y duro) -->
     <script>
@@ -389,25 +391,25 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
       });
 
       // Theming simple (persistido)
-      (function () {
-        try {
-          const saved = localStorage.getItem("theme");
-          if (saved) document.documentElement.classList.add(saved);
-        } catch {}
-      })();
+      // (function () {
+      //   try {
+      //     const saved = localStorage.getItem("theme");
+      //     if (saved) document.documentElement.classList.add(saved);
+      //   } catch {}
+      // })();
 
-      window.setTheme = function (name) {
-        try {
-          const html = document.documentElement;
-          html.className = html.className
-            .split(/\s+/)
-            .filter((c) => !c.startsWith("theme-"))
-            .join(" ")
-            .trim();
-          if (name) html.classList.add(name);
-          localStorage.setItem("theme", name || "");
-        } catch {}
-      };
+      // window.setTheme = function (name) {
+      //   try {
+      //     const html = document.documentElement;
+      //     html.className = html.className
+      //       .split(/\s+/)
+      //       .filter((c) => !c.startsWith("theme-"))
+      //       .join(" ")
+      //       .trim();
+      //     if (name) html.classList.add(name);
+      //     localStorage.setItem("theme", name || "");
+      //   } catch {}
+      // };
     </script>
     <script>
       // @ts-nocheck
@@ -505,9 +507,9 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
             try {
               const c = await shopAuth.me();
               if (c && c.name) {
-                if (brandHeader)
-                  brandHeader.textContent =
-                    c.name.split(" ")[0] + " – TuTienda";
+                // if (brandHeader)
+                //   brandHeader.textContent =
+                //     c.name.split(" ")[0] + " – TuTienda";
                 const btn = document.getElementById(shopAvatarId);
                 if (btn && c.avatarUrl) {
                   btn.textContent = "";
@@ -533,8 +535,8 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
           if (linkLogout) linkLogout.style.display = logged ? "" : "none";
 
           // Si querés, mostrás el nombre en el header:
-          if (brandHeader && u?.name)
-            brandHeader.textContent = u.name.split(" ")[0] + " – TuTienda";
+          // if (brandHeader && u?.name)
+          //   brandHeader.textContent = u.name.split(" ")[0] + " – TuTienda";
         }
 
         refreshUserUI();
@@ -605,25 +607,10 @@ const { title = "TuTienda", description = "E-commerce autogestionable" } =
 
         <hr class="my-4 border-[var(--card-border)]" />
 
-        <h4 class="text-xs uppercase text-[var(--muted)]">Tema</h4>
+        <!-- <h4 class="text-xs uppercase text-[var(--muted)]">Tema</h4>
         <div class="flex gap-2 mt-2">
-          <button
-            class="px-2 py-1 rounded border border-[var(--card-border)] text-xs"
-            onclick="setTheme('')">Default</button
-          >
-          <button
-            class="px-2 py-1 rounded border border-[var(--card-border)] text-xs"
-            onclick="setTheme('theme-profesional')">Pro</button
-          >
-          <button
-            class="px-2 py-1 rounded border border-[var(--card-border)] text-xs"
-            onclick="setTheme('theme-naranja-profesional')">Naranja</button
-          >
-          <button
-            class="px-2 py-1 rounded border border-[var(--card-border)] text-xs"
-            onclick="setTheme('theme-azul')">Azul</button
-          >
-        </div>
+           ...
+        </div> -->
       </aside>
     </div>
   </body>

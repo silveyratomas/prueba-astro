@@ -96,67 +96,53 @@ header a:hover { opacity: 1; }
    TEMAS (variables)
    ========================= */
 
-/* Tema Marrón (default) */
+/* Tema Naranja Profesional (default) */
 :root {
-  --brand: #4e342e;
-  --on-brand: #ffffff;
-  --accent: #8d6e63;
-  --accent-hover: #6d4c41;
-  --surface: #f5f5f5;
-  --text: #3e2723;
-  --muted: #8d6e63;
-  --card: #ffffff;
-  --card-border: #d7ccc8;
-  --button-background: #ffffff;
-  --button-text: #3e2723;
-  --red-negativo: #e53935;
-}
-
-/* Profesional (azul/verde) */
-.theme-profesional {
-  --brand: #1e3a8a;
-  --on-brand: #ffffff;
-  --accent: #10b981;
-  --accent-hover: #0284c7;
-  --surface: #f8fafc;
-  --text: #111827;
-  --muted: #6b7280;
-  --card: #ffffff;
-  --card-border: #e5e7eb;
-  --button-background: #ffffff;
-  --button-text: #111827;
-}
-
-/* Naranja profesional */
-.theme-naranja-profesional {
   --brand: #1c1c1c;
   --on-brand: #ffffff;
   --accent: #f57c00;
   --accent-hover: #e65100;
-  --surface: #fafafa;
+  --surface: #f0f2f5;
   --text: #212121;
   --muted: #616161;
   --card: #ffffff;
   --card-border: #e0e0e0;
   --button-background: #ffffff;
   --button-text: #212121;
-}
-
-/* Azul */
-.theme-azul {
-  --brand: #0ea5e9;
-  --on-brand: #ffffff;
-  --accent: #0284c7;
-  --accent-hover: #026c9f;
-  --surface: #f0f9ff;
-  --text: #0f172a;
-  --muted: #475569;
-  --card: #ffffff;
-  --card-border: #e2e8f0;
-  --button-background: #ffffff;
-  --button-text: #0f172a;
+  --red-negativo: #e53935;
 }
 
 /* Header/Footer usan el color de marca */
-header { background: var(--brand); color: var(--on-brand); }
+#siteHeader { background: var(--brand); color: var(--on-brand); }
 footer { background: var(--brand); color: var(--on-brand); }
+
+/* =========================
+   ANIMACIONES
+   ========================= */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+/* Stagger para listas (hijos directos) */
+.stagger-1 > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-1 > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-1 > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-1 > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-1 > *:nth-child(5) { animation-delay: 200ms; }
+
+/* Aplicar slide-up suave a las tarjetas y secciones principales por defecto */
+main section, main .card, main article {
+  animation: slideUp 0.5s ease-out forwards;
+}

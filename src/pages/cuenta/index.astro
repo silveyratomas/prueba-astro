@@ -5,103 +5,386 @@ import "../../styles/global.css";
 <html lang="es">
     <head>
         <meta charset="utf-8" />
-        <title>Mi cuenta – Tienda</title>
+        <title>Mi cuenta</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
     </head>
-    <body class="min-h-screen bg-[var(--surface)] text-[var(--text)] py-12">
-        <main class="container mx-auto px-4 max-w-4xl">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="md:col-span-1">
+    <body
+        class="min-h-screen bg-[var(--surface)] text-[var(--text)] py-8 md:py-12"
+    >
+        <main class="container mx-auto px-4 max-w-5xl">
+            <h1 class="text-3xl font-bold mb-8 text-[var(--text)]">
+                Mi Cuenta
+            </h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <!-- Sidebar de Navegación -->
+                <div class="md:col-span-4 lg:col-span-3">
                     <div
-                        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6"
+                        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm sticky top-4"
                     >
-                        <div class="flex items-center gap-3 mb-4">
+                        <div
+                            class="flex flex-col items-center text-center mb-6 pb-6 border-b border-[var(--card-border)]"
+                        >
+                            <img
+                                id="sidebarAvatar"
+                                src="https://ui-avatars.com/api/?name=User"
+                                class="w-20 h-20 rounded-full object-cover border-4 border-[var(--surface)] shadow-md mb-3"
+                            />
                             <div
-                                id="avatar"
-                                class="w-12 h-12 rounded-full bg-[var(--muted)] grid place-items-center text-white"
+                                id="accName"
+                                class="font-bold text-lg truncate w-full"
                             >
-                                ?
+                                Cargando...
                             </div>
-                            <div>
-                                <div id="accName" class="font-semibold">
-                                    Usuario
-                                </div>
-                                <div
-                                    id="accEmail"
-                                    class="text-sm text-[var(--muted)]"
-                                >
-                                    email@ejemplo.com
-                                </div>
+                            <div
+                                id="accEmail"
+                                class="text-sm text-[var(--muted)] truncate w-full"
+                            >
+                                ...
                             </div>
                         </div>
-                        <div class="space-y-2">
-                            <a href="/cuenta" class="block">Perfil</a>
-                            <a href="/comprar" class="block">Mis compras</a>
+
+                        <nav class="space-y-1">
+                            <button
+                                onclick="switchTab('profile')"
+                                id="tab-profile"
+                                class="w-full text-left px-4 py-2 rounded-lg hover:bg-[var(--surface)] transition-colors font-medium text-[var(--primary)] bg-[var(--surface)]"
+                            >
+                                Mi Perfil
+                            </button>
+                            <button
+                                onclick="switchTab('orders')"
+                                id="tab-orders"
+                                class="w-full text-left px-4 py-2 rounded-lg hover:bg-[var(--surface)] transition-colors font-medium text-[var(--muted)]"
+                            >
+                                Mis Compras
+                            </button>
+                            <button
+                                onclick="switchTab('settings')"
+                                id="tab-settings"
+                                class="w-full text-left px-4 py-2 rounded-lg hover:bg-[var(--surface)] transition-colors font-medium text-[var(--muted)]"
+                            >
+                                Configuración
+                            </button>
+                            <a
+                                href="/comprar"
+                                class="block w-full text-left px-4 py-2 rounded-lg hover:bg-[var(--surface)] transition-colors font-medium text-[var(--muted)]"
+                            >
+                                Mi Carrito
+                            </a>
                             <button
                                 id="logoutBtn"
-                                class="btn-outline w-full mt-3"
-                                >Cerrar sesión</button
+                                class="w-full text-left px-4 py-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors font-medium mt-4"
                             >
-                        </div>
+                                Cerrar sesión
+                            </button>
+                            <a
+                                href="/"
+                                class="block w-full text-left px-4 py-2 rounded-lg hover:bg-[var(--surface)] transition-colors font-medium text-[var(--muted)] mt-2 border-t border-[var(--card-border)] pt-4"
+                            >
+                                Volver a la tienda
+                            </a>
+                        </nav>
                     </div>
                 </div>
 
-                <div class="md:col-span-2">
-                    <div
-                        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 mb-6"
-                    >
-                        <h2 class="text-lg font-bold mb-3">Perfil</h2>
-                        <form
-                            id="profileForm"
-                            onsubmit="saveProfile(event)"
-                            class="space-y-4"
+                <!-- Área de Contenido -->
+                <div class="md:col-span-8 lg:col-span-9">
+                    <!-- Sección Perfil -->
+                    <div id="view-profile" class="space-y-6">
+                        <div
+                            class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm"
                         >
-                            <label class="block text-sm"
-                                >Email
-                                <input
-                                    name="email"
-                                    id="email"
-                                    readonly
-                                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-gray-100"
-                                />
-                            </label>
-                            <label class="block text-sm"
-                                >Nombre
-                                <input
-                                    name="name"
-                                    id="name"
-                                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-                                />
-                            </label>
-                            <label class="block text-sm"
-                                >Teléfono
-                                <input
-                                    name="phone"
-                                    id="phone"
-                                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-                                />
-                            </label>
-                            <label class="block text-sm"
-                                >Dirección
-                                <input
-                                    name="address"
-                                    id="address"
-                                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-                                />
-                            </label>
-                            <div class="flex gap-3">
-                                <button class="btn">Guardar</button>
-                            </div>
-                        </form>
+                            <h2
+                                class="text-xl font-bold mb-6 pb-2 border-b border-[var(--card-border)]"
+                            >
+                                Editar Perfil
+                            </h2>
+
+                            <form id="profileForm" class="space-y-6">
+                                <div
+                                    class="flex flex-col md:flex-row gap-6 items-start"
+                                >
+                                    <div
+                                        class="w-full md:w-1/3 flex flex-col items-center gap-3"
+                                    >
+                                        <div
+                                            class="relative group cursor-pointer"
+                                            onclick="document.getElementById('avatarFile').click()"
+                                            title="Click para subir una foto"
+                                            id="avatarDropZone"
+                                        >
+                                            <img
+                                                id="formAvatarPreview"
+                                                src="https://ui-avatars.com/api/?name=User"
+                                                class="w-32 h-32 rounded-full object-cover border-4 border-[var(--surface)] shadow-sm group-hover:opacity-75 transition-opacity"
+                                            />
+                                            <div
+                                                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <span
+                                                    class="bg-black/50 text-white text-xs px-2 py-1 rounded backdrop-blur-sm"
+                                                    >📷 Cambiar</span
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onclick="document.getElementById('avatarFile').click()"
+                                            class="text-xs text-[var(--primary)] hover:underline font-medium"
+                                        >
+                                            Subir imagen desde PC
+                                        </button>
+
+                                        <input
+                                            type="file"
+                                            id="avatarFile"
+                                            accept="image/*"
+                                            class="hidden"
+                                        />
+
+                                        <details class="w-full">
+                                            <summary
+                                                class="text-xs text-[var(--muted)] cursor-pointer text-center hover:text-[var(--text)] list-none"
+                                            >
+                                                <span
+                                                    class="underline decoration-dotted"
+                                                    >O usar URL externa</span
+                                                >
+                                            </summary>
+                                            <label
+                                                class="text-xs font-medium text-[var(--muted)] w-full block mt-2"
+                                            >
+                                                URL de Avatar
+                                                <input
+                                                    name="avatarUrl"
+                                                    id="avatarUrl"
+                                                    type="text"
+                                                    placeholder="https://..."
+                                                    class="mt-1 w-full rounded-md border border-[var(--card-border)] px-2 py-1 text-xs bg-white"
+                                                />
+                                            </label>
+                                        </details>
+                                    </div>
+
+                                    <div class="w-full md:w-2/3 space-y-4">
+                                        <div
+                                            class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                        >
+                                            <label
+                                                class="block text-sm font-medium"
+                                            >
+                                                Nombre Completo
+                                                <input
+                                                    name="name"
+                                                    id="name"
+                                                    type="text"
+                                                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                                />
+                                            </label>
+                                            <label
+                                                class="block text-sm font-medium"
+                                            >
+                                                Teléfono
+                                                <input
+                                                    name="phone"
+                                                    id="phone"
+                                                    type="tel"
+                                                    class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                                />
+                                            </label>
+                                        </div>
+
+                                        <label
+                                            class="block text-sm font-medium"
+                                        >
+                                            Email <span
+                                                class="text-[var(--muted)] font-normal text-xs"
+                                                >(No editable)</span
+                                            >
+                                            <input
+                                                name="email"
+                                                id="email"
+                                                type="email"
+                                                readonly
+                                                class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-gray-100 text-gray-500 cursor-not-allowed"
+                                            />
+                                        </label>
+
+                                        <label
+                                            class="block text-sm font-medium"
+                                        >
+                                            Dirección de Envío
+                                            <input
+                                                name="address"
+                                                id="address"
+                                                type="text"
+                                                class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                            />
+                                        </label>
+
+                                        <label
+                                            class="block text-sm font-medium"
+                                        >
+                                            Notas Adicionales
+                                            <textarea
+                                                name="notes"
+                                                id="notes"
+                                                rows="2"
+                                                class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                            ></textarea>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="flex justify-end pt-4 border-t border-[var(--card-border)]"
+                                >
+                                    <button type="submit" class="btn px-8"
+                                        >Guardar Cambios</button
+                                    >
+                                </div>
+                                <p
+                                    id="profileMsg"
+                                    class="text-center text-sm hidden"
+                                >
+                                </p>
+                            </form>
+                        </div>
                     </div>
 
-                    <div
-                        class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6"
-                    >
-                        <h2 class="text-lg font-bold mb-3">
-                            Historial de compras
-                        </h2>
-                        <div id="ordersWrap">Cargando...</div>
+                    <!-- Sección Compras -->
+                    <div id="view-orders" class="hidden space-y-6">
+                        <div
+                            class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm"
+                        >
+                            <h2
+                                class="text-xl font-bold mb-6 pb-2 border-b border-[var(--card-border)]"
+                            >
+                                Historial de Compras
+                            </h2>
+                            <div id="ordersWrap" class="min-h-[200px]">
+                                <div class="animate-pulse space-y-4">
+                                    <div class="h-12 bg-gray-200 rounded"></div>
+                                    <div class="h-12 bg-gray-200 rounded"></div>
+                                    <div class="h-12 bg-gray-200 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección Configuración -->
+                    <div id="view-settings" class="hidden space-y-6">
+                        <!-- Cambiar Email -->
+                        <div
+                            class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm"
+                        >
+                            <h2
+                                class="text-xl font-bold mb-6 pb-2 border-b border-[var(--card-border)]"
+                            >
+                                Cambiar Email
+                            </h2>
+                            <form
+                                id="changeEmailForm"
+                                class="space-y-4 max-w-md"
+                            >
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium mb-1"
+                                        >Nuevo Email</label
+                                    >
+                                    <input
+                                        type="email"
+                                        name="newEmail"
+                                        required
+                                        class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium mb-1"
+                                        >Contraseña Actual (para verificar)</label
+                                    >
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        required
+                                        class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                    />
+                                </div>
+                                <button type="submit" class="btn w-full"
+                                    >Actualizar Email</button
+                                >
+                                <p
+                                    id="emailMsg"
+                                    class="text-center text-sm hidden mt-2"
+                                >
+                                </p>
+                            </form>
+                        </div>
+
+                        <!-- Cambiar Contraseña -->
+                        <div
+                            class="bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 shadow-sm"
+                        >
+                            <h2
+                                class="text-xl font-bold mb-6 pb-2 border-b border-[var(--card-border)]"
+                            >
+                                Cambiar Contraseña
+                            </h2>
+                            <form
+                                id="changePassForm"
+                                class="space-y-4 max-w-md"
+                            >
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium mb-1"
+                                        >Contraseña Actual</label
+                                    >
+                                    <input
+                                        type="password"
+                                        name="currentPassword"
+                                        required
+                                        class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium mb-1"
+                                        >Nueva Contraseña</label
+                                    >
+                                    <input
+                                        type="password"
+                                        name="newPassword"
+                                        required
+                                        minlength="6"
+                                        class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium mb-1"
+                                        >Confirmar Nueva Contraseña</label
+                                    >
+                                    <input
+                                        type="password"
+                                        name="confirmPassword"
+                                        required
+                                        minlength="6"
+                                        class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
+                                    />
+                                </div>
+                                <button type="submit" class="btn w-full"
+                                    >Actualizar Contraseña</button
+                                >
+                                <p
+                                    id="passMsg"
+                                    class="text-center text-sm hidden mt-2"
+                                >
+                                </p>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -110,79 +393,424 @@ import "../../styles/global.css";
         <script src="/shop-auth.js" defer></script>
         <script>
             // @ts-nocheck
-            async function loadAccount() {
-                const c = await shopAuth.me();
-                if (!c) return (location.href = "/cuenta/login");
-                document.getElementById("accName").textContent =
-                    c.name || "Cliente";
-                document.getElementById("accEmail").textContent = c.email || "";
-                document.getElementById("name").value = c.name || "";
-                document.getElementById("email").value = c.email || "";
-                // try to fetch orders
-                try {
-                    const qs =
-                        new URLSearchParams(location.search).get("store") ||
-                        new URL(location).pathname.split("/")[2] ||
-                        "";
-                    const res = await fetch(
-                        "/api/shop/orders?store=" + encodeURIComponent(qs),
-                        {
-                            headers: {
-                                Authorization: "Bearer " + shopAuth.getToken(),
-                            },
-                        },
-                    );
-                    const j = await res.json();
-                    const wrap = document.getElementById("ordersWrap");
-                    const orders = j.orders || [];
-                    if (!orders.length) {
-                        wrap.innerHTML =
-                            '<div class="text-sm text-[var(--muted)]">Sin compras aún.</div>';
-                    } else {
-                        wrap.innerHTML =
-                            '<table class="w-full text-sm"><thead><tr><th>Fecha</th><th>Total</th><th>Estado</th></tr></thead><tbody>' +
-                            orders
-                                .map(
-                                    (o) =>
-                                        `<tr><td>${new Date(o.createdAt).toLocaleString()}</td><td>${o.total}</td><td>${o.status}</td></tr>`,
-                                )
-                                .join("") +
-                            "</tbody></table>";
+
+            // Tab switching logic
+            window.switchTab = function (tabName) {
+                // Hide all views
+                document.getElementById("view-profile").classList.add("hidden");
+                document.getElementById("view-orders").classList.add("hidden");
+                document
+                    .getElementById("view-settings")
+                    .classList.add("hidden");
+
+                // Reset tab styles
+                ["profile", "orders", "settings"].forEach((t) => {
+                    const el = document.getElementById(`tab-${t}`);
+                    if (el) {
+                        el.classList.remove(
+                            "text-[var(--primary)]",
+                            "bg-[var(--surface)]",
+                        );
+                        el.classList.add("text-[var(--muted)]");
                     }
+                });
+
+                // Show selected view and highlight tab
+                document
+                    .getElementById(`view-${tabName}`)
+                    .classList.remove("hidden");
+                const activeTab = document.getElementById(`tab-${tabName}`);
+                if (activeTab) {
+                    activeTab.classList.remove("text-[var(--muted)]");
+                    activeTab.classList.add(
+                        "text-[var(--primary)]",
+                        "bg-[var(--surface)]",
+                    );
+                }
+            };
+
+            async function loadAccount() {
+                try {
+                    const c = await shopAuth.me();
+                    if (!c) return (location.href = "/cuenta/login");
+
+                    // Update Sidebar
+                    document.getElementById("accName").textContent =
+                        c.name || "Cliente";
+                    document.getElementById("accEmail").textContent =
+                        c.email || "";
+                    if (c.avatarUrl)
+                        document.getElementById("sidebarAvatar").src =
+                            c.avatarUrl;
+                    else
+                        document.getElementById("sidebarAvatar").src =
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || "User")}`;
+
+                    // Update Form
+                    document.getElementById("name").value = c.name || "";
+                    document.getElementById("email").value = c.email || "";
+                    document.getElementById("phone").value = c.phone || "";
+                    document.getElementById("address").value = c.address || "";
+                    document.getElementById("avatarUrl").value =
+                        c.avatarUrl || "";
+                    document.getElementById("notes").value = c.notes || "";
+
+                    if (c.avatarUrl)
+                        document.getElementById("formAvatarPreview").src =
+                            c.avatarUrl;
+                    else
+                        document.getElementById("formAvatarPreview").src =
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || "User")}`;
+
+                    loadOrders();
                 } catch (e) {
-                    document.getElementById("ordersWrap").textContent =
-                        "No se pudieron cargar las compras.";
+                    console.error("Error loading account", e);
                 }
             }
 
-            async function saveProfile(e) {
-                e.preventDefault();
-                const body = {
-                    name: document.getElementById("name").value.trim(),
-                    phone: document.getElementById("phone").value.trim(),
-                    address: document.getElementById("address").value.trim(),
-                };
+            async function loadOrders() {
                 try {
-                    const res = await fetch("/api/shop/account", {
-                        method: "PATCH",
+                    const res = await fetch("/api/shop/orders", {
                         headers: {
-                            "Content-Type": "application/json",
                             Authorization: "Bearer " + shopAuth.getToken(),
                         },
-                        body: JSON.stringify(body),
                     });
                     const j = await res.json();
-                    alert("Guardado");
+                    const wrap = document.getElementById("ordersWrap");
+                    const orders = j.orders || [];
+
+                    if (!orders.length) {
+                        wrap.innerHTML = `
+                            <div class="flex flex-col items-center justify-center py-12 text-[var(--muted)]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                </svg>
+                                <p>No has realizado ninguna compra aún.</p>
+                                <a href="/" class="mt-4 btn-outline text-sm">Ir a la tienda</a>
+                            </div>
+                        `;
+                    } else {
+                        wrap.innerHTML = `
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="text-xs text-[var(--muted)] uppercase bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 rounded-l-lg">ID Pedido</th>
+                                            <th class="px-4 py-3">Fecha</th>
+                                            <th class="px-4 py-3">Total</th>
+                                            <th class="px-4 py-3 rounded-r-lg">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        ${orders
+                                            .map(
+                                                (o) => `
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-4 py-3 font-medium">
+                                                    #${o.id.slice(-6)}
+                                                    ${o.shippingInfo ? `<div class="text-xs text-[var(--muted)] mt-1">Envío: ${o.shippingInfo.shippingPro || "Estándar"}</div>` : ""}
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    ${new Date(o.createdAt).toLocaleDateString()}
+                                                    ${o.shippingInfo?.trackingNumber ? `<div class="text-xs text-blue-600 mt-1">Track: ${o.shippingInfo.trackingNumber}</div>` : ""}
+                                                </td>
+                                                <td class="px-4 py-3 font-bold">$${o.total}</td>
+                                                <td class="px-4 py-3">
+                                                    <span class="px-2 py-1 rounded-full text-xs font-medium 
+                                                        ${
+                                                            o.status === "PAID"
+                                                                ? "bg-green-100 text-green-800"
+                                                                : o.status ===
+                                                                    "PENDING"
+                                                                  ? "bg-yellow-100 text-yellow-800"
+                                                                  : "bg-gray-100 text-gray-800"
+                                                        }">
+                                                        ${o.status}
+                                                    </span>
+                                                    ${o.shippingInfo?.status ? `<div class="text-xs mt-1 text-[var(--muted)]">Envío: ${o.shippingInfo.status}</div>` : ""}
+                                                </td>
+                                            </tr>
+                                        `,
+                                            )
+                                            .join("")}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    }
                 } catch (e) {
-                    alert("Error al guardar");
+                    document.getElementById("ordersWrap").innerHTML =
+                        '<div class="text-red-500 text-center py-4">Error al cargar el historial.</div>';
                 }
             }
 
             document.addEventListener("DOMContentLoaded", () => {
-                loadAccount();
+                // Wait for shopAuth
+                const init = setInterval(() => {
+                    if (window.shopAuth) {
+                        clearInterval(init);
+                        loadAccount();
+                    }
+                }, 100);
+
+                // Avatar preview listener
+                document
+                    .getElementById("avatarUrl")
+                    .addEventListener("input", (e) => {
+                        if (e.target.value)
+                            document.getElementById("formAvatarPreview").src =
+                                e.target.value;
+                    });
+
+                // Avatar file upload
+                const fileInput = document.getElementById("avatarFile");
+                const dropZone = document.getElementById("avatarDropZone");
+
+                const handleFile = async (file) => {
+                    if (!file) return;
+                    if (!file.type.startsWith("image/")) {
+                        alert("Por favor sube solo imágenes");
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append("file", file);
+
+                    const img = document.getElementById("formAvatarPreview");
+                    const originalSrc = img.src;
+                    img.style.opacity = "0.5";
+
+                    try {
+                        const res = await fetch("/api/upload/avatar", {
+                            method: "POST",
+                            body: formData,
+                        });
+                        if (!res.ok) throw new Error("Error subiendo imagen");
+                        const data = await res.json();
+
+                        // Update inputs and preview
+                        document.getElementById("avatarUrl").value = data.url;
+                        document.getElementById("formAvatarPreview").src =
+                            data.url;
+                    } catch (err) {
+                        alert("Error al subir la imagen: " + err.message);
+                        img.src = originalSrc;
+                    } finally {
+                        img.style.opacity = "1";
+                        fileInput.value = ""; // reset input
+                    }
+                };
+
+                fileInput.addEventListener("change", (e) =>
+                    handleFile(e.target.files[0]),
+                );
+
+                // Drag and drop events
+                ["dragenter", "dragover", "dragleave", "drop"].forEach(
+                    (eventName) => {
+                        dropZone.addEventListener(
+                            eventName,
+                            preventDefaults,
+                            false,
+                        );
+                    },
+                );
+
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                ["dragenter", "dragover"].forEach((eventName) => {
+                    dropZone.addEventListener(eventName, highlight, false);
+                });
+
+                ["dragleave", "drop"].forEach((eventName) => {
+                    dropZone.addEventListener(eventName, unhighlight, false);
+                });
+
+                function highlight(e) {
+                    dropZone.classList.add(
+                        "ring-4",
+                        "ring-[var(--primary)]",
+                        "ring-opacity-50",
+                        "rounded-full",
+                    );
+                }
+
+                function unhighlight(e) {
+                    dropZone.classList.remove(
+                        "ring-4",
+                        "ring-[var(--primary)]",
+                        "ring-opacity-50",
+                        "rounded-full",
+                    );
+                }
+
+                dropZone.addEventListener("drop", (e) => {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    handleFile(files[0]);
+                });
+
+                // Save Profile
+                document
+                    .getElementById("profileForm")
+                    .addEventListener("submit", async (e) => {
+                        e.preventDefault();
+                        const btn = e.target.querySelector("button");
+                        const msg = document.getElementById("profileMsg");
+
+                        btn.disabled = true;
+                        btn.textContent = "Guardando...";
+                        msg.classList.add("hidden");
+
+                        const data = {
+                            name: document.getElementById("name").value.trim(),
+                            phone: document
+                                .getElementById("phone")
+                                .value.trim(),
+                            address: document
+                                .getElementById("address")
+                                .value.trim(),
+                            avatarUrl: document
+                                .getElementById("avatarUrl")
+                                .value.trim(),
+                            notes: document
+                                .getElementById("notes")
+                                .value.trim(),
+                        };
+
+                        try {
+                            await shopAuth.updateProfile(data);
+                            msg.textContent =
+                                "✅ Perfil actualizado correctamente";
+                            msg.className =
+                                "text-center text-sm text-green-600 mt-2 block";
+                            loadAccount(); // Refresh sidebar
+                        } catch (err) {
+                            msg.textContent = "❌ Error al guardar cambios";
+                            msg.className =
+                                "text-center text-sm text-red-600 mt-2 block";
+                        } finally {
+                            btn.disabled = false;
+                            btn.textContent = "Guardar Cambios";
+                        }
+                    });
+
+                // Change Email
+                document
+                    .getElementById("changeEmailForm")
+                    .addEventListener("submit", async (e) => {
+                        e.preventDefault();
+                        const form = e.target;
+                        const btn = form.querySelector("button");
+                        const msg = document.getElementById("emailMsg");
+
+                        btn.disabled = true;
+                        msg.classList.add("hidden");
+
+                        try {
+                            const res = await fetch(
+                                "/api/shop/auth/change-email",
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization:
+                                            "Bearer " + shopAuth.getToken(),
+                                    },
+                                    body: JSON.stringify({
+                                        newEmail: form.newEmail.value,
+                                        password: form.password.value,
+                                    }),
+                                },
+                            );
+                            const data = await res.json();
+                            if (!res.ok) throw new Error(data.error || "Error");
+
+                            msg.textContent =
+                                "✅ Email actualizado. Por favor inicia sesión nuevamente.";
+                            msg.className =
+                                "text-center text-sm text-green-600 mt-2 block";
+                            form.reset();
+                            setTimeout(() => {
+                                shopAuth.logout();
+                                location.href = "/cuenta/login";
+                            }, 2000);
+                        } catch (err) {
+                            msg.textContent = "❌ " + err.message;
+                            msg.className =
+                                "text-center text-sm text-red-600 mt-2 block";
+                            btn.disabled = false;
+                        }
+                    });
+
+                // Change Password
+                document
+                    .getElementById("changePassForm")
+                    .addEventListener("submit", async (e) => {
+                        e.preventDefault();
+                        const form = e.target;
+                        const btn = form.querySelector("button");
+                        const msg = document.getElementById("passMsg");
+
+                        if (
+                            form.newPassword.value !==
+                            form.confirmPassword.value
+                        ) {
+                            msg.textContent = "❌ Las contraseñas no coinciden";
+                            msg.className =
+                                "text-center text-sm text-red-600 mt-2 block";
+                            return;
+                        }
+
+                        btn.disabled = true;
+                        msg.classList.add("hidden");
+
+                        try {
+                            const res = await fetch(
+                                "/api/shop/auth/change-password",
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization:
+                                            "Bearer " + shopAuth.getToken(),
+                                    },
+                                    body: JSON.stringify({
+                                        currentPassword:
+                                            form.currentPassword.value,
+                                        newPassword: form.newPassword.value,
+                                    }),
+                                },
+                            );
+                            const data = await res.json();
+                            if (!res.ok) throw new Error(data.error || "Error");
+
+                            msg.textContent =
+                                "✅ Contraseña actualizada correctamente";
+                            msg.className =
+                                "text-center text-sm text-green-600 mt-2 block";
+                            form.reset();
+                        } catch (err) {
+                            msg.textContent = "❌ " + err.message;
+                            msg.className =
+                                "text-center text-sm text-red-600 mt-2 block";
+                        } finally {
+                            btn.disabled = false;
+                        }
+                    });
+
                 document
                     .getElementById("logoutBtn")
                     .addEventListener("click", async () => {
+                        if (
+                            !confirm(
+                                "¿Estás seguro de que quieres cerrar sesión?",
+                            )
+                        )
+                            return;
                         await shopAuth.logout();
                         location.href = "/";
                     });

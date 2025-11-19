@@ -18,11 +18,7 @@ import "../../styles/global.css";
                 <h1 class="text-2xl font-bold mb-4">Crear cuenta</h1>
                 <div id="formError" class="hidden text-sm text-red-600 mb-3">
                 </div>
-                <form
-                    id="regForm"
-                    onsubmit="handleRegister(event)"
-                    class="space-y-4"
-                >
+                <form id="regForm" class="space-y-4">
                     <label class="block text-sm"
                         >Nombre completo
                         <input
@@ -65,6 +61,11 @@ import "../../styles/global.css";
         <script src="/shop-auth.js" defer></script>
         <script>
             // @ts-nocheck
+            const form = document.getElementById("regForm");
+            if (form) {
+                form.addEventListener("submit", handleRegister);
+            }
+
             async function handleRegister(e) {
                 e.preventDefault();
                 const f = e.target;

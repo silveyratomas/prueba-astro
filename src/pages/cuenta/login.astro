@@ -18,11 +18,7 @@ import "../../styles/global.css";
                 <h1 class="text-2xl font-bold mb-4">Entrar a la tienda</h1>
                 <div id="formError" class="hidden text-sm text-red-600 mb-3">
                 </div>
-                <form
-                    id="loginForm"
-                    onsubmit="handleLogin(event)"
-                    class="space-y-4"
-                >
+                <form id="loginForm" class="space-y-4">
                     <label class="block text-sm"
                         >Email
                         <input
@@ -56,6 +52,11 @@ import "../../styles/global.css";
         <script src="/shop-auth.js" defer></script>
         <script>
             // @ts-nocheck
+            const form = document.getElementById("loginForm");
+            if (form) {
+                form.addEventListener("submit", handleLogin);
+            }
+
             async function handleLogin(e) {
                 e.preventDefault();
                 document.getElementById("formError").classList.add("hidden");

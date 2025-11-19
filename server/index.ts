@@ -5,8 +5,11 @@ import { PrismaClient } from '@prisma/client';
 import { authRouter } from './routes/auth';
 import { productsRouter } from './routes/products';
 import { categoriesRouter } from './routes/categories';
+import { ordersRouter } from './routes/orders';
 import debugRouter from './routes/debug';
 import shopRouter from './routes/shop-auth';
+import uploadRouter from './routes/upload';
+import path from 'path';
 
 const app = express();
 const prisma = new PrismaClient(); // <- ok dejarlo aunque no se use acá
@@ -25,6 +28,8 @@ app.use(cors({
 // app.options('/api', cors());
 
 app.use(express.json());
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
 
 // (opcional) mini logger para chequear si llega Authorization
 // app.use((req, _res, next) => {
@@ -41,7 +46,9 @@ app.get('/api/health', (_req, res) =>
 app.use('/api/auth', authRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/categories', categoriesRouter);
+app.use('/api/orders', ordersRouter);
 app.use('/api/shop', shopRouter);
+app.use('/api/upload', uploadRouter);
 
 if (process.env.NODE_ENV !== 'production') {
   app.use('/api/debug', debugRouter);
