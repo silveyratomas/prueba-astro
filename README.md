@@ -1,14 +1,3 @@
-
-
----
-
-
-![Vista previa de la página](./public/imgs/fotoSitio.png)
-![Vista previa de la página de admin](./public/imgs/PaginaAdmin.png)
-
-
----
-
 # TuTienda — La Revolución del E-commerce SaaS
 
 > **Stack de Alto Rendimiento:** Astro 5 + Express 5 + Prisma ORM + PostgreSQL + Tailwind CSS 4
