@@ -1,62 +1,142 @@
----
+﻿---
 import "../../styles/global.css";
 ---
 
-<html lang="es">
+<html lang="es" class="dark">
   <head>
     <meta charset="utf-8" />
-    <title>Iniciar sesión – Admin</title>
+    <title>Iniciar sesión TuTienda Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body
-    class="min-h-screen grid place-items-center bg-[var(--surface)] text-[var(--text)]"
+    class="min-h-screen flex items-center justify-center bg-[#0B0F19] text-white font-['Inter',sans-serif] overflow-hidden relative selection:bg-purple-500 selection:text-white"
   >
-    <form
-      id="loginForm"
-      action="#"
-      method="post"
-      class="w-full max-w-sm bg-[var(--card)] border border-[var(--card-border)] rounded-xl p-6 space-y-4"
-      onsubmit="return __login(event)"
-    >
-      <h1 class="text-xl font-bold">Iniciar sesión</h1>
-
-      <div>
-        <label class="text-sm">Email</label>
-        <input
-          name="email"
-          type="email"
-          required
-          class="mt-1 w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white"
-        />
-      </div>
-
-      <div>
-        <label class="text-sm">Contraseña</label>
-        <div class="relative mt-1">
-          <input
-            id="passInput"
-            name="pass"
-            type="password"
-            required
-            class="w-full rounded-lg border border-[var(--card-border)] px-3 py-2 bg-white pr-10"
-          />
-          <button
-            type="button"
-            id="togglePass"
-            class="absolute right-1 top-1/2 -translate-y-1/2 text-sm text-[var(--muted)]"
-            >Mostrar</button
-          >
-        </div>
-      </div>
-
-      <div id="adminLoginError" class="hidden text-sm text-red-600"></div>
-
-      <button id="adminLoginBtn" type="submit" class="btn w-full">Entrar</button
+    <!-- Background Effects -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+      <div
+        class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/20 blur-[120px]"
       >
-      <p class="text-xs text-[var(--muted)]">
-        Demo: buleria.games@gmail.com / owner123
-      </p>
-    </form>
+      </div>
+      <div
+        class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-600/10 blur-[120px]"
+      >
+      </div>
+      <!-- Grid Pattern -->
+      <div
+        class="absolute inset-0 bg-[url('https://astro.build/assets/grid.svg')] opacity-[0.15]"
+      >
+      </div>
+    </div>
+
+    <div class="w-full max-w-md p-6 relative z-10">
+      <!-- Logo -->
+      <div class="flex justify-center mb-8">
+        <a href="/landing" class="flex items-center gap-3 group">
+          <div
+            class="relative w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-tr from-orange-500 to-purple-600 rounded-xl rotate-6 opacity-70"
+            >
+            </div>
+            <div
+              class="relative w-full h-full bg-[#171C2F] rounded-xl border border-white/10 flex items-center justify-center"
+            >
+              <span class="text-xl">🚀</span>
+            </div>
+          </div>
+          <span class="font-bold text-2xl tracking-tight">TuTienda</span>
+        </a>
+      </div>
+
+      <form
+        id="loginForm"
+        action="#"
+        method="post"
+        class="bg-[#171C2F]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl space-y-6"
+        onsubmit="return __login(event)"
+      >
+        <div class="text-center">
+          <h1 class="text-xl font-bold mb-2">Bienvenido de nuevo</h1>
+          <p class="text-sm text-slate-400">
+            Ingresa a tu panel de administración
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label
+              class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider"
+              >Email</label
+            >
+            <input
+              name="email"
+              type="email"
+              required
+              placeholder="tu@email.com"
+              class="w-full rounded-lg bg-[#0B0F19] border border-white/10 px-4 py-3 text-white placeholder-slate-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all"
+            />
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider"
+              >Contraseña</label
+            >
+            <div class="relative">
+              <input
+                id="passInput"
+                name="pass"
+                type="password"
+                required
+                placeholder=""
+                class="w-full rounded-lg bg-[#0B0F19] border border-white/10 px-4 py-3 text-white placeholder-slate-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all pr-20"
+              />
+              <button
+                type="button"
+                id="togglePass"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-500 hover:text-white transition-colors"
+                >Mostrar</button
+              >
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="adminLoginError"
+          class="hidden text-sm text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20"
+        >
+        </div>
+
+        <button
+          id="adminLoginBtn"
+          type="submit"
+          class="w-full py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-purple-600 text-white font-bold shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+          >Entrar</button
+        >
+
+        <div class="text-center space-y-2">
+          <p class="text-xs text-slate-500">
+            Demo: <span class="font-mono text-slate-400"
+              >buleria.games@gmail.com</span
+            > / <span class="font-mono text-slate-400">owner123</span>
+          </p>
+          <p class="text-sm text-slate-500">
+            ¿No tienes cuenta? <a
+              href="/admin/register"
+              class="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+              >Regístrate gratis</a
+            >
+          </p>
+        </div>
+      </form>
+    </div>
 
     <!-- Cargar helper primero -->
     <script src="/admin-auth.js?v=7" is:inline defer></script>
@@ -84,6 +164,8 @@ import "../../styles/global.css";
         const btn = document.getElementById("adminLoginBtn");
         try {
           btn.disabled = true;
+          btn.textContent = "Verificando...";
+
           if (
             !window.tpAdminAuth ||
             typeof window.tpAdminAuth.login !== "function"
@@ -108,6 +190,7 @@ import "../../styles/global.css";
           return false;
         } finally {
           btn.disabled = false;
+          btn.textContent = "Entrar";
         }
       };
 

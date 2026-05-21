@@ -98,7 +98,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
             name="storeSlug"
             required
             value="mi-tienda-demo"
-            class="w-full rounded-lg border border-[var(--card-border)] px-4 py-3 bg-white text-sm"
+            class="w-full rounded-lg border border-[var(--card-border)] px-4 py-3 bg-gray-100 text-sm text-[var(--muted)]"
+            readonly
           />
         </div>
 
@@ -210,7 +211,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
           <input
             id="storeFilter"
             value="mi-tienda-demo"
-            class="rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-sm"
+            class="rounded-lg border border-[var(--card-border)] px-4 py-2 bg-gray-100 text-sm text-[var(--muted)]"
+            disabled
           />
           <button class="btn-outline" onclick="__loadList()">Actualizar</button>
         </div>

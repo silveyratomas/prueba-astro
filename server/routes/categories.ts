@@ -1,9 +1,7 @@
 // server/routes/categories.ts
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db/prisma';
 import { requireAuth } from './auth';
-
-const prisma = new PrismaClient();
 export const categoriesRouter = Router();
 
 // GET /api/categories?store=mi-tienda

@@ -1,7 +1,72 @@
 import { Router } from 'express';
 import { prisma } from '../db/prisma';
+import { requireAuth } from './auth';
 
 export const ordersRouter = Router();
+
+// GET /api/orders?store=slug
+ordersRouter.get('/', requireAuth as any, async (req, res) => {
+    try {
+        const storeSlug = String(req.query.store || '').trim();
+        if (!storeSlug) return res.status(400).json({ error: 'store (slug) requerido' });
+
+        const store = await prisma.store.findUnique({
+            where: { slug: storeSlug },
+            select: { id: true }
+        });
+        if (!store) return res.status(404).json({ error: 'store no encontrada' });
+
+        const orders = await prisma.order.findMany({
+            where: { storeId: store.id },
+            orderBy: { createdAt: 'desc' },
+            include: {
+                items: true,
+                shippingInfo: true,
+                user: { select: { name: true, email: true } },
+                payments: true
+            },
+            take: 100
+        });
+
+        res.json({ orders });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'server_error' });
+    }
+});
+
+// PATCH /api/orders/:id
+ordersRouter.patch('/:id', requireAuth as any, async (req, res) => {
+    try {
+        const id = String(req.params.id);
+        const { status, shippingStatus } = req.body;
+
+        const data: any = {};
+        if (status) data.status = status;
+
+        const order = await prisma.order.update({
+            where: { id },
+            data
+        });
+
+        if (shippingStatus && order) {
+            // Actualizar shipping si existe
+            // Primero chequeamos si existe shippingInfo
+            const shipping = await prisma.shipping.findUnique({ where: { orderId: id } });
+            if (shipping) {
+                await prisma.shipping.update({
+                    where: { orderId: id },
+                    data: { status: shippingStatus }
+                });
+            }
+        }
+
+        res.json({ order });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'server_error' });
+    }
+});
 
 // POST /api/orders
 ordersRouter.post('/', async (req, res) => {

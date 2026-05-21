@@ -383,7 +383,14 @@
       await __loadList();
     } catch (e) {
       console.error(e);
-      toast('No se pudo eliminar', 'err');
+      let msg = 'No se pudo eliminar';
+      const txt = e.message || '';
+      if (txt.includes('product_in_use')) {
+        msg = 'No se puede: el producto está en una orden.';
+      } else if (txt.includes('product_not_found')) {
+        msg = 'El producto ya no existe.';
+      }
+      toast(msg, 'err');
     }
   }
 

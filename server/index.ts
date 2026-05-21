@@ -1,7 +1,6 @@
 // server/index.ts
 import express from 'express';
 import cors from 'cors';
-import { PrismaClient } from '@prisma/client';
 import { authRouter } from './routes/auth';
 import { productsRouter } from './routes/products';
 import { categoriesRouter } from './routes/categories';
@@ -12,7 +11,6 @@ import uploadRouter from './routes/upload';
 import path from 'path';
 
 const app = express();
-const prisma = new PrismaClient(); // <- ok dejarlo aunque no se use acá
 
 const FRONT_ORIGIN = process.env.FRONT_ORIGIN || 'http://localhost:4321';
 const API_PORT = Number(process.env.API_PORT || 8787);

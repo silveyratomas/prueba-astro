@@ -1,0 +1,238 @@
+﻿---
+import "../../styles/global.css";
+---
+
+<html lang="es" class="dark">
+    <head>
+        <meta charset="utf-8" />
+        <title>Crear Cuenta TuTienda Admin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body
+        class="min-h-screen flex items-center justify-center bg-[#0B0F19] text-white font-['Inter',sans-serif] overflow-hidden relative selection:bg-purple-500 selection:text-white"
+    >
+        <!-- Background Effects -->
+        <div class="fixed inset-0 z-0 pointer-events-none">
+            <div
+                class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/20 blur-[120px]"
+            >
+            </div>
+            <div
+                class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-600/10 blur-[120px]"
+            >
+            </div>
+            <!-- Grid Pattern -->
+            <div
+                class="absolute inset-0 bg-[url('https://astro.build/assets/grid.svg')] opacity-[0.15]"
+            >
+            </div>
+        </div>
+
+        <div class="w-full max-w-md p-6 relative z-10">
+            <!-- Logo -->
+            <div class="flex justify-center mb-8">
+                <a href="/landing" class="flex items-center gap-3 group">
+                    <div
+                        class="relative w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-110"
+                    >
+                        <div
+                            class="absolute inset-0 bg-gradient-to-tr from-orange-500 to-purple-600 rounded-xl rotate-6 opacity-70"
+                        >
+                        </div>
+                        <div
+                            class="relative w-full h-full bg-[#171C2F] rounded-xl border border-white/10 flex items-center justify-center"
+                        >
+                            <span class="text-xl">🚀</span>
+                        </div>
+                    </div>
+                    <span class="font-bold text-2xl tracking-tight"
+                        >TuTienda</span
+                    >
+                </a>
+            </div>
+
+            <form
+                id="registerForm"
+                action="#"
+                method="post"
+                class="bg-[#171C2F]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl space-y-6"
+                onsubmit="return __register(event)"
+            >
+                <div class="text-center">
+                    <h1 class="text-xl font-bold mb-2">
+                        Crear cuenta de Administrador
+                    </h1>
+                    <p class="text-sm text-slate-400">
+                        Únete para gestionar tu e-commerce
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label
+                            class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider"
+                            >Nombre completo</label
+                        >
+                        <input
+                            name="name"
+                            type="text"
+                            required
+                            placeholder="Juan Pérez"
+                            class="w-full rounded-lg bg-[#0B0F19] border border-white/10 px-4 py-3 text-white placeholder-slate-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider"
+                            >Email</label
+                        >
+                        <input
+                            name="email"
+                            type="email"
+                            required
+                            placeholder="juan@empresa.com"
+                            class="w-full rounded-lg bg-[#0B0F19] border border-white/10 px-4 py-3 text-white placeholder-slate-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider"
+                            >Contraseña</label
+                        >
+                        <div class="relative">
+                            <input
+                                id="passInput"
+                                name="pass"
+                                type="password"
+                                required
+                                minlength="6"
+                                placeholder=""
+                                class="w-full rounded-lg bg-[#0B0F19] border border-white/10 px-4 py-3 text-white placeholder-slate-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all pr-20"
+                            />
+                            <button
+                                type="button"
+                                id="togglePass"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-500 hover:text-white transition-colors"
+                                >Mostrar</button
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    id="registerError"
+                    class="hidden text-sm text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20"
+                >
+                </div>
+
+                <button
+                    id="registerBtn"
+                    type="submit"
+                    class="w-full py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-purple-600 text-white font-bold shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >Crear cuenta</button
+                >
+
+                <p class="text-center text-sm text-slate-500">
+                    ¿Ya tienes cuenta? <a
+                        href="/admin/login"
+                        class="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                        >Inicia sesión</a
+                    >
+                </p>
+            </form>
+        </div>
+
+        <!-- Cargar helper para guardar token si es exitoso -->
+        <script src="/admin-auth.js?v=7" is:inline defer></script>
+
+        <script>
+            // @ts-nocheck
+            function setError(msg) {
+                const el = document.getElementById("registerError");
+                if (!el) return;
+                if (!msg) {
+                    el.classList.add("hidden");
+                    el.textContent = "";
+                } else {
+                    el.classList.remove("hidden");
+                    el.textContent = msg;
+                }
+            }
+
+            window.__register = async function (ev) {
+                ev.preventDefault();
+                setError("");
+                const form = document.getElementById("registerForm");
+                const name = form.name.value.trim();
+                const email = form.email.value.trim();
+                const password = document
+                    .getElementById("passInput")
+                    .value.trim();
+                const btn = document.getElementById("registerBtn");
+
+                if (password.length < 6) {
+                    setError("La contraseña debe tener al menos 6 caracteres.");
+                    return false;
+                }
+
+                try {
+                    btn.disabled = true;
+                    btn.textContent = "Creando cuenta...";
+
+                    // Usamos fetch directo porque admin-auth.js no tiene register
+                    const API =
+                        window.__API_BASE__ || "http://localhost:8787/api";
+
+                    const res = await fetch(`${API}/auth/register`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ name, email, password }),
+                    });
+
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        throw new Error(data.error || "Error al registrarse");
+                    }
+
+                    // Si éxito, guardamos token
+                    if (data.token) {
+                        localStorage.setItem("tp_admin_token", data.token);
+                    }
+
+                    // Redirigir al admin
+                    location.href = "/admin";
+                    return false;
+                } catch (e) {
+                    console.error("[register] error", e);
+                    setError(e.message);
+                    return false;
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = "Crear cuenta";
+                }
+            };
+
+            document.addEventListener("DOMContentLoaded", () => {
+                document
+                    .getElementById("togglePass")
+                    ?.addEventListener("click", () => {
+                        const inp = document.getElementById("passInput");
+                        if (!inp) return;
+                        const isPwd = inp.type === "password";
+                        inp.type = isPwd ? "text" : "password";
+                        document.getElementById("togglePass").textContent =
+                            isPwd ? "Ocultar" : "Mostrar";
+                    });
+            });
+        </script>
+    </body>
+</html>

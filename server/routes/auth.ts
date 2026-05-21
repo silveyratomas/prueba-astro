@@ -44,7 +44,7 @@ authRouter.post('/login', async (req, res) => {
 // === /api/auth/register
 authRouter.post('/register', async (req, res) => {
   try {
-    const { name, email, password, phone, address, storeId, storeSlug } = req.body ?? {};
+    const { name, email, password, storeName } = req.body ?? {};
     if (!email || !password || !name) return res.status(400).json({ error: 'name,email,password requeridos' });
 
     const lower = String(email).toLowerCase();
@@ -52,27 +52,30 @@ authRouter.post('/register', async (req, res) => {
     if (exists) return res.status(409).json({ error: 'email ya registrado' });
 
     const hash = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({ data: { name, email: lower, passwordHash: hash } });
+    const user = await prisma.user.create({ data: { name, email: lower, passwordHash: hash, role: 'MERCHANT' } });
 
-    // if storeSlug provided, try to resolve it to storeId
-    let targetStoreId = storeId;
-    if (!targetStoreId && storeSlug) {
-      const s = await prisma.store.findUnique({ where: { slug: String(storeSlug) } });
-      if (s) targetStoreId = s.id;
+    // auto-crear tienda para el nuevo merchant
+    const baseSlug = (storeName || name)
+      .toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 40) || 'mi-tienda';
+
+    let slug = baseSlug;
+    let attempt = 0;
+    while (true) {
+      const taken = await prisma.store.findUnique({ where: { slug } });
+      if (!taken) break;
+      attempt++;
+      slug = `${baseSlug}-${attempt}`;
     }
 
-    // si se tiene storeId, creamos StoreCustomer
-    if (targetStoreId) {
-      try {
-        await prisma.storeCustomer.create({ data: ({ storeId: targetStoreId, userId: user.id, name, email: lower, phone, address } as any) });
-      } catch (e) {
-        console.warn('[auth.register] storeCustomer create failed', (e as any)?.message);
-      }
-    }
+    await prisma.store.create({ data: { ownerUserId: user.id, name: storeName || name, slug } });
 
     const token = signToken({ uid: user.id, role: user.role });
     res.cookie('tp_auth', token, { httpOnly: true, maxAge: 2 * 60 * 60 * 1000 });
-    res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+    res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role }, storeSlug: slug });
   } catch (e) {
     console.error('[auth.register] error', e);
     res.status(500).json({ error: (e as any)?.message || 'internal error' });

@@ -1,0 +1,64 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Órdenes – Admin">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-3xl font-bold">Panel Admin — Órdenes</h1>
+            <p class="text-sm text-[var(--muted)] mt-1">
+                Gestioná los pedidos y envíos de tu tienda.
+            </p>
+        </div>
+        <div class="flex gap-2">
+            <button class="btn" onclick="__loadOrders()"
+                >Actualizar listado</button
+            >
+        </div>
+    </div>
+
+    <div class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <input
+                    id="storeFilter"
+                    value="mi-tienda-demo"
+                    class="rounded-lg border border-[var(--card-border)] px-4 py-2 bg-white text-sm"
+                />
+                <button class="btn-outline" onclick="__loadOrders()"
+                    >Filtrar</button
+                >
+            </div>
+        </div>
+
+        <div
+            class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-4 shadow-sm overflow-x-auto"
+        >
+            <table class="w-full text-sm min-w-0 table-auto">
+                <thead>
+                    <tr class="text-left border-b border-[var(--card-border)]">
+                        <th class="py-3 pr-4">ID / Fecha</th>
+                        <th class="py-3 pr-4">Cliente</th>
+                        <th class="py-3 pr-4">Items</th>
+                        <th class="py-3 pr-4 text-right">Total</th>
+                        <th class="py-3 pr-4 text-center">Estado Pago</th>
+                        <th class="py-3 pr-4 text-center">Estado Orden</th>
+                        <th class="py-3 pr-4 text-center">Envío</th>
+                        <th class="py-3 pr-4 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="orderRows">
+                    <tr
+                        ><td colspan="8" class="py-8 text-[var(--muted)]"
+                            >Cargando…</td
+                        ></tr
+                    >
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- scripts -->
+    <script src="/admin-auth.js" defer></script>
+    <script src="/admin-orders.js" defer></script>
+</AdminLayout>

@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev:web": "astro dev",
-    "dev:api": "nodemon server.mjs",
+    "dev:api": "nodemon --watch server --ext ts,js --exec \"tsx server/index.ts\"",
     "dev": "concurrently -k -n api,web -c cyan,magenta \"pnpm:dev:api\" \"pnpm:dev:web\"",
     "start:api": "node server.mjs",
     "build": "astro build",

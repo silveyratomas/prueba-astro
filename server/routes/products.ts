@@ -206,10 +206,30 @@ productsRouter.patch('/:id', requireAuth as any, async (req, res) => {
 productsRouter.delete('/:id', requireAuth as any, async (req, res) => {
   try {
     const id = String(req.params.id);
-    await prisma.product.delete({ where: { id } });
+
+    // Usamos una transacción para limpiar las relaciones antes de borrar el producto
+    await prisma.$transaction(async (tx) => {
+      // 1. Borrar items de carritos que tengan este producto
+      await tx.cartItem.deleteMany({ where: { productId: id } });
+
+      // 2. Borrar relaciones con categorías
+      await tx.productCategory.deleteMany({ where: { productId: id } });
+
+      // 3. Borrar variantes (si existen)
+      // Nota: Si las variantes están en órdenes, esto fallará (lo cual es correcto para integridad)
+      await tx.productVariant.deleteMany({ where: { productId: id } });
+
+      // 4. Finalmente borrar el producto
+      await tx.product.delete({ where: { id } });
+    });
+
     res.status(204).end();
   } catch (e: any) {
     if (e.code === 'P2025') return res.status(404).json({ error: 'product_not_found' });
+    // Violación de foreign key (ej: está en una orden)
+    if (e.code === 'P2003') {
+      return res.status(409).json({ error: 'product_in_use', message: 'No se puede eliminar: el producto es parte de una orden de compra.' });
+    }
     console.error(e);
     res.status(500).json({ error: 'server_error' });
   }

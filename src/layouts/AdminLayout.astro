@@ -34,16 +34,22 @@ const { title = "Admin – TuTienda" } = Astro.props;
           <span>🏠</span> General
         </a>
         <a
-          href="/admin/ventas"
+          href="/admin/ordenes"
           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-[var(--muted)] hover:bg-[var(--surface)] hover:text-[var(--text)] transition-colors"
         >
-          <span>💰</span> Ventas
+          <span>📦</span> Órdenes
         </a>
         <a
           href="/admin/productos"
           class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-[var(--muted)] hover:bg-[var(--surface)] hover:text-[var(--text)] transition-colors"
         >
           <span>📦</span> Productos
+        </a>
+        <a
+          href="/admin/categories"
+          class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-[var(--muted)] hover:bg-[var(--surface)] hover:text-[var(--text)] transition-colors"
+        >
+          <span>🏷️</span> Categorías
         </a>
         <a
           href="/admin/clientes"
@@ -123,8 +129,8 @@ const { title = "Admin – TuTienda" } = Astro.props;
               >General</a
             >
             <a
-              href="/admin/ventas"
-              class="block py-2 px-3 rounded hover:bg-gray-100">Ventas</a
+              href="/admin/ordenes"
+              class="block py-2 px-3 rounded hover:bg-gray-100">Órdenes</a
             >
             <a
               href="/admin/productos"
